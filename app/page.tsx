@@ -7,8 +7,14 @@ export default function Home() {
   return (
     <div>
       <HomeSearch />
+      <div style={{
+        display: 'flex',
+        gap: 10,
+        justifyContent: 'center'
+      }}>
       <TrackingProjects />
       <HomeProjectListings />
+      </div>
     </div>
   );
 }
