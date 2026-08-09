@@ -1,4 +1,4 @@
-export default function HomeProjectListingItem() {
+export default function ProjectListingItem() {
     // accept TOR obj
     return (
         <li className="list-row">

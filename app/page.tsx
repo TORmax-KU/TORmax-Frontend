@@ -1,4 +1,4 @@
-import HomeProjectListingsTabs from "@/component/HomePage/ProjectRecommendation/HomeProjectListingsTabs";
+import ProjectListingsTabs from "@/component/HomePage/ProjectRecommendation/ProjectListingsTabs";
 import HomeSearch from "@/component/HomePage/HomeSearch";
 import TrackingProjects from "@/component/HomePage/TrackingProjects";
 import Image from "next/image";
@@ -13,7 +13,7 @@ export default function Home() {
         justifyContent: 'center'
       }}>
       <TrackingProjects />
-      <HomeProjectListingsTabs />
+      <ProjectListingsTabs />
       </div>
     </div>
   );

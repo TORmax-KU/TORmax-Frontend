@@ -1,17 +1,17 @@
 import React from "react";
 
-interface HomeProjectListingItemProps {
+interface ProjectListingItemProps {
     label: string
     defaultChecked?: boolean
     children: React.ReactNode
 }
 
-export default function HomeProjectListingTabItem({
+export default function ProjectListingTabItem({
     label,
     defaultChecked=false,
     children
 }
-    : HomeProjectListingItemProps) {
+    : ProjectListingItemProps) {
     return (
         <React.Fragment>
             <input type="radio" name="my_tabs_2" className="tab" aria-label={label} defaultChecked={defaultChecked} style={{
