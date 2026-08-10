@@ -1,6 +1,6 @@
 'use client'
 
-import RangeSlider from "react-range-slider-input";
+import UserInfoForm from "@/component/UserInfoForm"
 
 export default function UserProfile() {
     return (
@@ -21,25 +21,8 @@ export default function UserProfile() {
                     </div>
                 </div>
             </div>
+            <UserInfoForm/>
 
-            <fieldset className="fieldset">
-                <label className="label" htmlFor="username">Username</label>
-                <input type="text" id="username" className="input" placeholder="username" />
-
-                <label className="label" htmlFor="firstname">Firstname</label>
-                <input type="text" id="firstname" className="input" placeholder="firstname" />
-
-                <label className="label" htmlFor="lastname">Lastname</label>
-                <input type="text" id="lastname" className="input" placeholder="lastname" />
-
-                <label className="label" htmlFor="phonenumber">Phone Number</label>
-                <input type="text" id="phonenumber" className="input" placeholder="phone number" />
-
-                <label className="label" htmlFor="email">Email</label>
-                <input type="text" id="email" className="input" placeholder="email" />
-
-                <RangeSlider/>
-            </fieldset>
         </div>
     )
 }
