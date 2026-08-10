@@ -8,10 +8,18 @@ export default function TORList() {
             flexDirection: 'column',
             alignItems: 'center',
             gap: 20,
-            paddingTop: 50
+            paddingTop: 100,
         }}>
-            <SearchInput/>
-            <ProjectListing/>
+            <SearchInput />
+            <div style={{
+                width: '100%',
+                paddingLeft: 100,
+                paddingRight: 100,
+                paddingTop: 50
+            }}>
+                <ProjectListing />
+            </div>
+
         </div>
     )
 }
