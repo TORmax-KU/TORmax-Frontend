@@ -66,7 +66,7 @@ export default function UserInfoForm() {
                             />                        </div>
                     </div>
 
-                    <RangeSlider id="min-max-price-range-slider" min={0} max={99999999} step={100000} ref={ref} value={value} onInput={setValue} className="margin-lg" />
+                    <RangeSlider id="min-max-price-range-slider" min={0} max={999999999} step={100000} ref={ref} value={value} onInput={setValue} className="margin-lg" />
                 </div>
 
             </fieldset>
