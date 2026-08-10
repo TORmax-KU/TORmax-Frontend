@@ -14,12 +14,12 @@ export default function TORPage() {
         height: 300,
         padding: 25
       }}>
-        <>For more
-          information link</>
-        <>pdf link
-        </>
-        <>existing website</>
-        <>Contacts</>
+        <div>For more
+          information link</div>
+        <div>pdf link
+        </div>
+        <div>existing website</div>
+        <div>Contacts</div>
       </div>
       <div>
         Project Info

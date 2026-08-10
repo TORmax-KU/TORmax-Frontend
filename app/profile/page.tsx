@@ -1,6 +1,6 @@
 'use client'
 
-// import RangeSlider from "react-range-slider-input";
+import RangeSlider from "react-range-slider-input";
 
 export default function UserProfile() {
     return (
@@ -38,7 +38,7 @@ export default function UserProfile() {
                 <label className="label" htmlFor="email">Email</label>
                 <input type="text" id="email" className="input" placeholder="email" />
 
-                {/* <RangeSlider/> */}
+                <RangeSlider/>
             </fieldset>
         </div>
     )
