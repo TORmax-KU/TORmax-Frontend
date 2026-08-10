@@ -6,7 +6,8 @@ export default function Header() {
     return (
         <div className="navbar bg-base-100 shadow-sm" style={{
             position: 'sticky',
-            top: 0
+            top: 0,
+            zIndex: 1000,
         }}>
             <div className="navbar-start">
                 <div className="dropdown">

@@ -12,7 +12,7 @@ export default function UserProfile() {
         }}>
             <div style={{
                 position: 'sticky',
-                top: 0,
+                top: '30%',
                 height: '80vh'
             }}>
                 <div className="avatar">
