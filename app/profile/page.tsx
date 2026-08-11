@@ -1,6 +1,7 @@
 'use client'
 
-import UserInfoForm from "@/component/UserInfoForm"
+import ProfessionInfoForm from "@/component/Profile/ProfessionInfoForm"
+import UserInfoForm from "@/component/Profile/UserInfoForm"
 
 export default function UserProfile() {
     return (
@@ -12,7 +13,7 @@ export default function UserProfile() {
         }}>
             <div style={{
                 position: 'sticky',
-                top: '30%',
+                top: '30vh',
                 height: '80vh'
             }}>
                 <div className="avatar">
@@ -21,8 +22,10 @@ export default function UserProfile() {
                     </div>
                 </div>
             </div>
-            <UserInfoForm/>
-
+            <div>
+                <UserInfoForm/>
+                <ProfessionInfoForm/>
+            </div>
         </div>
     )
 }

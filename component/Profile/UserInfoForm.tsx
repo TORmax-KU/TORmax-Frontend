@@ -42,7 +42,7 @@ export default function UserInfoForm() {
                     }}>
                         Budget Requirement
                     </div>
-                    <div style={{ display: 'flex', gap: 20, width: 210}}>
+                    <div style={{ display: 'flex', gap: 20, width: 210 }}>
                         <div>
                             <label className="label" htmlFor="minprice">Min</label>
                             <input
@@ -68,9 +68,9 @@ export default function UserInfoForm() {
 
                     <RangeSlider id="min-max-price-range-slider" min={0} max={999999999} step={100000} ref={ref} value={value} onInput={setValue} className="margin-lg" />
                 </div>
-
+                
+                <button type="submit" className="btn btn-primary mt-6">Save</button>
             </fieldset>
-
 
         </div>
 
