@@ -1,6 +1,15 @@
-export default function SearchInput() {
+import React from "react";
+import { DetailedVersion } from "../ProjectListings/ProjectListing";
+import SearchFilter from "./SearchFilter";
+
+export default function SearchInput({ detailed = false }: DetailedVersion) {
     return (
-        <label className="input">
+        <div style={{
+            display: 'flex',
+            gap: 10,
+            alignItems: 'center'
+        }}>
+            <label className="input">
             <svg className="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <g
                     strokeLinejoin="round"
@@ -14,6 +23,9 @@ export default function SearchInput() {
                 </g>
             </svg>
             <input type="search" required placeholder="Search" />
-        </label>
+            
+        </label><SearchFilter/>
+        </div>
+        
     )
 }

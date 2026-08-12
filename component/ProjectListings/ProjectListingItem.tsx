@@ -1,8 +1,8 @@
 import { RiAddCircleFill, RiFileList2Line } from "@remixicon/react";
 import Link from "next/link";
-import { BigInfoVersion } from "./ProjectListing";
+import { DetailedVersion } from "./ProjectListing";
 
-export default function ProjectListingItem({ biginfo = false }: BigInfoVersion) {
+export default function ProjectListingItem({ detailed = false }: DetailedVersion) {
     // accept TOR obj
     return (
         <Link href="/tor-page/1" style={{
@@ -16,7 +16,7 @@ export default function ProjectListingItem({ biginfo = false }: BigInfoVersion) 
                     <div className="font-semibold text-base truncate w-[150px]">Digital Skills Training for Rural Youth</div>
                     <div className="text-xs uppercase font-semibold opacity-60">Employer</div>
                 </div>
-                {biginfo ?
+                {detailed ?
                     (<div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs opacity-70">
                         <span className=" overflow-y-auto">📍 Northern Region, Thailand</span>
                     </div>) : (null)
