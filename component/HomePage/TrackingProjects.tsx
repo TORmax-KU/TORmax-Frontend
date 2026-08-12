@@ -19,27 +19,27 @@ export default function TrackingProjects() {
                 </thead>
                 <tbody>
                     <tr>
-                        <Link href='/tor-page/1'>
-                        <td>Project A</td>
-                        </Link>
+                        <td><Link href='/tor-page/1'>
+                        Project A
+                        </Link></td>
                         <td>Approved</td>
                     </tr>
                     <tr>
-                        <Link href='/tor-page/1'>
-                        <td>Project B</td>
-                        </Link>
+                        <td><Link href='/tor-page/1'>
+                        Project B
+                        </Link></td>
                         <td>Applied</td>
                     </tr>
                     <tr>
-                        <Link href='/tor-page/1'>
-                        <td>Project C</td>
-                        </Link>
+                        <td><Link href='/tor-page/1'>
+                        Project C
+                        </Link></td>
                         <td>Rejected</td>
                     </tr>
                     <tr>
-                        <Link href='/tor-page/1'>
-                        <td>Project D</td>
-                        </Link>
+                        <td><Link href='/tor-page/1'>
+                        Project D
+                        </Link></td>
                         <td>Unavailable</td>
                     </tr>
                 </tbody>
