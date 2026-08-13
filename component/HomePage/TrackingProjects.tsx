@@ -3,13 +3,15 @@ import Link from "next/link"
 export default function TrackingProjects() {
     return (
         <div style={{
-            width: '35%',
+            width: '100%',
             padding: 15,
-            paddingLeft: 25
         }}>
-
-            Tracked Projects
-
+            <div style={{
+                fontSize: 20,
+            }}>
+                Tracked Projects
+            </div>
+            
             <table className="table">
                 <thead>
                     <tr>

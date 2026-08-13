@@ -9,6 +9,7 @@ export default function Home() {
       <HomeSearch />
       <div style={{
         display: 'flex',
+        flexDirection: 'column',
         gap: 10,
         justifyContent: 'center'
       }}>

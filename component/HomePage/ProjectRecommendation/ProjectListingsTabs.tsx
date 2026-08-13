@@ -4,7 +4,7 @@ import ProjectListingTabItem from "./ProjectListingsTabItem";
 export default function ProjectListingsTabs() {
     return (
         <div style={{
-            width: '65%',
+            width: '100%',
             padding: 15,
             paddingLeft: 25
         }}>
