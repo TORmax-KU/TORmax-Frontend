@@ -1,8 +1,8 @@
 import { RiAddCircleFill, RiFileList2Line } from "@remixicon/react";
 import Link from "next/link";
-import { DetailedVersion } from "./ProjectListing";
+import { AltVersion } from "./AltVersion";
 
-export default function ProjectListingItem({ detailed = false }: DetailedVersion) {
+export default function ProjectListingItem({ altLook = false }: AltVersion) {
     // accept TOR obj
     return (
         <li className="list-row" style={{
@@ -15,7 +15,7 @@ export default function ProjectListingItem({ detailed = false }: DetailedVersion
                     <div className="font-semibold text-base truncate w-[200px]">Digital Skills Training for Rural Youth</div>
                     <div className="text-xs uppercase font-semibold opacity-60">Employer</div>
                 </div>
-                {detailed ?
+                {altLook ?
                     (<div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs opacity-70">
                         <span className=" overflow-y-auto">📍 Northern Region, Thailand</span>
                     </div>) : (null)

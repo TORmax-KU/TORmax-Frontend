@@ -51,9 +51,7 @@ export default function HomeSearch() {
                     {/* Search Input */}
                     <div className="w-full max-w-3xl animate-fade-in-up delay-300">
                         <div className="relative">
-                            <div className="relative bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl border border-white/20 p-1 transition-all duration-300 hover:shadow-primary/20 hover:border-primary/30">
-                                <SearchInput detailed={true} />
-                            </div>
+                            <SearchInput mode='dark' altLook/>
 
                             {/* Quick Search Tags */}
                             <div className="flex flex-wrap justify-center gap-2 mt-4">

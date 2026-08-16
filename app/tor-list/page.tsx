@@ -17,7 +17,7 @@ export default function TORList() {
                 paddingRight: 100,
                 paddingTop: 50
             }}>
-                <ProjectListing detailed/>
+                <ProjectListing altLook/>
             </div>
 
         </div>
