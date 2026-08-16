@@ -11,14 +11,14 @@ import {
     RiCloseLine,
     RiQuestionLine
 } from "@remixicon/react";
-import { mockProjects, Project } from "@/public/mockData/mockProjects";
+import { mockTrackingProjects, TrackingProject } from "@/public/mockData/mockProjects";
 
 
 export default function TrackingProjects() {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState<string>('All');
 
-    const getStatusBadge = (status: Project['status']) => {
+    const getStatusBadge = (status: TrackingProject['status']) => {
         const config = {
             'Approved': { color: 'badge-success', icon: <RiCheckLine className="h-3 w-3" /> },
             'Applied': { color: 'badge-warning', icon: <RiTimeLine className="h-3 w-3" /> },
@@ -28,14 +28,14 @@ export default function TrackingProjects() {
         return config[status] || config['Unavailable'];
     };
 
-    const filteredProjects = mockProjects.filter(project => {
+    const filteredProjects = mockTrackingProjects.filter(project => {
         const matchesSearch = project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             project.trackingId.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesStatus = filterStatus === 'All' || project.status === filterStatus;
         return matchesSearch && matchesStatus;
     });
 
-    const statusCounts = mockProjects.reduce((acc, p) => {
+    const statusCounts = mockTrackingProjects.reduce((acc, p) => {
         acc[p.status] = (acc[p.status] || 0) + 1;
         return acc;
     }, {} as Record<string, number>);
@@ -48,7 +48,7 @@ export default function TrackingProjects() {
                     <h1 className="text-2xl sm:text-3xl font-bold text-base-content flex items-center gap-3">
                         📋 Tracked Projects
                         <span className="text-sm font-normal text-base-content/50 bg-base-200 px-3 py-1 rounded-full">
-                            {mockProjects.length} total
+                            {mockTrackingProjects.length} total
                         </span>
                     </h1>
                     <p className="text-sm text-base-content/60 mt-1">
@@ -199,7 +199,7 @@ export default function TrackingProjects() {
                 {/* Table Footer */}
                 <div className="px-6 py-3 border-t border-base-200 flex justify-between items-center text-sm text-base-content/50">
                     <span>
-                        Showing {filteredProjects.length} of {mockProjects.length} projects
+                        Showing {filteredProjects.length} of {mockTrackingProjects.length} projects
                     </span>
                     <div className="flex gap-1">
                         <button className="btn btn-ghost btn-xs">Previous</button>

@@ -1,3 +1,4 @@
 export interface AltVersion {
-    altLook?: boolean
+    altLook?: boolean;
+    compact?: boolean;
 }
