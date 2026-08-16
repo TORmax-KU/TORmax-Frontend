@@ -1,17 +1,18 @@
 'use client';
 
-import { 
-    RiUserLine, 
+import {
+    RiUserLine,
     RiArrowDownSLine
 } from "@remixicon/react";
 import "react-range-slider-input/dist/style.css";
 import { FilterState } from ".";
 import LocationPicker from "@/component/RadarMap/LocationPicker";
-import AutocompleteInput from "@/component/AutocompleteInput";
-import LanguageTagInput from "@/component/LanguageTagInput";
-import StarRatingSlider from "@/component/StarRatingSlider";
+import AutocompleteInput from "@/component/Input/AutocompleteInput";
+import StarRatingSlider from "@/component/Input/StarRatingSlider";
 import { companyNames } from "@/public/mockData/companyNames";
 import { contractorNames } from "@/public/mockData/contractorNames";
+import AutocompleteMultiselect from "@/component/Input/AutocompleteMultiselect";
+import { allLanguages } from "@/public/mockData/allLanguages";
 
 interface ContractorProps {
     filters: FilterState;
@@ -21,16 +22,21 @@ interface ContractorProps {
     onArrayToggle: (field: keyof FilterState, value: string) => void;
 }
 
-export default function Contractor({ 
-    filters, 
-    isActive, 
-    onToggle, 
+export default function Contractor({
+    filters,
+    isActive,
+    onToggle,
     onInputChange,
-    onArrayToggle 
+    onArrayToggle
 }: ContractorProps) {
+    // Handler for language toggle
+    const handleLanguageToggle = (value: string) => {
+        onArrayToggle("contractorLanguages", value);
+    };
+
     return (
         <div className="space-y-3 border-t border-base-300 pt-4">
-            <button 
+            <button
                 onClick={onToggle}
                 className="flex items-center justify-between w-full text-left hover:bg-base-200/50 p-2 rounded-lg transition-colors"
             >
@@ -45,7 +51,7 @@ export default function Contractor({
                 </div>
                 <RiArrowDownSLine className={`h-4 w-4 transition-transform ${isActive ? 'rotate-180' : ''}`} />
             </button>
-            
+
             {isActive && (
                 <div className="pl-6 space-y-4">
                     {/* Name & Company - Autocomplete */}
@@ -79,10 +85,13 @@ export default function Contractor({
                     />
 
                     {/* Languages - Autocomplete with tags */}
-                    <LanguageTagInput
+                    <AutocompleteMultiselect
+                        label="Languages"
+                        options={allLanguages}
                         selected={filters.contractorLanguages}
-                        onAdd={(value) => onArrayToggle("contractorLanguages", value)}
-                        onRemove={(value) => onArrayToggle("contractorLanguages", value)}
+                        onToggle={handleLanguageToggle}
+                        placeholder="Search languages..."
+                        color="success"
                     />
                 </div>
             )}
