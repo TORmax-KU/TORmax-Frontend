@@ -212,7 +212,7 @@ export default function FilterOptions() {
             />
 
             {/* Actions - Floating Footer */}
-            <div className="sticky bottom-0 bg-base-100/95 backdrop-blur-sm border-t border-base-300 pt-4 pb-2 -mx-2 px-4 rounded-b-xl">
+            <div className="z-100 sticky bottom-0 bg-base-100/95 backdrop-blur-sm border-t border-base-300 pt-4 pb-2 -mx-2 px-4 rounded-b-xl">
                 <div className="flex gap-3">
                     <button
                         className="btn btn-primary flex-1 gap-2 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all duration-300"

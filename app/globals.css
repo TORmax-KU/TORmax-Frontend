@@ -194,3 +194,82 @@ html {
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.25);
 }
+/* Level Slider */
+.level-slider {
+    --slider-track-height: 6px;
+    --slider-thumb-size: 20px;
+    --slider-thumb-color: #8b5cf6;
+    --slider-track-color: rgba(255, 255, 255, 0.1);
+    --slider-range-color: linear-gradient(to right, #8b5cf6, #6d28d9);
+}
+
+.level-slider .slider-track {
+    height: var(--slider-track-height) !important;
+    background: var(--slider-track-color) !important;
+    border-radius: 999px !important;
+}
+
+.level-slider .slider-track .slider-range {
+    background: var(--slider-range-color) !important;
+    border-radius: 999px !important;
+    height: 100% !important;
+}
+
+.level-slider .slider-thumb {
+    width: var(--slider-thumb-size) !important;
+    height: var(--slider-thumb-size) !important;
+    background: white !important;
+    border: 2px solid var(--slider-thumb-color) !important;
+    border-radius: 50% !important;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.level-slider .slider-thumb:hover {
+    transform: scale(1.15) !important;
+}
+
+/* Team Size Slider */
+.team-slider {
+    --slider-track-height: 6px;
+    --slider-thumb-size: 20px;
+    --slider-thumb-color: #3b82f6;
+    --slider-track-color: rgba(255, 255, 255, 0.1);
+    --slider-range-color: linear-gradient(to right, #3b82f6, #2563eb);
+}
+
+.team-slider .slider-track {
+    height: var(--slider-track-height) !important;
+    background: var(--slider-track-color) !important;
+    border-radius: 999px !important;
+}
+
+.team-slider .slider-track .slider-range {
+    background: var(--slider-range-color) !important;
+    border-radius: 999px !important;
+    height: 100% !important;
+}
+
+.team-slider .slider-thumb {
+    width: var(--slider-thumb-size) !important;
+    height: var(--slider-thumb-size) !important;
+    background: white !important;
+    border: 2px solid var(--slider-thumb-color) !important;
+    border-radius: 50% !important;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.team-slider .slider-thumb:hover {
+    transform: scale(1.15) !important;
+}
+/* Hide the disabled lower thumb */
+.team-slider .range-slider__thumb[data-lower] {
+    width: 0;
+}
+
+.team-slider .range-slider__range {
+    border-radius: 6px;
+}
