@@ -5,7 +5,7 @@ import {
     RiArrowDownSLine
 } from "@remixicon/react";
 import "react-range-slider-input/dist/style.css";
-import { FilterState } from "./FilterIndex";
+import { FilterState } from ".";
 import LocationPicker from "@/component/RadarMap/LocationPicker";
 import AutocompleteInput from "@/component/AutocompleteInput";
 import LanguageTagInput from "@/component/LanguageTagInput";
@@ -20,7 +20,6 @@ interface ContractorProps {
     onInputChange: (field: keyof FilterState, value: string | string[]) => void;
     onArrayToggle: (field: keyof FilterState, value: string) => void;
 }
-
 
 export default function Contractor({ 
     filters, 

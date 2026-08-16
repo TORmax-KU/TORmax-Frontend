@@ -11,8 +11,7 @@ import {
     RiCloseLine,
     RiQuestionLine
 } from "@remixicon/react";
-import { mockProjects } from "@/public/mockData/mockProjects";
-import { Project } from "next/dist/build/swc/types";
+import { mockProjects, Project } from "@/public/mockData/mockProjects";
 
 
 export default function TrackingProjects() {

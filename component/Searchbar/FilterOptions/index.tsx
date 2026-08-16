@@ -3,13 +3,13 @@
 import { useState, useMemo } from "react";
 import FilterHeader from "./FilterHeader";
 import BasicSearch from "./BasicSearch";
-import ProjectDetails from "./ProjectDetails";
 import BudgetTimeline from "./BudgetTimeline";
 import SkillsTechnologies from "./SkillsTechnologies";
 import Contractor from "./Contractor";
 import WorkRequirements from "./WorkRequirements";
 import AdditionalOptions from "./AdditionalOptions";
 import { RiSearchLine } from "@remixicon/react";
+import ProjectDetails from "./ProjectDetails";
 
 export type FilterState = {
     keyword: string;

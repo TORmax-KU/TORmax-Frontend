@@ -1,5 +1,5 @@
 import { RiSearchLine, RiArrowDownSLine, RiUserLine } from "@remixicon/react";
-import { FilterState } from "./FilterIndex";
+import { FilterState } from ".";
 
 interface BasicSearchProps {
     filters: FilterState;

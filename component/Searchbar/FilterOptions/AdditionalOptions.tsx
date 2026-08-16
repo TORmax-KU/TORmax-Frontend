@@ -1,5 +1,5 @@
 import { RiStarLine, RiArrowDownSLine } from "@remixicon/react";
-import { FilterState } from "./FilterIndex";
+import { FilterState } from ".";
 
 interface AdditionalOptionsProps {
     filters: FilterState;

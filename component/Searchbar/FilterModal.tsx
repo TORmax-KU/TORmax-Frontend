@@ -1,7 +1,7 @@
 'use client';
 
 import React from "react";
-import FilterOptions from "./FilterOptions/FilterIndex";
+import FilterOptions from "./FilterOptions";
 
 export default function FilterModal() {
     return (
