@@ -6,7 +6,10 @@ import Image from "next/image";
 export default function Home() {
   return (
     <div>
-      <HomeSearch />
+      <div className="dark:bg-base-300 bg-base-100 min-h-screen">
+        <HomeSearch />
+      </div>
+      
       <div style={{
         display: 'flex',
         flexDirection: 'column',
