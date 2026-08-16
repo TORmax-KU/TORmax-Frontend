@@ -8,7 +8,7 @@ import {
 } from "@remixicon/react";
 import RangeSlider from "react-range-slider-input";
 import "react-range-slider-input/dist/style.css";
-import { FilterState } from "./index";
+import { FilterState } from "./FilterIndex";
 
 interface BudgetTimelineProps {
     filters: FilterState;

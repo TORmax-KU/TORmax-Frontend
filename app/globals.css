@@ -273,3 +273,44 @@ html {
 .team-slider .range-slider__range {
     border-radius: 6px;
 }
+
+/* Rating Slider Styles */
+.rating-slider {
+    --slider-track-height: 6px;
+    --slider-thumb-size: 20px;
+    --slider-thumb-color: #f59e0b;
+    --slider-track-color: rgba(255, 255, 255, 0.1);
+    --slider-range-color: linear-gradient(to right, #fbbf24, #f59e0b);
+}
+
+.rating-slider .slider-track {
+    height: var(--slider-track-height) !important;
+    background: var(--slider-track-color) !important;
+    border-radius: 999px !important;
+}
+
+.rating-slider .slider-track .slider-range {
+    background: var(--slider-range-color) !important;
+    border-radius: 999px !important;
+    height: 100% !important;
+}
+
+.rating-slider .slider-thumb[data-upper] {
+    width: var(--slider-thumb-size) !important;
+    height: var(--slider-thumb-size) !important;
+    background: white !important;
+    border: 2px solid var(--slider-thumb-color) !important;
+    border-radius: 50% !important;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.rating-slider .slider-thumb[data-upper]:hover {
+    transform: scale(1.15) !important;
+}
+
+.rating-slider .slider-thumb[data-lower] {
+    display: none !important;
+}
+
