@@ -110,3 +110,70 @@ html {
 .filter-pulse {
     animation: filterPulse 2s ease-in-out infinite;
 }
+
+/* Custom Budget Slider Styles */
+.budget-slider {
+    --slider-track-height: 6px;
+    --slider-thumb-size: 20px;
+    --slider-thumb-color: #3b82f6;
+    --slider-track-color: rgba(255, 255, 255, 0.1);
+    --slider-range-color: linear-gradient(to right, #3b82f6, #8b5cf6);
+}
+
+.budget-slider .slider-track {
+    height: var(--slider-track-height) !important;
+    background: var(--slider-track-color) !important;
+    border-radius: 999px !important;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+.budget-slider .slider-track .slider-range {
+    background: var(--slider-range-color) !important;
+    border-radius: 999px !important;
+    height: 100% !important;
+}
+
+.budget-slider .slider-thumb {
+    width: var(--slider-thumb-size) !important;
+    height: var(--slider-thumb-size) !important;
+    background: white !important;
+    border: 2px solid var(--slider-thumb-color) !important;
+    border-radius: 50% !important;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+
+.budget-slider .slider-thumb:hover {
+    transform: scale(1.15) !important;
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4) !important;
+}
+
+.budget-slider .slider-thumb:active {
+    transform: scale(0.95) !important;
+}
+
+.budget-slider .slider-thumb::after {
+    content: '' !important;
+    position: absolute !important;
+    inset: 4px !important;
+    border-radius: 50% !important;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4), transparent 70%) !important;
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .budget-slider .slider-thumb {
+    background: #1e293b !important;
+    border-color: #3b82f6 !important;
+}
+
+[data-theme="dark"] .budget-slider .slider-track {
+    background: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .budget-slider {
+        --slider-thumb-size: 16px;
+    }
+}
