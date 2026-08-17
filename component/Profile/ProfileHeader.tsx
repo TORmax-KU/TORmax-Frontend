@@ -1,16 +1,32 @@
 'use client';
 
 import { UserProfile } from "@/interface/UserProfile/UserProfile";
-import { RiEditLine, RiSaveLine, RiCloseLine, RiCheckLine, RiShareLine, RiMapPinLine } from "@remixicon/react";
+import { RiEditLine, RiSaveLine, RiCloseLine, RiShareLine, RiMapPinLine } from "@remixicon/react";
 import Image from "next/image";
+import { useState } from "react";
 
 interface ProfileHeaderProps {
     profile: UserProfile;
     isEditing: boolean;
     setIsEditing: (value: boolean) => void;
+    onUpdate?: (field: string, value: string) => void;
 }
 
-export default function ProfileHeader({ profile, isEditing, setIsEditing }: ProfileHeaderProps) {
+export default function ProfileHeader({ 
+    profile, 
+    isEditing, 
+    setIsEditing,
+    onUpdate 
+}: ProfileHeaderProps) {
+    const [editTitle, setEditTitle] = useState(profile.title);
+
+    const handleSave = () => {
+        if (onUpdate && editTitle !== profile.title) {
+            onUpdate('title', editTitle);
+        }
+        setIsEditing(false);
+    };
+
     return (
         <div className="bg-base-100 rounded-box shadow-lg p-6">
             <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
@@ -34,7 +50,18 @@ export default function ProfileHeader({ profile, isEditing, setIsEditing }: Prof
                 <div className="flex-1">
                     <div className="flex items-center gap-3 flex-wrap">
                         <h1 className="text-2xl font-bold">{profile.name}</h1>
-                        <span className="badge badge-primary">{profile.title}</span>
+                        {/* Edit mode for title */}
+                        {isEditing ? (
+                            <input 
+                                type="text" 
+                                className="input input-bordered input-sm max-w-xs"
+                                value={editTitle}
+                                onChange={(e) => setEditTitle(e.target.value)}
+                                placeholder="Your title..."
+                            />
+                        ) : (
+                            <span className="badge badge-primary">{profile.title}</span>
+                        )}
                     </div>
                     <p className="text-sm text-base-content/60">{profile.company}</p>
                     <p className="text-sm text-base-content/60 flex items-center gap-1 mt-1">
@@ -49,14 +76,17 @@ export default function ProfileHeader({ profile, isEditing, setIsEditing }: Prof
                         <>
                             <button 
                                 className="btn btn-success btn-sm gap-1"
-                                onClick={() => setIsEditing(false)}
+                                onClick={handleSave}
                             >
                                 <RiSaveLine className="h-4 w-4" />
                                 Save
                             </button>
                             <button 
                                 className="btn btn-ghost btn-sm gap-1"
-                                onClick={() => setIsEditing(false)}
+                                onClick={() => {
+                                    setEditTitle(profile.title);
+                                    setIsEditing(false);
+                                }}
                             >
                                 <RiCloseLine className="h-4 w-4" />
                                 Cancel
