@@ -1,5 +1,5 @@
 import { projects } from "@/public/mockData/mockProjects";
-import { AltVersion } from "./AltVersion";
+import { AltVersion } from "../../interface/AltVersion";
 import ProjectListingItem from "./ProjectListingItem";
 import { RiSearchLine } from "@remixicon/react";
 

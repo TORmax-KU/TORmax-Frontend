@@ -3,7 +3,7 @@
 import { RiAddCircleFill, RiFileList2Line, RiHeartLine, RiHeartFill, RiMapPinLine, RiBuildingLine, RiTimeLine } from "@remixicon/react";
 import Link from "next/link";
 import { useState } from "react";
-import { AltVersion } from "./AltVersion";
+import { AltVersion } from "../../interface/AltVersion";
 
 interface ProjectListingItemProps extends AltVersion {
     project?: {

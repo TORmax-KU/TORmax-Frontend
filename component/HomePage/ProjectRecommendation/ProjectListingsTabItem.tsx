@@ -1,6 +1,6 @@
 'use client';
 
-import { AltVersion } from "@/component/ProjectListings/AltVersion";
+import { AltVersion } from "@/interface/AltVersion";
 import React, { useState } from "react";
 
 interface ProjectListingTabItemProps extends AltVersion {

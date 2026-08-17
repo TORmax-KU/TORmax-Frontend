@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { RiFireLine, RiHeartLine, RiBuildingLine, RiCheckLine } from "@remixicon/react";
-import { AltVersion } from "@/component/ProjectListings/AltVersion";
+import { AltVersion } from "@/interface/AltVersion";
 import ProjectListing from "@/component/ProjectListings/ProjectListing";
 import ProjectListingTabItem from "./ProjectListingsTabItem";
 

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import SearchFilter from "./SearchFilter";
-import { AltVersion } from "../ProjectListings/AltVersion";
+import { AltVersion } from "../../interface/AltVersion";
 
 interface SearchInputProps extends AltVersion {
     mode?: 'light' | 'dark';
