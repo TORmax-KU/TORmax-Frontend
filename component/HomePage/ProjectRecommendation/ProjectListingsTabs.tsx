@@ -53,18 +53,6 @@ export default function ProjectListingsTabs({
                     ))}
                 </div>
             </div>
-
-            {/* Footer Info */}
-            <div className={`
-                flex justify-between items-center mt-4 text-xs text-base-content/30
-                ${altLook ? 'px-2' : 'px-4'}
-            `}>
-                <span>Showing latest projects</span>
-                <span className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-success" />
-                    Live updates
-                </span>
-            </div>
         </div>
     );
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
     RiArrowRightLine,
     RiSearchLine,
@@ -13,10 +13,12 @@ import {
 } from "@remixicon/react";
 import { mockTrackingProjects, TrackingProject } from "@/public/mockData/mockProjects";
 
+const ITEMS_PER_PAGE = 3;
 
 export default function TrackingProjects() {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState<string>('All');
+    const [currentPage, setCurrentPage] = useState(1);
 
     const getStatusBadge = (status: TrackingProject['status']) => {
         const config = {
@@ -28,17 +30,70 @@ export default function TrackingProjects() {
         return config[status] || config['Unavailable'];
     };
 
-    const filteredProjects = mockTrackingProjects.filter(project => {
-        const matchesSearch = project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            project.trackingId.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus = filterStatus === 'All' || project.status === filterStatus;
-        return matchesSearch && matchesStatus;
-    });
+    // Filter projects
+    const filteredProjects = useMemo(() => {
+        return mockTrackingProjects.filter(project => {
+            const matchesSearch = project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                project.trackingId.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesStatus = filterStatus === 'All' || project.status === filterStatus;
+            return matchesSearch && matchesStatus;
+        });
+    }, [searchTerm, filterStatus]);
+
+    // Pagination
+    const totalPages = Math.ceil(filteredProjects.length / ITEMS_PER_PAGE);
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const currentProjects = filteredProjects.slice(startIndex, endIndex);
+
+    // Reset to page 1 when filters change
+    useMemo(() => {
+        setCurrentPage(1);
+    }, [searchTerm, filterStatus]);
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
 
     const statusCounts = mockTrackingProjects.reduce((acc, p) => {
         acc[p.status] = (acc[p.status] || 0) + 1;
         return acc;
     }, {} as Record<string, number>);
+
+    // Generate page numbers
+    const getPageNumbers = () => {
+        const pages = [];
+        const maxVisible = 5;
+        
+        if (totalPages <= maxVisible) {
+            for (let i = 1; i <= totalPages; i++) {
+                pages.push(i);
+            }
+        } else {
+            if (currentPage <= 3) {
+                for (let i = 1; i <= 4; i++) {
+                    pages.push(i);
+                }
+                pages.push('...');
+                pages.push(totalPages);
+            } else if (currentPage >= totalPages - 2) {
+                pages.push(1);
+                pages.push('...');
+                for (let i = totalPages - 3; i <= totalPages; i++) {
+                    pages.push(i);
+                }
+            } else {
+                pages.push(1);
+                pages.push('...');
+                for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+                    pages.push(i);
+                }
+                pages.push('...');
+                pages.push(totalPages);
+            }
+        }
+        return pages;
+    };
 
     return (
         <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
@@ -108,13 +163,19 @@ export default function TrackingProjects() {
                         placeholder="Search projects by name or ID..."
                         className="input input-bordered w-full pl-10"
                         value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setCurrentPage(1);
+                        }}
                     />
                 </div>
                 <select
                     className="select select-bordered w-full sm:w-48"
                     value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value)}
+                    onChange={(e) => {
+                        setFilterStatus(e.target.value);
+                        setCurrentPage(1);
+                    }}
                 >
                     <option value="All">All Status</option>
                     <option value="Approved">✅ Approved</option>
@@ -139,8 +200,8 @@ export default function TrackingProjects() {
                             </tr>
                         </thead>
                         <tbody>
-                            {filteredProjects.length > 0 ? (
-                                filteredProjects.map((project) => {
+                            {currentProjects.length > 0 ? (
+                                currentProjects.map((project) => {
                                     const badge = getStatusBadge(project.status);
                                     return (
                                         <tr key={project.id} className="hover:bg-base-200/50 transition-colors">
@@ -196,18 +257,51 @@ export default function TrackingProjects() {
                     </table>
                 </div>
 
-                {/* Table Footer */}
-                <div className="px-6 py-3 border-t border-base-200 flex justify-between items-center text-sm text-base-content/50">
+                {/* Table Footer with Pagination */}
+                <div className="px-6 py-3 border-t border-base-200 flex flex-col sm:flex-row justify-between items-center gap-3 text-sm text-base-content/50">
                     <span>
-                        Showing {filteredProjects.length} of {mockTrackingProjects.length} projects
+                        Showing {filteredProjects.length > 0 ? startIndex + 1 : 0} - {Math.min(endIndex, filteredProjects.length)} of {filteredProjects.length} projects
                     </span>
-                    <div className="flex gap-1">
-                        <button className="btn btn-ghost btn-xs">Previous</button>
-                        <button className="btn btn-primary btn-xs">1</button>
-                        <button className="btn btn-ghost btn-xs">2</button>
-                        <button className="btn btn-ghost btn-xs">3</button>
-                        <button className="btn btn-ghost btn-xs">Next</button>
-                    </div>
+                    
+                    {/* Pagination Controls */}
+                    {totalPages > 1 && (
+                        <div className="flex items-center gap-1">
+                            {/* Previous Button */}
+                            <button
+                                className="btn btn-ghost btn-xs"
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                disabled={currentPage === 1}
+                            >
+                                ‹
+                            </button>
+
+                            {/* Page Numbers */}
+                            {getPageNumbers().map((page, index) => (
+                                typeof page === 'number' ? (
+                                    <button
+                                        key={index}
+                                        className={`btn btn-xs ${currentPage === page ? 'btn-primary' : 'btn-ghost'}`}
+                                        onClick={() => handlePageChange(page)}
+                                    >
+                                        {page}
+                                    </button>
+                                ) : (
+                                    <span key={index} className="px-1 text-base-content/30">
+                                        {page}
+                                    </span>
+                                )
+                            ))}
+
+                            {/* Next Button */}
+                            <button
+                                className="btn btn-ghost btn-xs"
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                disabled={currentPage === totalPages}
+                            >
+                                ›
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
