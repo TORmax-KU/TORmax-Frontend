@@ -48,12 +48,12 @@ export const mockNotifications: Notification[] = [
     },
     {
         id: '5',
-        title: 'Project Risk Alert',
-        message: 'Potential risk detected in "AI-Powered Agricultural Monitoring" project',
+        title: 'Login Breach',
+        message: 'You logged in on a new unrecognized location',
         type: 'error',
         timestamp: '1 day ago',
         read: true,
-        link: '/tor-page/4'
+        link: '/settings'
     },
     {
         id: '6',
