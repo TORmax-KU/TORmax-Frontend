@@ -26,7 +26,7 @@ export default function Header() {
                 </div>
             </div>
             <div className="navbar-center">
-                <Link href="/" className="btn btn-ghost text-xl">TORment</Link>
+                <Link href="/" className="btn btn-ghost text-xl">TORmax</Link>
             </div>
             <div className="navbar-end">
                 <Link href="/tor-list">
