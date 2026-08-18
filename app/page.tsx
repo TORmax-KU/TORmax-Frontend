@@ -1,6 +1,7 @@
 import ProjectListingsTabs from "@/component/HomePage/ProjectRecommendation/ProjectListingsTabs";
 import HomeSearch from "@/component/HomePage/HomeSearch";
 import TrackingProjects from "@/component/HomePage/TrackingProjects";
+import Dashboard from "@/component/HomePage/Dashboard";
 
 export default function Home() {
   return (
@@ -11,11 +12,11 @@ export default function Home() {
       
       <div style={{
         display: 'flex',
+        flexDirection: 'column',
         gap: 10,
         justifyContent: 'center'
       }}>
-      <TrackingProjects />
-      <ProjectListingsTabs />
+      <Dashboard/>
       </div>
     </div>
   );

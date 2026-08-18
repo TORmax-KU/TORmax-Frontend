@@ -75,7 +75,7 @@ export default function HomeSearch() {
                     </div>
 
                     {/* Statistics Counter */}
-                    <div className="grid grid-cols-3 gap-8 mt-12 text-white/90">
+                    <div className="grid grid-cols-2 gap-8 mt-12 text-white/90">
                         <div className="text-center">
                             <div className="text-2xl md:text-3xl font-bold">10K+</div>
                             <div className="text-xs md:text-sm opacity-70">Projects</div>
@@ -84,10 +84,10 @@ export default function HomeSearch() {
                             <div className="text-2xl md:text-3xl font-bold">5K+</div>
                             <div className="text-xs md:text-sm opacity-70">Contributors</div>
                         </div>
-                        <div className="text-center">
+                        {/* <div className="text-center">
                             <div className="text-2xl md:text-3xl font-bold">98%</div>
                             <div className="text-xs md:text-sm opacity-70">Satisfaction</div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
 

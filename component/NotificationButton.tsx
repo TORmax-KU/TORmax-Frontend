@@ -174,7 +174,7 @@ export default function NotificationButton() {
                     {/* Footer */}
                     {notifications.length > 0 && (
                         <div className="p-3 border-t border-base-200 text-center">
-                            <Link href="/notification">
+                            <Link href="/notifications">
                             <button 
                                 className="btn btn-ghost btn-xs text-xs text-base-content/40 hover:text-primary transition-colors w-full"
                                 onClick={() => {
