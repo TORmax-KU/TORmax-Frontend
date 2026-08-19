@@ -129,7 +129,7 @@ const LockedOverlay = ({ children, href }: { children: React.ReactNode; href: st
 export default function DashboardPage() {
     const [activeTab, setActiveTab] = useState<'latest' | 'interests' | 'employers'>('latest');
     const [isRefreshing, setIsRefreshing] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false); // Set to false for locked view, true for logged in view
+    const [isLoggedIn, setIsLoggedIn] = useState(true); 
 
     const handleRefresh = () => {
         setIsRefreshing(true);
@@ -160,14 +160,6 @@ export default function DashboardPage() {
                     </h1>
                     <p className="text-sm text-base-content/50">Your personalized TOR project hub</p>
                 </div>
-                <button
-                    className={`btn btn-ghost btn-sm gap-2 transition-all duration-300 group ${isRefreshing ? 'opacity-70' : ''}`}
-                    onClick={handleRefresh}
-                    disabled={isRefreshing}
-                >
-                    <RiRefreshLine className={`h-4 w-4 transition-all duration-700 ${isRefreshing ? 'animate-spin' : 'group-hover:rotate-180'}`} />
-                    <span>{isRefreshing ? 'Refreshing...' : 'Refresh'}</span>
-                </button>
             </div>
 
             {/* Stats Grid - Locked if not logged in */}
