@@ -59,7 +59,7 @@ export const TORCard: React.FC<TORCardProps> = ({ item }) => {
             <span className="font-bold text-slate-700 dark:text-slate-200">{count}/{item.requirements.length} ({percentage}%)</span>
           </div>
           <Link 
-            href={`/tor-detail/${item.id}`}
+            href={`/tor-page/${item.id}`}
             className="px-4 py-2 bg-slate-900 dark:bg-[#2D2938] hover:bg-[#5B3E96] dark:hover:bg-[#5B3E96] text-white rounded-xl text-xs font-bold transition-colors"
           >
             Review TOR

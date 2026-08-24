@@ -1,4 +1,4 @@
-import { TORItem, UserProfile, SystemLog } from '@/types';
+import { TORItem, UserProfile, SystemLog, TORRequirement } from '@/types';
 
 export const initialProfile: UserProfile = {
     companyName: 'Thai Tech Solutions Ltd.',
@@ -25,7 +25,7 @@ export const initialProfile: UserProfile = {
 
 export const initialTORs: TORItem[] = [
     {
-        id: 'TOR-6703954',
+        id: '6703954',
         price: '฿ 18,500,000 THB',
         rawPrice: 18500000,
         sourcePortal: 'Central Public e-GP Portal',
@@ -45,7 +45,7 @@ export const initialTORs: TORItem[] = [
         feasibility: { budgetFit: 95, securityFit: 100, techStack: 90, timelineFit: 80, localPresence: 100 }
     },
     {
-        id: 'TOR-6704102',
+        id: '6704102',
         price: '฿ 45,000,000 THB',
         rawPrice: 45000000,
         sourcePortal: 'State Enterprise Portal (SRT)',
@@ -64,7 +64,7 @@ export const initialTORs: TORItem[] = [
         feasibility: { budgetFit: 60, securityFit: 70, techStack: 50, timelineFit: 60, localPresence: 100 }
     },
     {
-        id: 'TOR-6704889',
+        id: '6704889',
         price: '฿ 8,200,000 THB',
         rawPrice: 8200000,
         sourcePortal: 'Open Procurement Data API',
