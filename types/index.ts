@@ -61,3 +61,10 @@ export interface SystemLog {
     type: 'SYNC' | 'VECTOR' | 'ALERT' | 'CREATE';
     msg: string;
 }
+
+export interface AppNotification {
+  id: string;
+  title: string;
+  time: string;
+  read: boolean;
+}
