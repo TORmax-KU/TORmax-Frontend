@@ -1,174 +1,99 @@
 'use client';
 
-import { useState, useRef, useEffect } from "react";
-import SearchFilter from "./SearchFilter";
-import { AltVersion } from "../../interface/AltVersion";
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-interface SearchInputProps extends AltVersion {
-    mode?: 'light' | 'dark';
+interface SearchInputProps {
+    mode?: 'dark' | 'light';
+    altLook?: boolean;
+    onSearch?: (query: string) => void;
+    placeholder?: string;
+    initialValue?: string;
 }
 
-export default function SearchInput({ mode = 'light', altLook = false }: SearchInputProps) {
-    const [isFocused, setIsFocused] = useState(false);
-    const [searchValue, setSearchValue] = useState('');
-    const inputRef = useRef<HTMLInputElement>(null);
+export default function SearchInput({
+    mode = 'dark',
+    altLook = false,
+    onSearch,
+    placeholder = 'Search procurement titles, agencies, or TOR IDs...',
+    initialValue = ''
+}: SearchInputProps) {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const [query, setQuery] = useState(initialValue);
 
-    // Mode-based styling
-    const getModeStyles = () => {
-        if (mode === 'light') {
-            return {
-                // Container
-                containerBg: 'bg-white/80 backdrop-blur-md',
-                containerBorder: 'border-gray-200/50 hover:border-primary/30',
-                // Input wrapper - keep glass look
-                inputBg: 'bg-white/50 backdrop-blur-sm',
-                inputBorder: 'border-gray-200/50 hover:border-gray-300/70',
-                // Text colors
-                text: 'text-gray-800',
-                placeholder: 'placeholder-gray-400',
-                icon: 'text-gray-500',
-                // Clear button
-                clearButton: 'text-gray-400 hover:text-gray-600',
-                // Suggestions
-                suggestionBg: 'bg-white/95 backdrop-blur-sm border-gray-200/50',
-                suggestionText: 'text-gray-700',
-                suggestionHover: 'hover:bg-gray-50',
-                // Result text
-                resultText: 'text-gray-500',
-            };
+    // Sync state if URL query changes
+    useEffect(() => {
+        const urlQuery = searchParams.get('q');
+        if (urlQuery !== null) {
+            setQuery(urlQuery);
         }
-        // Dark mode
-        return {
-            containerBg: 'bg-white/5 backdrop-blur-md',
-            containerBorder: 'border-white/10 hover:border-white/30',
-            inputBg: 'bg-white/5 backdrop-blur-sm',
-            inputBorder: 'border-white/10 hover:border-white/20',
-            text: 'text-white',
-            placeholder: 'placeholder-white/40',
-            icon: 'text-white/40',
-            clearButton: 'text-white/40 hover:text-white/60',
-            suggestionBg: 'bg-base-100/90 backdrop-blur-sm border-white/10',
-            suggestionText: 'text-white/60',
-            suggestionHover: 'hover:bg-white/5',
-            resultText: 'text-white/30',
-        };
+    }, [searchParams]);
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        const trimmedQuery = query.trim();
+
+        if (onSearch) {
+            onSearch(trimmedQuery);
+            return;
+        }
+
+        if (trimmedQuery) {
+            router.push(`/search-feed?q=${encodeURIComponent(trimmedQuery)}`);
+        } else {
+            router.push('/search-feed');
+        }
     };
 
-    const styles = getModeStyles();
-
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Enter' && searchValue.trim()) {
-                e.preventDefault();
-                console.log('Searching for:', searchValue);
-            }
-        };
-
-        const input = inputRef.current;
-        if (input) {
-            input.addEventListener('keydown', handleKeyDown);
-            return () => input.removeEventListener('keydown', handleKeyDown);
-        }
-    }, [searchValue]);
-
     return (
-        <div className={`z-10 relative ${styles.containerBg} rounded-2xl shadow-2xl border ${styles.containerBorder} p-1 transition-all duration-300 hover:shadow-primary/20`}>
-            <div className="w-full">
-                <div className={`
-                    flex items-center gap-3 transition-all duration-300
-                    ${altLook ? 'bg-transparent rounded-xl p-2' : ''}
-                `}>
-                    <div className={`
-                        relative flex-1 transition-all duration-300
-                        ${isFocused ? 'scale-[1.01]' : ''}
-                    `}>
-                        <div className={`
-                            relative flex items-center gap-3
-                            ${styles.inputBg}
-                            border ${styles.inputBorder} rounded-xl
-                            transition-all duration-300
-                            ${isFocused
-                                ? 'border-primary/50 shadow-lg shadow-primary/20 ring-2 ring-primary/20'
-                                : ''
-                            }
-                        `}>
-                            {/* Search Icon */}
-                            <div className="flex-shrink-0 pl-4">
-                                <svg
-                                    className={`h-5 w-5 transition-colors duration-300 ${styles.icon}`}
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2.5"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <circle cx="11" cy="11" r="8" />
-                                    <path d="m21 21-4.3-4.3" />
-                                </svg>
-                            </div>
-
-                            {/* Input */}
-                            <input
-                                ref={inputRef}
-                                type="search"
-                                value={searchValue}
-                                onChange={(e) => setSearchValue(e.target.value)}
-                                onFocus={() => setIsFocused(true)}
-                                onBlur={() => setIsFocused(false)}
-                                placeholder={altLook ? "Search projects..." : "Search"}
-                                className={`
-                                    flex-1 bg-transparent border-none outline-none 
-                                    py-4 pr-2 
-                                    ${styles.text}
-                                    ${styles.placeholder}
-                                    ${altLook ? 'text-lg' : 'text-base'}
-                                `}
-                                aria-label="Search for projects"
-                            />
-
-                            {/* Clear Button */}
-                            {searchValue && (
-                                <button
-                                    onClick={() => setSearchValue('')}
-                                    className={`flex-shrink-0 mr-1 p-1 rounded-full transition-colors ${styles.clearButton}`}
-                                    aria-label="Clear search"
-                                >
-                                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            )}
-
-                            {/* Filter Button */}
-                            <div className="flex-shrink-0 pr-2 relative z-50">
-                                <SearchFilter mode={mode} />
-                            </div>
-                        </div>
-
-                        {/* Search Suggestions */}
-                        {isFocused && searchValue.length > 1 && (
-                            <div className={`absolute top-full left-0 right-0 mt-2 ${styles.suggestionBg} border rounded-xl shadow-2xl overflow-hidden z-[60]`}>
-                                <div className="p-2 space-y-1">
-                                    <div className={`px-3 py-2 text-sm ${styles.suggestionText} ${styles.suggestionHover} rounded-lg cursor-pointer transition-colors`}>
-                                        🔍 Search for "{searchValue}"
-                                    </div>
-                                    <div className={`px-3 py-2 text-sm ${styles.suggestionText} ${styles.suggestionHover} rounded-lg cursor-pointer transition-colors`}>
-                                        💡 Try searching for specific technologies
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
+        <form onSubmit={handleSubmit} className="relative w-full">
+            <div
+                className={`relative flex items-center rounded-2xl transition-all duration-300 ${mode === 'dark'
+                        ? 'bg-slate-900/90 border border-slate-700/80 text-white shadow-2xl focus-within:border-indigo-500/80 focus-within:ring-4 focus-within:ring-indigo-500/20'
+                        : 'bg-white border border-slate-200 text-slate-900 shadow-md focus-within:border-indigo-600 focus-within:ring-4 focus-within:ring-indigo-600/10'
+                    } ${altLook ? 'backdrop-blur-xl' : ''}`}
+            >
+                {/* Search Icon */}
+                <div className="pl-4 pr-2 text-slate-400 pointer-events-none flex items-center justify-center">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
                 </div>
 
-                {altLook && searchValue && (
-                    <div className={`mt-2 text-sm ${styles.resultText}`}>
-                        {searchValue.length > 0 && `Showing results for "${searchValue}"`}
-                    </div>
+                {/* Text Input */}
+                <input
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder={placeholder}
+                    className={`w-full py-4 pr-3 bg-transparent text-sm sm:text-base outline-none placeholder:text-slate-400 ${mode === 'dark' ? 'text-white' : 'text-slate-900'
+                        }`}
+                />
+
+                {/* Clear Button */}
+                {query && (
+                    <button
+                        type="button"
+                        onClick={() => setQuery('')}
+                        className="p-1 mr-1 text-slate-400 hover:text-slate-200 rounded-full hover:bg-white/10 transition-colors"
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 )}
+
+                {/* Submit Action Button */}
+                <div className="pr-2">
+                    <button
+                        type="submit"
+                        className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl transition-all active:scale-95 shadow-md flex items-center gap-2 cursor-pointer"
+                    >
+                        <span>Search</span>
+                    </button>
+                </div>
             </div>
-        </div>
+        </form>
     );
 }

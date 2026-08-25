@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { initialTORs } from '@/utils/mockData';
 import { FilterState, TORItem } from '@/types';
 import { FilterModal } from '@/component/FilterModal';
@@ -16,9 +17,18 @@ const INITIAL_FILTERS: FilterState = {
   requireCapital: false,
 };
 
-export default function SearchFeedPage() {
+function SearchFeedContent() {
+  const searchParams = useSearchParams();
   const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+
+  // Sync state when URL query parameter 'q' changes
+  useEffect(() => {
+    const urlQuery = searchParams.get('q');
+    if (urlQuery !== null) {
+      setFilters((prev) => ({ ...prev, query: urlQuery }));
+    }
+  }, [searchParams]);
 
   // Dynamically extract unique agencies and methods for dropdown options
   const { agencies, methods } = useMemo(() => {
@@ -34,7 +44,7 @@ export default function SearchFeedPage() {
     };
   }, []);
 
-  // Reactive filtering using useMemo instead of render DirectoryList imperative calls
+  // Reactive filtering using useMemo
   const filteredTORs = useMemo(() => {
     return initialTORs.filter((item: TORItem) => {
       const q = filters.query.toLowerCase();
@@ -87,14 +97,31 @@ export default function SearchFeedPage() {
 
       {/* Quick Search Input */}
       <div className="flex gap-3">
-        <input
-          type="text"
-          value={filters.query}
-          onChange={(e) => setFilters((prev) => ({ ...prev, query: e.target.value }))}
-          placeholder="Filter directory by title, agency, or TOR ID..."
-          className="flex-1 p-3 rounded-xl bg-white dark:bg-tormax-surfaceDark border border-slate-200 dark:border-tormax-borderDark text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:border-tormax-purple shadow-2xs"
-        />
+        <div className="relative flex-1">
+          <input
+            type="text"
+            value={filters.query}
+            onChange={(e) => setFilters((prev) => ({ ...prev, query: e.target.value }))}
+            placeholder="Filter directory by title, agency, or TOR ID..."
+            className="w-full p-3 pr-10 rounded-xl bg-white dark:bg-tormax-surfaceDark border border-slate-200 dark:border-tormax-borderDark text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:border-tormax-purple shadow-2xs"
+          />
+          {filters.query && (
+            <button
+              onClick={() => setFilters((prev) => ({ ...prev, query: '' }))}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold"
+            >
+              ✕
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Active Search Badge Info */}
+      {filters.query && (
+        <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+          Showing results for <span className="font-bold text-tormax-purple dark:text-tormax-lavender">"{filters.query}"</span> ({filteredTORs.length} items found)
+        </div>
+      )}
 
       {/* Directory Cards Feed */}
       <div className="space-y-4">
@@ -159,5 +186,13 @@ export default function SearchFeedPage() {
         methods={methods}
       />
     </div>
+  );
+}
+
+export default function SearchFeedPage() {
+  return (
+    <Suspense fallback={<div className="max-w-6xl mx-auto p-10 text-center text-xs text-slate-400">Loading feed...</div>}>
+      <SearchFeedContent />
+    </Suspense>
   );
 }

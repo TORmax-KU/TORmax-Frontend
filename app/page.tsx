@@ -1,4 +1,4 @@
-import HomeSearch from "@/component/HomePage/HomeSearch";
+import HomeSearch from "@/component/HomeSearch";
 import { initialTORs } from "@/utils/mockData";
 import DailyDigestSection from "@/component/DailyDigestSection";
 
