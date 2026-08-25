@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from "react";
-import { RiLockLine, RiShieldCheckLine, RiTimeLine, RiEyeLine, RiEyeOffLine } from "@remixicon/react";
+import React, { useState } from "react";
 import { UserSettings } from "@/interface/settings";
+import { RiLockLine, RiShieldKeyholeLine, RiHistoryLine, RiEyeLine, RiEyeOffLine, RiArrowRightSLine } from "@remixicon/react";
 
 interface SecuritySettingsProps {
     settings: UserSettings;
@@ -14,127 +14,103 @@ export default function SecuritySettings({ settings, onUpdate }: SecuritySetting
     const [showChangePassword, setShowChangePassword] = useState(false);
 
     return (
-        <div className="p-6">
-            <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-primary/10 rounded-xl">
-                    <RiLockLine className="h-5 w-5 text-primary" />
+        <React.Fragment>
+            {/* Header Section with Subdued Grey Surface Separation */}
+            <div className="flex items-center gap-4 mb-8 p-4 bg-slate-50/80 border border-slate-200/80 rounded-2xl">
+                <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-2xl shadow-sm">
+                    <RiLockLine className="h-6 w-6 text-indigo-600" />
                 </div>
                 <div>
-                    <h2 className="text-lg font-semibold">Security</h2>
-                    <p className="text-sm text-base-content/50">Manage your security preferences</p>
+                    <h2 className="text-xl font-bold text-slate-900 tracking-tight">Security & Auth</h2>
+                    <p className="text-sm text-slate-500">Configure multi-factor authentication and session security</p>
                 </div>
             </div>
 
             <div className="space-y-4">
-                {/* Two-Factor Auth */}
-                <div className="flex items-center justify-between p-4 bg-base-200/30 rounded-xl">
+                {/* 2FA Toggle */}
+                <div className="flex items-center justify-between p-4 bg-slate-50/60 border border-slate-200 hover:border-indigo-400 hover:bg-white hover:shadow-md rounded-2xl transition-all duration-300">
                     <div className="flex items-center gap-3">
-                        <RiShieldCheckLine className="h-5 w-5 text-success" />
+                        <div className="p-2.5 bg-white rounded-xl border border-slate-200 shadow-sm">
+                            <RiShieldKeyholeLine className="h-5 w-5 text-indigo-600" />
+                        </div>
                         <div>
-                            <p className="font-medium">Two-Factor Authentication</p>
-                            <p className="text-sm text-base-content/50">Add an extra layer of security</p>
+                            <p className="text-sm font-semibold text-slate-800">Two-Factor Authentication (2FA)</p>
+                            <p className="text-xs text-slate-500">Enforce secondary authorization app prompt</p>
                         </div>
                     </div>
-                    <input 
-                        type="checkbox" 
-                        className="toggle toggle-primary"
-                        checked={settings.twoFactorAuth}
-                        onChange={(e) => onUpdate('twoFactorAuth', e.target.checked)}
-                    />
+                    <button
+                        onClick={() => onUpdate('twoFactorAuth', !settings.twoFactorAuth)}
+                        className={`w-12 h-6 rounded-full transition-colors relative p-1 ${settings.twoFactorAuth ? 'bg-indigo-600' : 'bg-slate-300'
+                            }`}
+                    >
+                        <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${settings.twoFactorAuth ? 'translate-x-6' : 'translate-x-0'
+                            }`} />
+                    </button>
                 </div>
 
                 {/* Session Timeout */}
-                <div className="flex items-center justify-between p-4 bg-base-200/30 rounded-xl">
+                <div className="flex items-center justify-between p-4 bg-slate-50/60 border border-slate-200 hover:border-indigo-400 hover:bg-white hover:shadow-md rounded-2xl transition-all duration-300">
                     <div className="flex items-center gap-3">
-                        <RiTimeLine className="h-5 w-5 text-primary" />
+                        <div className="p-2.5 bg-white rounded-xl border border-slate-200 shadow-sm">
+                            <RiHistoryLine className="h-5 w-5 text-indigo-600" />
+                        </div>
                         <div>
-                            <p className="font-medium">Session Timeout</p>
-                            <p className="text-sm text-base-content/50">Auto-logout after inactivity</p>
+                            <p className="text-sm font-semibold text-slate-800">Inactivity Timeout</p>
+                            <p className="text-xs text-slate-500">Automatic session termination window</p>
                         </div>
                     </div>
-                    <select 
-                        className="select select-bordered select-sm"
+                    <select
+                        className="bg-white border border-indigo-500 text-slate-900 text-sm rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 shadow-sm"
                         value={settings.sessionTimeout}
                         onChange={(e) => onUpdate('sessionTimeout', e.target.value)}
                     >
-                        <option value="15 minutes">15 minutes</option>
-                        <option value="30 minutes">30 minutes</option>
-                        <option value="1 hour">1 hour</option>
-                        <option value="2 hours">2 hours</option>
-                        <option value="8 hours">8 hours</option>
-                        <option value="24 hours">24 hours</option>
+                        {['15 minutes', '30 minutes', '1 hour', '2 hours', '8 hours'].map((time) => (
+                            <option key={time} value={time} className="bg-white text-slate-900">{time}</option>
+                        ))}
                     </select>
                 </div>
 
-                {/* Login Alerts */}
-                <div className="flex items-center justify-between p-4 bg-base-200/30 rounded-xl">
-                    <div className="flex items-center gap-3">
-                        <RiLockLine className="h-5 w-5 text-info" />
-                        <div>
-                            <p className="font-medium">Login Alerts</p>
-                            <p className="text-sm text-base-content/50">Get notified of new sign-ins</p>
-                        </div>
-                    </div>
-                    <input 
-                        type="checkbox" 
-                        className="toggle toggle-primary"
-                        checked={settings.loginAlerts}
-                        onChange={(e) => onUpdate('loginAlerts', e.target.checked)}
-                    />
-                </div>
-
-                {/* Change Password */}
-                <div className="p-4 bg-base-200/30 rounded-xl">
-                    <button 
-                        className="btn btn-ghost btn-sm gap-2"
+                {/* Password Reset Panel */}
+                <div className="p-4 bg-slate-50/60 border border-slate-200 hover:border-indigo-400 hover:bg-white hover:shadow-md rounded-2xl transition-all duration-300">
+                    <button
                         onClick={() => setShowChangePassword(!showChangePassword)}
+                        className="w-full flex items-center justify-between text-left text-sm font-semibold text-slate-800 hover:text-indigo-600 transition-colors"
                     >
-                        <RiLockLine className="h-4 w-4" />
-                        Change Password
+                        <span>Update Security Password</span>
+                        <RiArrowRightSLine className={`h-5 w-5 text-slate-500 transition-transform ${showChangePassword ? 'rotate-90' : ''}`} />
                     </button>
-                    
+
                     {showChangePassword && (
-                        <div className="mt-4 space-y-3">
+                        <div className="mt-4 pt-4 border-t border-slate-200 space-y-3">
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                className="bg-white border border-slate-200 text-slate-900 placeholder:text-slate-400 text-sm rounded-xl px-4 py-2.5 w-full focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 shadow-sm"
+                                placeholder="Current Password"
+                            />
                             <div className="relative">
-                                <input 
-                                    type={showPassword ? 'text' : 'password'} 
-                                    className="input input-bordered w-full pr-24"
-                                    placeholder="Current password"
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    className="bg-white border border-slate-200 text-slate-900 placeholder:text-slate-400 text-sm rounded-xl px-4 py-2.5 w-full focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 shadow-sm pr-10"
+                                    placeholder="New Password"
                                 />
-                            </div>
-                            <div className="relative">
-                                <input 
-                                    type={showPassword ? 'text' : 'password'} 
-                                    className="input input-bordered w-full pr-24"
-                                    placeholder="New password"
-                                />
-                                <button 
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 btn btn-ghost btn-xs"
+                                <button
+                                    type="button"
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                                     onClick={() => setShowPassword(!showPassword)}
                                 >
                                     {showPassword ? <RiEyeOffLine className="h-4 w-4" /> : <RiEyeLine className="h-4 w-4" />}
                                 </button>
                             </div>
-                            <div className="relative">
-                                <input 
-                                    type={showPassword ? 'text' : 'password'} 
-                                    className="input input-bordered w-full pr-24"
-                                    placeholder="Confirm new password"
-                                />
-                            </div>
-                            <div className="flex gap-2">
-                                <button className="btn btn-primary btn-sm">Update Password</button>
-                                <button 
-                                    className="btn btn-ghost btn-sm"
-                                    onClick={() => setShowChangePassword(false)}
-                                >
-                                    Cancel
-                                </button>
-                            </div>
+                            <button
+                                type="button"
+                                className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-colors shadow-sm"
+                            >
+                                Apply New Password
+                            </button>
                         </div>
                     )}
                 </div>
             </div>
-        </div>
+        </React.Fragment>
     );
 }

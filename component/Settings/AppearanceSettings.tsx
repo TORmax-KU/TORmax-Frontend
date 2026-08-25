@@ -1,7 +1,8 @@
 'use client';
 
+import React from "react";
 import { UserSettings } from "@/interface/settings";
-import { RiPaletteLine, RiSunLine, RiMoonLine, RiComputerLine, RiLayoutGridLine, RiEyeCloseFill,  } from "@remixicon/react";
+import { RiPaletteLine, RiSunLine, RiMoonLine, RiComputerLine, RiLayoutGridLine, RiBardFill } from "@remixicon/react";
 
 interface AppearanceSettingsProps {
     settings: UserSettings;
@@ -10,86 +11,100 @@ interface AppearanceSettingsProps {
 
 export default function AppearanceSettings({ settings, onUpdate }: AppearanceSettingsProps) {
     return (
-        <div className="p-6">
-            <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-primary/10 rounded-xl">
-                    <RiPaletteLine className="h-5 w-5 text-primary" />
+        <React.Fragment>
+            {/* Header Section with Subdued Grey Surface Separation */}
+            <div className="flex items-center gap-4 mb-8 p-4 bg-slate-50/80 border border-slate-200/80 rounded-2xl">
+                <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-2xl shadow-sm">
+                    <RiPaletteLine className="h-6 w-6 text-indigo-600" />
                 </div>
                 <div>
-                    <h2 className="text-lg font-semibold">Appearance</h2>
-                    <p className="text-sm text-base-content/50">Customize your experience</p>
+                    <h2 className="text-xl font-bold text-slate-900 tracking-tight">Interface Theme</h2>
+                    <p className="text-sm text-slate-500">Customize the visual layout, density, and rendering engine</p>
                 </div>
             </div>
 
-            <div className="space-y-4">
-                {/* Theme */}
-                <div className="p-4 bg-base-200/30 rounded-xl">
-                    <div className="flex items-center gap-3 mb-3">
-                        <RiPaletteLine className="h-5 w-5 text-primary" />
-                        <div>
-                            <p className="font-medium">Theme</p>
-                            <p className="text-sm text-base-content/50">Choose your preferred theme</p>
-                        </div>
-                    </div>
-                    <div className="flex gap-2">
-                        <button 
-                            className={`btn flex-1 gap-2 ${settings.theme === 'light' ? 'btn-primary' : 'btn-ghost'}`}
-                            onClick={() => onUpdate('theme', 'light')}
-                        >
-                            <RiSunLine className="h-4 w-4" />
-                            Light
-                        </button>
-                        <button 
-                            className={`btn flex-1 gap-2 ${settings.theme === 'dark' ? 'btn-primary' : 'btn-ghost'}`}
-                            onClick={() => onUpdate('theme', 'dark')}
-                        >
-                            <RiMoonLine className="h-4 w-4" />
-                            Dark
-                        </button>
-                        <button 
-                            className={`btn flex-1 gap-2 ${settings.theme === 'system' ? 'btn-primary' : 'btn-ghost'}`}
-                            onClick={() => onUpdate('theme', 'system')}
-                        >
-                            <RiComputerLine className="h-4 w-4" />
-                            System
-                        </button>
+            <div className="space-y-6">
+                {/* Theme Selector */}
+                <div>
+                    <label className="text-xs font-bold text-slate-500 uppercase tracking-wider block mb-3">
+                        Base Theme Mode
+                    </label>
+                    <div className="grid grid-cols-3 gap-3">
+                        {[
+                            { id: 'light', label: 'Light', icon: RiSunLine },
+                            { id: 'dark', label: 'Dark', icon: RiMoonLine },
+                            { id: 'system', label: 'System', icon: RiComputerLine },
+                        ].map(({ id, label, icon: Icon }) => {
+                            const active = settings.theme === id;
+                            return (
+                                <button
+                                    key={id}
+                                    onClick={() => onUpdate('theme', id as UserSettings['theme'])}
+                                    className={`flex flex-col items-center gap-2 p-4 rounded-2xl border transition-all duration-200 ${
+                                        active
+                                            ? 'bg-indigo-50/80 border-indigo-500 text-indigo-600 shadow-sm'
+                                            : 'bg-slate-50/60 border-slate-200 text-slate-600 hover:border-indigo-300 hover:bg-white hover:text-slate-900'
+                                    }`}
+                                >
+                                    <Icon className={`h-6 w-6 ${active ? 'text-indigo-600' : 'text-slate-500'}`} />
+                                    <span className="text-xs font-semibold">{label}</span>
+                                </button>
+                            );
+                        })}
                     </div>
                 </div>
 
-                {/* Compact Mode */}
-                <div className="flex items-center justify-between p-4 bg-base-200/30 rounded-xl">
-                    <div className="flex items-center gap-3">
-                        <RiLayoutGridLine className="h-5 w-5 text-secondary" />
-                        <div>
-                            <p className="font-medium">Compact Mode</p>
-                            <p className="text-sm text-base-content/50">Reduce spacing and font sizes</p>
+                {/* Dynamic Controls Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-center justify-between p-4 bg-slate-50/60 border border-slate-200 rounded-2xl hover:border-indigo-300 hover:bg-white transition-all duration-300">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2.5 bg-white rounded-xl border border-slate-200 shadow-sm">
+                                <RiLayoutGridLine className="h-5 w-5 text-indigo-600" />
+                            </div>
+                            <div>
+                                <p className="text-sm font-semibold text-slate-800">Compact Layout</p>
+                                <p className="text-xs text-slate-500">Reduce structural margins</p>
+                            </div>
                         </div>
+                        <button
+                            onClick={() => onUpdate('compactMode', !settings.compactMode)}
+                            className={`w-12 h-6 rounded-full transition-colors relative p-1 ${
+                                settings.compactMode ? 'bg-indigo-600' : 'bg-slate-300'
+                            }`}
+                        >
+                            <div
+                                className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
+                                    settings.compactMode ? 'translate-x-6' : 'translate-x-0'
+                                }`}
+                            />
+                        </button>
                     </div>
-                    <input 
-                        type="checkbox" 
-                        className="toggle toggle-secondary"
-                        checked={settings.compactMode}
-                        onChange={(e) => onUpdate('compactMode', e.target.checked)}
-                    />
-                </div>
 
-                {/* Reduced Motion */}
-                <div className="flex items-center justify-between p-4 bg-base-200/30 rounded-xl">
-                    <div className="flex items-center gap-3">
-                        <RiEyeCloseFill className="h-5 w-5 text-accent" />
-                        <div>
-                            <p className="font-medium">Reduced Motion</p>
-                            <p className="text-sm text-base-content/50">Minimize animations and transitions</p>
+                    <div className="flex items-center justify-between p-4 bg-slate-50/60 border border-slate-200 rounded-2xl hover:border-indigo-300 hover:bg-white transition-all duration-300">
+                        <div className="flex items-center gap-3">
+                            <div className="p-2.5 bg-white rounded-xl border border-slate-200 shadow-sm">
+                                <RiBardFill className="h-5 w-5 text-indigo-600" />
+                            </div>
+                            <div>
+                                <p className="text-sm font-semibold text-slate-800">Reduced Motion</p>
+                                <p className="text-xs text-slate-500">Disable transitions</p>
+                            </div>
                         </div>
+                        <button
+                            onClick={() => onUpdate('reducedMotion', !settings.reducedMotion)}
+                            className={`w-12 h-6 rounded-full transition-colors relative p-1 ${
+                                settings.reducedMotion ? 'bg-indigo-600' : 'bg-slate-300'
+                            }`}
+                        >
+                            <div
+                                className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
+                                    settings.reducedMotion ? 'translate-x-6' : 'translate-x-0'
+                                }`}
+                            />
+                        </button>
                     </div>
-                    <input 
-                        type="checkbox" 
-                        className="toggle toggle-accent"
-                        checked={settings.reducedMotion}
-                        onChange={(e) => onUpdate('reducedMotion', e.target.checked)}
-                    />
                 </div>
             </div>
-        </div>
+        </React.Fragment>
     );
 }

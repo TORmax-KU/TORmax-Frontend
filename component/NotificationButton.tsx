@@ -7,11 +7,11 @@ import {
     RiCheckLine,
     RiTimeLine,
     RiFileListLine,
-    RiAlertLine
+    RiAlertLine,
+    RiArrowRightSLine
 } from "@remixicon/react";
 import { mockNotifications } from "@/public/mockData/mockNotifications";
 import Link from "next/link";
-
 
 export default function NotificationButton() {
     const [isOpen, setIsOpen] = useState(false);
@@ -79,11 +79,11 @@ export default function NotificationButton() {
                 <div className="
                     absolute right-0 mt-2 w-96 max-w-[calc(100vw-2rem)] 
                     bg-base-100 rounded-box shadow-2xl border border-base-200 
-                    z-50
+                    z-[9999] max-h-[calc(100vh-5rem)] flex flex-col
                     animate-fade-in-up
                 ">
                     {/* Header */}
-                    <div className="flex items-center justify-between p-4 border-b border-base-200">
+                    <div className="flex items-center justify-between p-4 border-b border-base-200 flex-shrink-0">
                         <div className="flex items-center gap-2">
                             <h3 className="font-semibold text-base">Notifications</h3>
                             {unreadCount > 0 && (
@@ -111,7 +111,7 @@ export default function NotificationButton() {
                     </div>
 
                     {/* Notification List - Scrollable */}
-                    <div className="max-h-96 overflow-y-auto custom-scrollbar">
+                    <div className="max-h-80 overflow-y-auto custom-scrollbar">
                         {notifications.length > 0 ? (
                             <div className="divide-y divide-base-200/50">
                                 {notifications.map((notification) => (
@@ -169,25 +169,21 @@ export default function NotificationButton() {
                                 <p className="text-sm text-base-content/40">No notifications</p>
                             </div>
                         )}
+                        test
                     </div>
+                    
 
-                    {/* Footer */}
-                    {notifications.length > 0 && (
-                        <div className="p-3 border-t border-base-200 text-center">
-                            <Link href="/notifications">
-                            <button 
-                                className="btn btn-ghost btn-xs text-xs text-base-content/40 hover:text-primary transition-colors w-full"
-                                onClick={() => {
-                                    // Handle view all notifications
-                                    console.log('View all notifications');
-                                    setIsOpen(false);
-                                }}
-                            >
-                                View all notifications
-                            </button>
-                            </Link>
-                        </div>
-                    )}
+                    {/* Footer - Read More Link */}
+                    <div className="p-3 border-t border-base-200 text-center bg-base-100 rounded-b-box shrink-0 mt-auto">
+                        <Link 
+                            href="/notifications" 
+                            onClick={() => setIsOpen(false)}
+                            className="inline-flex items-center justify-center gap-1 text-xs font-semibold text-primary hover:underline w-full py-1"
+                        >
+                            Read more
+                            <RiArrowRightSLine className="h-4 w-4" />
+                        </Link>
+                    </div>
                 </div>
             )}
         </div>

@@ -14,15 +14,6 @@ export default function Home() {
       <div className="dark:bg-base-300 bg-base-100 min-h-[80%]">
         <HomeSearch />
       </div>
-      
-      <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 10,
-        justifyContent: 'center'
-      }}>
-      <Dashboard/>
-      </div>
 
       <div className="max-w-6xl mx-auto px-8 py-10 w-full space-y-10">
       <section className="bg-gradient-to-r from-[#3B2468] to-[#5B3E96] rounded-3xl p-8 text-white space-y-4 shadow-xl">

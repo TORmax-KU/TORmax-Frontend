@@ -12,7 +12,6 @@ export default async function Template({
 
     return (
         <div>
-                <Header />
                 <Navbar/>
                 <div className="animate-fadeIn transition-opacity duration-300">
                     {children} {/* Now has access to mock data */}

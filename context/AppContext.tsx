@@ -33,6 +33,11 @@ const translations: Record<Language, Record<string, string>> = {
         backToDirectory: 'Back to Directory',
         notifications: 'Notifications',
         markAllRead: 'Mark all as read',
+        account: 'Account',
+    security: 'Security',
+    settingsNotifications: 'Notifications',
+    privacy: 'Privacy',
+    appearance: 'Appearance',
     },
     TH: {
         dailyDigest: 'สรุปรายวัน',
@@ -54,6 +59,11 @@ const translations: Record<Language, Record<string, string>> = {
         backToDirectory: 'กลับสู่คลังเอกสาร',
         notifications: 'การแจ้งเตือน',
         markAllRead: 'ทำเครื่องหมายว่าอ่านแล้ว',
+        account: 'บัญชี',
+    security: 'ความปลอดภัย',
+    settingsNotifications: 'การแจ้งเตือน',
+    privacy: 'ความเป็นส่วนตัว',
+    appearance: 'การแสดงผล',
     },
 };
 

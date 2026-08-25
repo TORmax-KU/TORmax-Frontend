@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import { AppNotification } from '@/types';
+import DrawerMenu from './DrawerMenu';
 
 export interface NavbarProps {
     companyName: string;
@@ -42,16 +43,25 @@ export const Navbar: React.FC<NavbarProps> = ({ companyName, taxId }) => {
         <nav className="sticky top-0 z-40 bg-white/90 dark:bg-[#1C1A24]/90 backdrop-blur-md border-b border-slate-200 dark:border-[#2D2938] px-6 py-3 flex items-center justify-between gap-4">
             {/* Brand & Links */}
             <div className="flex items-center space-x-6">
-                <Link href="/" className="flex items-center space-x-2.5 group shrink-0">
-                    <div className="w-8 h-8 rounded-xl bg-[#5B3E96] text-white flex items-center justify-center font-bold text-lg shadow">
-                        T
-                    </div>
-                    <span className="text-xl font-black tracking-tight text-[#5B3E96] dark:text-white">
-                        TOR<span className="text-[#9B82C1]">max</span>
-                    </span>
-                </Link>
+                <div style={{
+                    display: 'flex'
+                }}>
+                    <DrawerMenu />
+                    <Link href="/" className="flex items-center space-x-2.5 group shrink-0">
+                        <div className="w-8 h-8 rounded-xl bg-[#5B3E96] text-white flex items-center justify-center font-bold text-lg shadow">
+                            T
+                        </div>
+                        <span className="text-xl font-black tracking-tight text-[#5B3E96] dark:text-white">
+                            TOR<span className="text-[#9B82C1]">max</span>
+                        </span>
+                    </Link>
+                </div>
+
 
                 <div className="hidden lg:flex items-center space-x-1 text-xs font-semibold text-slate-600 dark:text-slate-300">
+                    <Link href="/login" className="px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors">
+                        {t('Login')}
+                    </Link>
                     <Link href="/#daily-digest" className="px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors">
                         {t('dailyDigest')}
                     </Link>
@@ -61,6 +71,7 @@ export const Navbar: React.FC<NavbarProps> = ({ companyName, taxId }) => {
                     <Link href="/admin" className="px-3 py-1.5 rounded-lg text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 font-bold transition-colors">
                         ⚙️ {t('adminPortal')}
                     </Link>
+                    
                 </div>
             </div>
 
@@ -97,57 +108,19 @@ export const Navbar: React.FC<NavbarProps> = ({ companyName, taxId }) => {
                     {isDark ? '☀️' : '🌙'}
                 </button>
 
-                {/* Notification Menu */}
-                <div className="relative">
-                    <button
-                        onClick={() => setShowNotifications(!showNotifications)}
-                        className="w-8 h-8 rounded-lg border border-slate-200 dark:border-[#2D2938] flex items-center justify-center text-xs relative hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors"
-                        title="Notifications"
-                    >
-                        🔔
-                        {unreadCount > 0 && (
-                            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center animate-pulse">
-                                {unreadCount}
-                            </span>
-                        )}
-                    </button>
-
-                    {/* Notifications Dropdown */}
-                    {showNotifications && (
-                        <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-[#1C1A24] border border-slate-200 dark:border-[#2D2938] rounded-2xl shadow-xl p-4 space-y-3 z-50">
-                            <div className="flex items-center justify-between border-b border-slate-100 dark:border-[#2D2938] pb-2">
-                                <span className="font-bold text-xs text-slate-900 dark:text-white">
-                                    {t('notifications')}
-                                </span>
-                                {unreadCount > 0 && (
-                                    <button
-                                        onClick={markAllAsRead}
-                                        className="text-[10px] text-[#5B3E96] dark:text-[#9B82C1] font-bold hover:underline"
-                                    >
-                                        {t('markAllRead')}
-                                    </button>
-                                )}
-                            </div>
-
-                            <div className="space-y-2 max-h-60 overflow-y-auto">
-                                {notifications.map((n) => (
-                                    <div
-                                        key={n.id}
-                                        className={`p-2.5 rounded-xl text-xs space-y-1 transition-colors ${n.read
-                                                ? 'bg-transparent opacity-60'
-                                                : 'bg-slate-50 dark:bg-[#121118] border border-slate-100 dark:border-[#2D2938]'
-                                            }`}
-                                    >
-                                        <div className="font-semibold text-slate-800 dark:text-slate-200 leading-snug">
-                                            {n.title}
-                                        </div>
-                                        <div className="text-[10px] text-slate-400 font-medium">{n.time}</div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
+                {/* Notification Link */}
+                <Link
+                    href="/notifications"
+                    className="w-8 h-8 rounded-lg border border-slate-200 dark:border-[#2D2938] flex items-center justify-center text-xs relative hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors"
+                    title="Notifications"
+                >
+                    🔔
+                    {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center animate-pulse">
+                            {unreadCount}
+                        </span>
                     )}
-                </div>
+                </Link>
 
                 {/* User Profile Direct Link */}
                 <Link href="/profile" className="flex items-center space-x-2 pl-2 border-l border-slate-200 dark:border-[#2D2938] group">
