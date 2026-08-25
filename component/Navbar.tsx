@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import { AppNotification } from '@/types';
 import DrawerMenu from './DrawerMenu';
+import LogoSignature from './LogoSignature';
 
 export interface NavbarProps {
     companyName: string;
@@ -47,13 +48,9 @@ export const Navbar: React.FC<NavbarProps> = ({ companyName, taxId }) => {
                     display: 'flex'
                 }}>
                     <DrawerMenu />
-                    <Link href="/" className="flex items-center space-x-2.5 group shrink-0">
-                        <div className="w-8 h-8 rounded-xl bg-[#5B3E96] text-white flex items-center justify-center font-bold text-lg shadow">
-                            T
-                        </div>
-                        <span className="text-xl font-black tracking-tight text-[#5B3E96] dark:text-white">
-                            TOR<span className="text-[#9B82C1]">max</span>
-                        </span>
+                    <Link href="/">
+                    <LogoSignature/>
+                        
                     </Link>
                 </div>
 
@@ -105,7 +102,7 @@ export const Navbar: React.FC<NavbarProps> = ({ companyName, taxId }) => {
                     onClick={toggleTheme}
                     className="w-8 h-8 rounded-lg border border-slate-200 dark:border-[#2D2938] text-xs hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors flex items-center justify-center"
                 >
-                    {isDark ? '☀️' : '🌙'}
+                    {isDark ? '🌙' : '☀️'}
                 </button>
 
                 {/* Notification Link */}

@@ -1,65 +1,169 @@
 'use client';
 
 import React from 'react';
-import { FilterState } from '@/types';
 
-export interface FilterModalProps {
-    isOpen: boolean;
-    filters: FilterState;
-    onClose: () => void;
-    onApply: (updated: FilterState) => void;
-    onReset: () => void;
+export interface FilterState {
+  query: string;
+  method: string;
+  agency: string;
+  minBudget: number | '';
+  maxBudget: number | '';
+  requireIso: boolean;
+  requireCapital: boolean;
 }
 
-export const FilterModal: React.FC<FilterModalProps> = ({ isOpen, filters, onClose, onApply, onReset }) => {
-    const [localFilters, setLocalFilters] = React.useState<FilterState>(filters);
+interface FilterModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  filters: FilterState;
+  onApply: (newFilters: FilterState) => void;
+  onReset: () => void;
+  agencies: string[];
+  methods: string[];
+}
 
-    if (!isOpen) return null;
+export const FilterModal: React.FC<FilterModalProps> = ({
+  isOpen,
+  onClose,
+  filters,
+  onApply,
+  onReset,
+  agencies,
+  methods,
+}) => {
+  const [draft, setDraft] = React.useState<FilterState>(filters);
 
-    return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-[#1C1A24] border border-slate-200 dark:border-[#2D2938] rounded-3xl max-w-2xl w-full p-6 space-y-6 shadow-2xl">
-                <div className="flex justify-between items-center border-b border-slate-200 dark:border-[#2D2938] pb-4">
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-900 dark:text-white">Advanced Filter Engine</h3>
-                        <p className="text-xs text-slate-500">Configure multi-attribute criteria</p>
-                    </div>
-                    <button onClick={onClose} className="text-slate-400 hover:text-white text-xl font-bold">✕</button>
-                </div>
+  // Keep draft in sync when modal opens
+  React.useEffect(() => {
+    setDraft(filters);
+  }, [filters, isOpen]);
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                    <div className="space-y-2">
-                        <label className="font-bold block text-slate-700 dark:text-slate-300">Procurement Method</label>
-                        <select
-                            value={localFilters.method}
-                            onChange={(e) => setLocalFilters({ ...localFilters, method: e.target.value })}
-                            className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#121118] border border-slate-200 dark:border-[#2D2938] font-semibold"
-                        >
-                            <option value="ALL">All Bidding Methods</option>
-                            <option value="e-Bidding">e-Bidding</option>
-                            <option value="e-Market">e-Market</option>
-                        </select>
-                    </div>
+  if (!isOpen) return null;
 
-                    <div className="space-y-2">
-                        <label className="font-bold block text-slate-700 dark:text-slate-300">Agency / Ministry</label>
-                        <select
-                            value={localFilters.agency}
-                            onChange={(e) => setLocalFilters({ ...localFilters, agency: e.target.value })}
-                            className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#121118] border border-slate-200 dark:border-[#2D2938] font-semibold"
-                        >
-                            <option value="ALL">All Agencies</option>
-                            <option value="Ministry of Digital Economy and Society (MDES)">MDES</option>
-                            <option value="State Railway of Thailand">State Railway of Thailand</option>
-                        </select>
-                    </div>
-                </div>
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onApply(draft);
+    onClose();
+  };
 
-                <div className="flex justify-end gap-3 pt-4 border-t border-slate-200 dark:border-[#2D2938]">
-                    <button onClick={onReset} className="px-5 py-2.5 border border-slate-200 dark:border-[#2D2938] rounded-xl text-xs font-bold">Reset</button>
-                    <button onClick={() => onApply(localFilters)} className="px-6 py-2.5 bg-[#5B3E96] text-white rounded-xl text-xs font-bold shadow">Apply Filters</button>
-                </div>
-            </div>
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
+      <div className="bg-white dark:bg-tormax-surfaceDark border border-slate-200 dark:border-tormax-borderDark rounded-2xl max-w-lg w-full p-6 space-y-6 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+        <div className="flex justify-between items-center border-b border-slate-100 dark:border-tormax-borderDark pb-3">
+          <h2 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+            <span>🎛️</span> Advanced Filters & Source Portals
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg font-bold"
+          >
+            ✕
+          </button>
         </div>
-    );
+
+        <form onSubmit={handleSubmit} className="space-y-4 text-xs font-semibold">
+          {/* Procurement Method */}
+          <div className="space-y-1">
+            <label className="text-slate-600 dark:text-slate-300">Procurement Method</label>
+            <select
+              value={draft.method}
+              onChange={(e) => setDraft({ ...draft, method: e.target.value })}
+              className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-tormax-purple"
+            >
+              <option value="ALL">All Methods</option>
+              {methods.map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Agency */}
+          <div className="space-y-1">
+            <label className="text-slate-600 dark:text-slate-300">Procuring Agency</label>
+            <select
+              value={draft.agency}
+              onChange={(e) => setDraft({ ...draft, agency: e.target.value })}
+              className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-tormax-purple"
+            >
+              <option value="ALL">All Agencies</option>
+              {agencies.map((a) => (
+                <option key={a} value={a}>
+                  {a}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Budget Range */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <label className="text-slate-600 dark:text-slate-300">Min Budget (THB)</label>
+              <input
+                type="number"
+                placeholder="0"
+                value={draft.minBudget}
+                onChange={(e) =>
+                  setDraft({ ...draft, minBudget: e.target.value ? Number(e.target.value) : '' })
+                }
+                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-tormax-purple"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-slate-600 dark:text-slate-300">Max Budget (THB)</label>
+              <input
+                type="number"
+                placeholder="No Limit"
+                value={draft.maxBudget}
+                onChange={(e) =>
+                  setDraft({ ...draft, maxBudget: e.target.value ? Number(e.target.value) : '' })
+                }
+                className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:border-tormax-purple"
+              />
+            </div>
+          </div>
+
+          {/* Special Requirements */}
+          <div className="space-y-2 pt-2">
+            <label className="flex items-center gap-2 cursor-pointer text-slate-700 dark:text-slate-300">
+              <input
+                type="checkbox"
+                checked={draft.requireIso}
+                onChange={(e) => setDraft({ ...draft, requireIso: e.target.checked })}
+                className="rounded text-tormax-purple focus:ring-tormax-purple"
+              />
+              Require ISO 27001 Certification
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer text-slate-700 dark:text-slate-300">
+              <input
+                type="checkbox"
+                checked={draft.requireCapital}
+                onChange={(e) => setDraft({ ...draft, requireCapital: e.target.checked })}
+                className="rounded text-tormax-purple focus:ring-tormax-purple"
+              />
+              Require Minimum Registered Capital
+            </label>
+          </div>
+
+          {/* Actions */}
+          <div className="pt-4 border-t border-slate-100 dark:border-tormax-borderDark flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={onReset}
+              className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-xl hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+            >
+              Reset Filters
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-tormax-purple hover:bg-tormax-purpleDeep text-white rounded-xl shadow-md transition-colors"
+            >
+              Apply Filters
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 };
