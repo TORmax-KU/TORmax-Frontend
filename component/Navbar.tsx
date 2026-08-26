@@ -57,7 +57,7 @@ export const Navbar: React.FC<NavbarProps> = ({ companyName, taxId }) => {
 
                 <div className="hidden lg:flex items-center space-x-1 text-xs font-semibold text-slate-600 dark:text-slate-300">
                     <Link href="/login" className="px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors">
-                        {t('Login')}
+                        {t('login')}
                     </Link>
                     <Link href="/#daily-digest" className="px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors">
                         {t('dailyDigest')}

@@ -2,21 +2,24 @@
 
 import { useState } from 'react';
 import LogoSignature from '@/component/LogoSignature';
+import { useApp } from '@/context/AppContext';
 
 export default function GoogleLoginPage() {
+    const { isDark, toggleTheme, lang, toggleLanguage, t } = useApp();
     const [isLoading, setIsLoading] = useState(false);
 
     const handleGoogleLogin = () => {
         setIsLoading(true);
-        // Replace this with your actual NextAuth / Firebase / OAuth logic
-        // e.g., signIn('google', { callbackUrl: '/dashboard' });
+        // Replace with actual authentication flow
         setTimeout(() => {
             setIsLoading(false);
         }, 1500);
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-slate-200 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex flex-col items-center justify-center p-4 sm:p-6 text-slate-800 dark:text-slate-100 antialiased selection:bg-blue-500 selection:text-white">
+        <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-slate-200 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex flex-col items-center justify-center p-4 sm:p-6 text-slate-800 dark:text-slate-100 antialiased selection:bg-blue-500 selection:text-white transition-colors duration-300 relative">
+
+
             {/* Decorative background glow elements */}
             <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-400/10 dark:bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2 translate-y-1/2 w-96 h-96 bg-indigo-400/10 dark:bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -26,15 +29,17 @@ export default function GoogleLoginPage() {
 
                 {/* Brand/Product Identity */}
                 <div className="flex items-center mb-5">
-                    <LogoSignature/>
+                    <LogoSignature />
                 </div>
 
                 {/* Heading Section */}
                 <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white mb-2">
-                    Welcome back
+                    {lang === 'TH' ? 'ยินดีต้อนรับกลับเข้าสู่ระบบ' : 'Welcome back'}
                 </h1>
                 <p className="text-sm text-slate-500 dark:text-slate-400 mb-8 max-w-xs">
-                    Sign in to access your TORmax workspace and qualification engine.
+                    {lang === 'TH'
+                        ? 'เข้าสู่ระบบเพื่อเข้าใช้งานพื้นที่ทำงาน TORmax และระบบวิเคราะห์คุณสมบัติ'
+                        : 'Sign in to access your TORmax workspace and qualification engine.'}
                 </p>
 
                 {/* Google OAuth Action Button */}
@@ -46,7 +51,9 @@ export default function GoogleLoginPage() {
                     {isLoading ? (
                         <div className="flex items-center gap-2">
                             <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                            <span className="text-slate-500 dark:text-slate-400">Authenticating...</span>
+                            <span className="text-slate-500 dark:text-slate-400">
+                                {lang === 'TH' ? 'กำลังยืนยันตัวตน...' : 'Authenticating...'}
+                            </span>
                         </div>
                     ) : (
                         <>
@@ -68,7 +75,9 @@ export default function GoogleLoginPage() {
                                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                                 />
                             </svg>
-                            <span>Continue with Google</span>
+                            <span>
+                                {lang === 'TH' ? 'ดำเนินการต่อด้วย Google' : 'Continue with Google'}
+                            </span>
                         </>
                     )}
                 </button>
@@ -77,31 +86,59 @@ export default function GoogleLoginPage() {
                 <div className="w-full flex items-center my-6 gap-3">
                     <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
                     <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                        Protected by Google
+                        {lang === 'TH' ? 'ได้รับการคุ้มครองโดย Google' : 'Protected by Google'}
                     </span>
                     <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
                 </div>
 
                 {/* Scope / Terms Notice */}
                 <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed text-center">
-                    By continuing, Google will share your name, email address, language preference, and profile picture with <span className="font-semibold text-slate-700 dark:text-slate-300">TORmax</span>.
+                    {lang === 'TH' ? (
+                        <>
+                            ในการดำเนินการต่อ Google จะแชร์ชื่อ อีเมล การตั้งค่าภาษา และรูปโปรไฟล์ของคุณกับ{' '}
+                            <span className="font-semibold text-slate-700 dark:text-slate-300">TORmax</span>
+                        </>
+                    ) : (
+                        <>
+                            By continuing, Google will share your name, email address, language preference, and profile picture with{' '}
+                            <span className="font-semibold text-slate-700 dark:text-slate-300">TORmax</span>.
+                        </>
+                    )}
                 </p>
             </div>
 
             {/* Footer Controls */}
             <footer className="w-full max-w-md mt-8 flex justify-between items-center px-4 text-xs font-medium text-slate-500 dark:text-slate-400">
                 <div className="relative">
-                    <select className="bg-transparent hover:text-slate-700 dark:hover:text-slate-200 focus:outline-none cursor-pointer pr-4 appearance-none">
-                        <option value="en" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">English (United States)</option>
-                        <option value="th" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">ไทย (Thai)</option>
+                    <select
+                        value={lang.toLowerCase()}
+                        onChange={(e) => {
+                            if (e.target.value.toUpperCase() !== lang) {
+                                toggleLanguage();
+                            }
+                        }}
+                        className="bg-transparent hover:text-slate-700 dark:hover:text-slate-200 focus:outline-none cursor-pointer pr-4 appearance-none"
+                    >
+                        <option value="en" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+                            English (United States)
+                        </option>
+                        <option value="th" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+                            ไทย (Thai)
+                        </option>
                     </select>
                     <span className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-[10px]">▼</span>
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <a href="#" className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors">Help</a>
-                    <a href="#" className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors">Privacy</a>
-                    <a href="#" className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors">Terms</a>
+                    <a href="#" className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+                        {lang === 'TH' ? 'ช่วยเหลือ' : 'Help'}
+                    </a>
+                    <a href="#" className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+                        {lang === 'TH' ? 'ความเป็นส่วนตัว' : 'Privacy'}
+                    </a>
+                    <a href="#" className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+                        {lang === 'TH' ? 'ข้อกำหนด' : 'Terms'}
+                    </a>
                 </div>
             </footer>
         </div>
