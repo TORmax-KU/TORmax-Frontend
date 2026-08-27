@@ -4,16 +4,17 @@ import React from 'react';
 import Link from 'next/link';
 import { TORItem } from '@/types';
 import { TORCard } from './TORCard';
-import { useApp } from '@/context/AppContext'; // Adjust path if necessary
+import { useApp } from '@/context/AppContext';
+import { Language } from '@/public/mockData/Language';
 
 interface DailyDigestSectionProps {
-  topMatches: TORItem[];
+  topMatches?: TORItem[];
   userProfile?: {
     companyName?: string;
   };
 }
 
-// Dictionary for DailyDigestSection text
+// Localized dictionary for DailyDigestSection
 const i18n = {
   en: {
     title: "Daily Digest — Today's Curated Bids",
@@ -38,8 +39,10 @@ export default function DailyDigestSection({
   userProfile = {},
 }: DailyDigestSectionProps) {
   const { lang: contextLang } = useApp();
-  const lang = (contextLang?.toLowerCase() as 'en' | 'th') || 'en';
-  const t = i18n[lang];
+
+  // Resolve active language code ('en' | 'th')
+  const activeLang: Language = (contextLang?.toLowerCase() as Language) === 'th' ? 'th' : 'en';
+  const t = i18n[activeLang];
 
   const companyName = userProfile.companyName || t.defaultCompany;
 
@@ -66,7 +69,7 @@ export default function DailyDigestSection({
           </span>
           <Link
             href="/search-feed"
-            className="hidden sm:inline-flex text-xs font-bold text-tormax-purple dark:text-tormax-lavender hover:underline"
+            className="hidden sm:inline-flex text-xs font-bold text-[#5B3E96] dark:text-tormax-lavender hover:underline"
           >
             {t.viewDirectory}
           </Link>

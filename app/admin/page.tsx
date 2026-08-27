@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   AreaChart,
@@ -11,9 +11,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { initialTORs } from '@/utils/mockData';
+import { initialTORs, Language } from '@/utils/mockData';
 import { TORItem } from '@/types';
-import { useApp } from '@/context/AppContext'; // Adjust path if necessary
+import { useApp } from '@/context/AppContext';
 
 interface LogEntry {
   id: string;
@@ -187,11 +187,20 @@ const i18n = {
 export default function AdminPage() {
   // Consume language state from App Context
   const { lang: contextLang } = useApp();
-  const lang = (contextLang?.toLowerCase() as 'en' | 'th') || 'en';
-  const t = i18n[lang];
+  const activeLang: Language = (contextLang?.toLowerCase() as Language) === 'th' ? 'th' : 'en';
+  const t = i18n[activeLang];
 
   const [activeTab, setActiveTab] = useState<'ops' | 'users' | 'scraping' | 'diagnostics' | 'logs'>('ops');
-  const [torList, setTorList] = useState<TORItem[]>(initialTORs);
+  
+  // Resolve localized dataset array
+  const currentTORs = initialTORs[activeLang] || initialTORs.en || [];
+  const [torList, setTorList] = useState<TORItem[]>(currentTORs);
+
+  // Sync dataset when active language changes
+  useEffect(() => {
+    setTorList(initialTORs[activeLang] || initialTORs.en || []);
+  }, [activeLang]);
+
   const [users, setUsers] = useState<User[]>(INITIAL_USERS);
   const [editingTor, setEditingTor] = useState<TORItem | null>(null);
   const [userQuery, setUserQuery] = useState('');
@@ -218,7 +227,7 @@ export default function AdminPage() {
 
   const triggerManualSyncAll = () => {
     addLog('SCRAPE', 'ScraperAPI global ingestion executed across all target nodes.');
-    alert(lang === 'th' ? 'ดำเนินการดึงข้อมูล ScraperAPI สำเร็จทุกเป้าหมาย!' : 'ScraperAPI ingestion completed across all target portals!');
+    alert(activeLang === 'th' ? 'ดำเนินการดึงข้อมูล ScraperAPI สำเร็จทุกเป้าหมาย!' : 'ScraperAPI ingestion completed across all target portals!');
   };
 
   const runNetworkDiagnostic = (domain: string) => {
@@ -226,8 +235,8 @@ export default function AdminPage() {
   };
 
   const deleteTOR = (id: string) => {
-    if (confirm(lang === 'th' ? `ยืนยันการลบข้อมูล TOR รหัส ${id} หรือไม่?` : `Confirm purge of TOR record ${id} from persistent vector store?`)) {
-      setTorList((prev) => prev.filter((t) => t.id !== id));
+    if (confirm(activeLang === 'th' ? `ยืนยันการลบข้อมูล TOR รหัส ${id} หรือไม่?` : `Confirm purge of TOR record ${id} from persistent vector store?`)) {
+      setTorList((prev) => prev.filter((tItem) => tItem.id !== id));
       addLog('ALERT', `Manually deleted TOR entry: ${id}`);
     }
   };

@@ -3,10 +3,10 @@
 import React, { useState, useMemo, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { initialTORs } from '@/utils/mockData';
+import { initialTORs, Language } from '@/utils/mockData';
 import { FilterState, TORItem } from '@/types';
 import { FilterModal } from '@/component/FilterModal';
-import { useApp } from '@/context/AppContext'; // Adjust path if necessary
+import { useApp } from '@/context/AppContext';
 
 const INITIAL_FILTERS: FilterState = {
   query: '',
@@ -18,7 +18,7 @@ const INITIAL_FILTERS: FilterState = {
   requireCapital: false,
 };
 
-// Dictionary for SearchFeed page
+// Localized dictionary for SearchFeed page
 const i18n = {
   en: {
     title: 'Multi-Source TOR Directory',
@@ -53,8 +53,13 @@ const i18n = {
 function SearchFeedContent() {
   const searchParams = useSearchParams();
   const { lang: contextLang } = useApp();
-  const lang = (contextLang?.toLowerCase() as 'en' | 'th') || 'en';
-  const t = i18n[lang];
+  
+  // Resolve active language code ('en' | 'th')
+  const activeLang: Language = (contextLang?.toLowerCase() as Language) === 'th' ? 'th' : 'en';
+  const t = i18n[activeLang];
+
+  // Retrieve mock dataset for active locale
+  const currentTORs = initialTORs[activeLang] || initialTORs.en;
 
   const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -67,11 +72,11 @@ function SearchFeedContent() {
     }
   }, [searchParams]);
 
-  // Dynamically extract unique agencies and methods for dropdown options
+  // Dynamically extract unique agencies and methods from the active language dataset
   const { agencies, methods } = useMemo(() => {
     const agencySet = new Set<string>();
     const methodSet = new Set<string>();
-    initialTORs.forEach((item) => {
+    currentTORs.forEach((item) => {
       if (item.employer) agencySet.add(item.employer);
       if (item.method) methodSet.add(item.method);
     });
@@ -79,11 +84,11 @@ function SearchFeedContent() {
       agencies: Array.from(agencySet),
       methods: Array.from(methodSet),
     };
-  }, []);
+  }, [currentTORs]);
 
-  // Reactive filtering using useMemo
+  // Reactive filtering bound to active locale TOR list and active filters
   const filteredTORs = useMemo(() => {
-    return initialTORs.filter((item: TORItem) => {
+    return currentTORs.filter((item: TORItem) => {
       const q = filters.query.toLowerCase();
       const matchesQ =
         !q ||
@@ -100,12 +105,12 @@ function SearchFeedContent() {
 
       let matchesIso = true;
       if (filters.requireIso) {
-        matchesIso = Boolean(item.requirements?.some((r) => r.text.includes('ISO 27001')));
+        matchesIso = Boolean(item.requirements?.some((r) => r.text.includes('ISO')));
       }
 
       return matchesQ && matchesMethod && matchesAgency && matchesBudget && matchesIso;
     });
-  }, [filters]);
+  }, [currentTORs, filters]);
 
   const handleReset = () => {
     setFilters(INITIAL_FILTERS);
@@ -230,8 +235,8 @@ function SearchFeedContent() {
 
 export default function SearchFeedPage() {
   const { lang: contextLang } = useApp();
-  const lang = (contextLang?.toLowerCase() as 'en' | 'th') || 'en';
-  const t = i18n[lang];
+  const activeLang: Language = (contextLang?.toLowerCase() as Language) === 'th' ? 'th' : 'en';
+  const t = i18n[activeLang];
 
   return (
     <Suspense fallback={<div className="max-w-6xl mx-auto p-10 text-center text-xs text-slate-400">{t.loading}</div>}>

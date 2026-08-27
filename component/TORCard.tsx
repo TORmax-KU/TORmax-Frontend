@@ -3,13 +3,36 @@
 import React from 'react';
 import Link from 'next/link';
 import { TORItem } from '@/types';
-import { calculatePassRate } from '@/utils/mockData';
+import { calculatePassRate, Language } from '@/utils/mockData';
+import { useApp } from '@/context/AppContext';
 
 export interface TORCardProps {
   tor: TORItem;
 }
 
+// Localized dictionary for TORCard labels
+const i18n = {
+  en: {
+    matchSuffix: '% Match',
+    sourcePrefix: '🌐 Source:',
+    eligiblePrefix: 'Eligible:',
+    reviewSpec: 'Review Spec →',
+  },
+  th: {
+    matchSuffix: '% ตรงสเปก',
+    sourcePrefix: '🌐 แหล่งที่มา:',
+    eligiblePrefix: 'ผ่านคุณสมบัติ:',
+    reviewSpec: 'ดูข้อกำหนด →',
+  },
+};
+
 export const TORCard: React.FC<TORCardProps> = ({ tor }) => {
+  const { lang: contextLang } = useApp();
+
+  // Resolve active language code ('en' | 'th')
+  const activeLang: Language = (contextLang?.toLowerCase() as Language) === 'th' ? 'th' : 'en';
+  const t = i18n[activeLang];
+
   // Optional eligibility calculations if requirements exist on the item
   const passRate = tor.requirements ? calculatePassRate(tor.requirements) : null;
 
@@ -22,7 +45,7 @@ export const TORCard: React.FC<TORCardProps> = ({ tor }) => {
             {tor.id}
           </span>
           <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full shadow-2xs">
-            {tor.matchScore}% Match
+            {tor.matchScore}{t.matchSuffix}
           </span>
         </div>
 
@@ -33,7 +56,7 @@ export const TORCard: React.FC<TORCardProps> = ({ tor }) => {
 
         {/* Source Tag */}
         <span className="inline-block text-[10px] font-bold px-2.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-          🌐 Source: {tor.sourcePortal}
+          {t.sourcePrefix} {tor.sourcePortal}
         </span>
 
         {/* Title & Employer */}
@@ -74,9 +97,9 @@ export const TORCard: React.FC<TORCardProps> = ({ tor }) => {
           <div className="text-[11px] font-medium text-slate-400">
             ⏳ {tor.deadline}
           </div>
-          {passRate && (
+          {passRate && tor.requirements && (
             <div className="text-[10px] font-bold text-slate-600 dark:text-slate-300 mt-0.5">
-              Eligible: {passRate.count}/{tor.requirements.length} ({passRate.percentage}%)
+              {t.eligiblePrefix} {passRate.count}/{tor.requirements.length} ({passRate.percentage}%)
             </div>
           )}
         </div>
@@ -85,7 +108,7 @@ export const TORCard: React.FC<TORCardProps> = ({ tor }) => {
           href={`/tor-page/${tor.id}`}
           className="px-4 py-2 bg-tormax-purple hover:bg-tormax-purpleDeep text-white text-xs font-bold rounded-xl transition-all shadow-md active:scale-95 shrink-0"
         >
-          Review Spec →
+          {t.reviewSpec}
         </Link>
       </div>
     </div>
