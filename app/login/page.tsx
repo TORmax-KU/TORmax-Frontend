@@ -1,19 +1,29 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import LogoSignature from '@/component/LogoSignature';
 import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 
 export default function GoogleLoginPage() {
-    const { isDark, toggleTheme, lang, toggleLanguage, t } = useApp();
+    const { lang, toggleLanguage } = useApp();
+    const { user, isLoading: isAuthLoading, loginWithGoogle } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const authFailed = searchParams.get('error') === 'auth_failed';
+
+    // Already signed in: skip the login screen entirely
+    useEffect(() => {
+        if (!isAuthLoading && user) {
+            router.replace('/');
+        }
+    }, [isAuthLoading, user, router]);
 
     const handleGoogleLogin = () => {
         setIsLoading(true);
-        // Replace with actual authentication flow
-        setTimeout(() => {
-            setIsLoading(false);
-        }, 1500);
+        loginWithGoogle();
     };
 
     return (
@@ -41,6 +51,14 @@ export default function GoogleLoginPage() {
                         ? 'เข้าสู่ระบบเพื่อเข้าใช้งานพื้นที่ทำงาน TORmax และระบบวิเคราะห์คุณสมบัติ'
                         : 'Sign in to access your TORmax workspace and qualification engine.'}
                 </p>
+
+                {authFailed && (
+                    <p className="w-full mb-4 px-4 py-2.5 rounded-xl text-xs font-medium text-rose-600 bg-rose-500/10 border border-rose-500/20">
+                        {lang === 'TH'
+                            ? 'เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง'
+                            : 'Sign-in failed. Please try again.'}
+                    </p>
+                )}
 
                 {/* Google OAuth Action Button */}
                 <button

@@ -68,3 +68,14 @@ export interface AppNotification {
   time: string;
   read: boolean;
 }
+
+export interface AuthUser {
+  _id: string;
+  googleId?: string;
+  username?: string;
+  realName?: string;
+  email: string;
+  aboutMe?: string;
+  role: 'Vendor' | 'JobLister' | 'Admin';
+  status: 'Active' | 'Disabled';
+}

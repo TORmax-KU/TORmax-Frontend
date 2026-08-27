@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import { AppNotification } from '@/types';
 import DrawerMenu from './DrawerMenu';
 import LogoSignature from './LogoSignature';
@@ -19,8 +20,9 @@ const mockNotifications: AppNotification[] = [
     { id: '3', title: 'Ingestion system completed e-GP sync', time: '5h ago', read: true }
 ];
 
-export const Navbar: React.FC<NavbarProps> = ({ companyName, taxId }) => {
+export const Navbar: React.FC<NavbarProps> = ({ companyName }) => {
     const { isDark, toggleTheme, lang, toggleLanguage, t } = useApp();
+    const { user, logout } = useAuth();
     const [searchQuery, setSearchQuery] = useState('');
     const [showNotifications, setShowNotifications] = useState(false);
     const [notifications, setNotifications] = useState<AppNotification[]>(mockNotifications);
@@ -56,9 +58,11 @@ export const Navbar: React.FC<NavbarProps> = ({ companyName, taxId }) => {
 
 
                 <div className="hidden lg:flex items-center space-x-1 text-xs font-semibold text-slate-600 dark:text-slate-300">
-                    <Link href="/login" className="px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors">
-                        {t('login')}
-                    </Link>
+                    {!user && (
+                        <Link href="/login" className="px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors">
+                            {t('login')}
+                        </Link>
+                    )}
                     <Link href="/#daily-digest" className="px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors">
                         {t('dailyDigest')}
                     </Link>
@@ -120,18 +124,28 @@ export const Navbar: React.FC<NavbarProps> = ({ companyName, taxId }) => {
                 </Link>
 
                 {/* User Profile Direct Link */}
-                <Link href="/profile" className="flex items-center space-x-2 pl-2 border-l border-slate-200 dark:border-[#2D2938] group">
-                    <div className="w-8 h-8 rounded-lg bg-[#3B2468] text-white flex items-center justify-center font-bold text-xs ring-2 ring-[#5B3E96]/50">
-                        TT
+                {user && (
+                    <div className="flex items-center space-x-2 pl-2 border-l border-slate-200 dark:border-[#2D2938] group">
+                        <Link href="/profile" className="flex items-center space-x-2">
+                            <div className="w-8 h-8 rounded-lg bg-[#3B2468] text-white flex items-center justify-center font-bold text-xs ring-2 ring-[#5B3E96]/50">
+                                {(user.realName || user.email).slice(0, 2).toUpperCase()}
+                            </div>
+                            <div className="hidden xl:block text-xs">
+                                <div className="font-bold flex items-center gap-1 text-[11px] text-slate-900 dark:text-white">
+                                    <span>{user.realName || companyName}</span>
+                                </div>
+                                <div className="text-slate-400 text-[9px]">{user.email}</div>
+                            </div>
+                        </Link>
+                        <button
+                            onClick={logout}
+                            title="Log out"
+                            className="w-8 h-8 rounded-lg border border-slate-200 dark:border-[#2D2938] flex items-center justify-center text-xs hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors"
+                        >
+                            ↪️
+                        </button>
                     </div>
-                    <div className="hidden xl:block text-xs">
-                        <div className="font-bold flex items-center gap-1 text-[11px] text-slate-900 dark:text-white">
-                            <span>{companyName}</span>
-                            <span className="text-emerald-500 text-[10px]">⚙️</span>
-                        </div>
-                        <div className="text-slate-400 text-[9px]">Tax ID: {taxId}</div>
-                    </div>
-                </Link>
+                )}
             </div>
         </nav>
     );
