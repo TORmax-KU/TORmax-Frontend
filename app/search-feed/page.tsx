@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { initialTORs } from '@/utils/mockData';
 import { FilterState, TORItem } from '@/types';
 import { FilterModal } from '@/component/FilterModal';
+import { useApp } from '@/context/AppContext'; // Adjust path if necessary
 
 const INITIAL_FILTERS: FilterState = {
   query: '',
@@ -17,8 +18,44 @@ const INITIAL_FILTERS: FilterState = {
   requireCapital: false,
 };
 
+// Dictionary for SearchFeed page
+const i18n = {
+  en: {
+    title: 'Multi-Source TOR Directory',
+    subtitle: 'Aggregated tenders across multiple public procurement platforms',
+    filterBtn: '🎛️ Advanced Filters & Source Portals',
+    searchPlaceholder: 'Filter directory by title, agency, or TOR ID...',
+    showingResultsPrefix: 'Showing results for ',
+    itemsFoundSuffix: ' items found',
+    noResults: 'No TOR listings match your filter criteria. Try broadening parameters in the Advanced Filter Popover.',
+    source: 'Source:',
+    method: 'Method:',
+    deadline: 'Deadline:',
+    openSpec: 'Open TOR Spec →',
+    loading: 'Loading feed...',
+  },
+  th: {
+    title: 'สารบัญเอกสาร TOR จากทุกแหล่ง',
+    subtitle: 'รวบรวมประกาศจัดซื้อจัดจ้างจากพอร์ทัลภาครัฐหลากหลายช่องทาง',
+    filterBtn: '🎛️ ตัวกรองขั้นสูง & แหล่งข้อมูล',
+    searchPlaceholder: 'กรองรายการตามชื่อโครงการ, หน่วยงาน หรือรหัส TOR...',
+    showingResultsPrefix: 'แสดงผลลัพธ์สำหรับ ',
+    itemsFoundSuffix: ' รายการ',
+    noResults: 'ไม่พบรายการ TOR ที่ตรงกับเงื่อนไข ลองขยายขอบเขตการค้นหาในหน้าต่างตัวกรองขั้นสูง',
+    source: 'แหล่งที่มา:',
+    method: 'วิธีการจัดซื้อ:',
+    deadline: 'กำหนดยื่น:',
+    openSpec: 'ดูรายละเอียด TOR →',
+    loading: 'กำลังโหลดข้อมูล...',
+  },
+};
+
 function SearchFeedContent() {
   const searchParams = useSearchParams();
+  const { lang: contextLang } = useApp();
+  const lang = (contextLang?.toLowerCase() as 'en' | 'th') || 'en';
+  const t = i18n[lang];
+
   const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
@@ -81,17 +118,17 @@ function SearchFeedContent() {
       <div className="border-b border-slate-200 dark:border-tormax-borderDark pb-4 flex flex-col md:flex-row justify-between md:items-end gap-4">
         <div>
           <h1 className="text-3xl font-black font-display text-slate-900 dark:text-white tracking-tight">
-            Multi-Source TOR Directory
+            {t.title}
           </h1>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
-            Aggregated tenders across multiple public procurement platforms
+            {t.subtitle}
           </p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="px-4 py-2.5 bg-tormax-purple text-white text-xs font-bold rounded-xl hover:bg-tormax-purpleDeep flex items-center space-x-2 shadow-sm active:scale-95 transition-all"
+          className="px-4 py-2.5 bg-tormax-purple text-white text-xs font-bold rounded-xl hover:bg-tormax-purpleDeep flex items-center space-x-2 shadow-sm active:scale-95 transition-all cursor-pointer"
         >
-          <span>🎛️ Advanced Filters & Source Portals</span>
+          <span>{t.filterBtn}</span>
         </button>
       </div>
 
@@ -102,13 +139,13 @@ function SearchFeedContent() {
             type="text"
             value={filters.query}
             onChange={(e) => setFilters((prev) => ({ ...prev, query: e.target.value }))}
-            placeholder="Filter directory by title, agency, or TOR ID..."
+            placeholder={t.searchPlaceholder}
             className="w-full p-3 pr-10 rounded-xl bg-white dark:bg-tormax-surfaceDark border border-slate-200 dark:border-tormax-borderDark text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:border-tormax-purple shadow-2xs"
           />
           {filters.query && (
             <button
               onClick={() => setFilters((prev) => ({ ...prev, query: '' }))}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold cursor-pointer"
             >
               ✕
             </button>
@@ -119,7 +156,9 @@ function SearchFeedContent() {
       {/* Active Search Badge Info */}
       {filters.query && (
         <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-          Showing results for <span className="font-bold text-tormax-purple dark:text-tormax-lavender">"{filters.query}"</span> ({filteredTORs.length} items found)
+          {t.showingResultsPrefix}
+          <span className="font-bold text-tormax-purple dark:text-tormax-lavender">"{filters.query}"</span>
+          <span> ({filteredTORs.length}{t.itemsFoundSuffix})</span>
         </div>
       )}
 
@@ -127,7 +166,7 @@ function SearchFeedContent() {
       <div className="space-y-4">
         {filteredTORs.length === 0 ? (
           <div className="p-8 text-center text-xs font-medium text-slate-500 dark:text-slate-400 bg-white dark:bg-tormax-surfaceDark rounded-2xl border border-slate-200 dark:border-tormax-borderDark shadow-sm">
-            No TOR listings match your filter criteria. Try broadening parameters in the Advanced Filter Popover.
+            {t.noResults}
           </div>
         ) : (
           filteredTORs.map((item) => (
@@ -141,7 +180,7 @@ function SearchFeedContent() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <span className="text-[10px] font-bold px-2.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-                    Source: {item.sourcePortal}
+                    {t.source} {item.sourcePortal}
                   </span>
                   <span className="text-xs font-mono font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded">
                     {item.id}
@@ -157,17 +196,17 @@ function SearchFeedContent() {
                 <span>🏛️ {item.employer}</span>
                 <span>•</span>
                 <span className="text-tormax-purple dark:text-tormax-lavender font-bold">
-                  Method: {item.method}
+                  {t.method} {item.method}
                 </span>
               </div>
 
               <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-tormax-borderDark text-xs">
-                <span className="text-slate-400 font-medium">Deadline: {item.deadline}</span>
+                <span className="text-slate-400 font-medium">{t.deadline} {item.deadline}</span>
                 <Link
                   href={`/tor-page/${item.id}`}
                   className="px-4 py-2 bg-tormax-purple hover:bg-tormax-purpleDeep text-white font-bold rounded-xl transition-all shadow-sm active:scale-95"
                 >
-                  Open TOR Spec →
+                  {t.openSpec}
                 </Link>
               </div>
             </div>
@@ -190,8 +229,12 @@ function SearchFeedContent() {
 }
 
 export default function SearchFeedPage() {
+  const { lang: contextLang } = useApp();
+  const lang = (contextLang?.toLowerCase() as 'en' | 'th') || 'en';
+  const t = i18n[lang];
+
   return (
-    <Suspense fallback={<div className="max-w-6xl mx-auto p-10 text-center text-xs text-slate-400">Loading feed...</div>}>
+    <Suspense fallback={<div className="max-w-6xl mx-auto p-10 text-center text-xs text-slate-400">{t.loading}</div>}>
       <SearchFeedContent />
     </Suspense>
   );
