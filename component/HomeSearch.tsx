@@ -5,40 +5,62 @@ import { useRouter } from 'next/navigation';
 import MediaBlock from "./MediaBlock";
 import FilterModal from './Searchbar/FilterModal';
 import SearchInput from './Searchbar/SearchInput';
+import { useApp } from '@/context/AppContext'; // Adjust path if necessary
 
-// Mock data structure to support the Daily Digest map
-const mockTORs = [
-  {
-    id: "TOR-2026-001",
-    matchScore: 98,
-    price: "฿12,500,000",
-    sourcePortal: "CGD e-GP",
-    name: "Enterprise Cloud Infrastructure & Disaster Recovery System",
-    employer: "Ministry of Digital Economy and Society",
-    deadline: "12 Days Left"
+// Dictionary for HomeSearch hero text
+const i18n = {
+  en: {
+    activeTenders: '6,420+ Active Tenders Consolidated',
+    heading1: 'What project are you',
+    heading2: 'looking for?',
+    subtitle1: 'Instant AI vector matching across',
+    subtitle2: 'CGD e-GP, state enterprise portals, and direct ministry tender boards',
+    popular: 'Popular:',
+    todaysDigest: "Today's Digest",
+    browseAll: 'Browse All TORs',
+    statTendersVal: '6,420+',
+    statTendersLabel: 'Multi-Site Tenders',
+    statPipelineVal: '฿14.2B',
+    statPipelineLabel: 'Tracked Pipeline',
+    statAccuracyVal: '96%',
+    statAccuracyLabel: 'Match Accuracy',
+    tags: [
+      { label: 'Cloud Infrastructure', query: 'Cloud' },
+      { label: 'Cybersecurity', query: 'Cybersecurity' },
+      { label: 'Fiber Optics', query: 'Fiber' },
+      { label: 'AI System', query: 'AI' },
+    ],
   },
-  {
-    id: "TOR-2026-002",
-    matchScore: 94,
-    price: "฿8,200,000",
-    sourcePortal: "State Enterprise Portal",
-    name: "National Cybersecurity Monitoring & Threat Detection Platform",
-    employer: "National Cyber Security Agency (NCSA)",
-    deadline: "5 Days Left"
+  th: {
+    activeTenders: 'รวบรวมประกาศจัดซื้อจัดจ้างมากกว่า 6,420+ รายการ',
+    heading1: 'คุณกำลังมองหา',
+    heading2: 'โครงการใดที่ใช่?',
+    subtitle1: 'ค้นหาด้วยระบบ AI เวกเตอร์อัจฉริยะครอบคลุม',
+    subtitle2: 'ระบบ e-GP กรมบัญชีกลาง, พอร์ทัลรัฐวิสาหกิจ และบอร์ดจัดซื้อจัดจ้างของกระทรวงโดยตรง',
+    popular: 'คำค้นยอดนิยม:',
+    todaysDigest: 'สรุปประจำวัน',
+    browseAll: 'ดูรายการ TOR ทั้งหมด',
+    statTendersVal: '6,420+',
+    statTendersLabel: 'โครงการจากทุกแหล่ง',
+    statPipelineVal: '14.2 พันล้านบาท',
+    statPipelineLabel: 'มูลค่าโครงการในระบบ',
+    statAccuracyVal: '96%',
+    statAccuracyLabel: 'ความแม่นยำในการจับคู่',
+    tags: [
+      { label: 'ระบบคลาวด์', query: 'Cloud' },
+      { label: 'ความปลอดภัยไซเบอร์', query: 'Cybersecurity' },
+      { label: 'โครงข่ายไฟเบอร์', query: 'Fiber' },
+      { label: 'ระบบปัญญาประดิษฐ์ (AI)', query: 'AI' },
+    ],
   },
-  {
-    id: "TOR-2026-003",
-    matchScore: 89,
-    price: "฿45,000,000",
-    sourcePortal: "Direct Ministry Board",
-    name: "Provincial High-Speed Fiber Optic Expansion Project",
-    employer: "National Telecom (NT)",
-    deadline: "18 Days Left"
-  }
-];
+};
 
 export default function HomeSearch() {
   const router = useRouter();
+  const { lang: contextLang } = useApp();
+  const lang = (contextLang?.toLowerCase() as 'en' | 'th') || 'en';
+  const t = i18n[lang];
+
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -54,7 +76,7 @@ export default function HomeSearch() {
   };
 
   const jumpToDigestSection = () => {
-    const el = document.getElementById('daily-digest-section');
+    const el = document.getElementById('daily-digest');
     if (el) {
       el.scrollIntoView({ behavior: 'smooth' });
     }
@@ -87,20 +109,20 @@ export default function HomeSearch() {
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md text-xs font-medium text-slate-300 shadow-inner">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
             <span className="w-2 h-2 rounded-full bg-emerald-400 -ml-4" />
-            <span>6,420+ Active Tenders Consolidated</span>
+            <span>{t.activeTenders}</span>
           </div>
 
           {/* Main Heading */}
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-[1.15]">
-            What project are you
+            {t.heading1}
             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 via-purple-300 to-cyan-300 mt-2">
-              looking for?
+              {t.heading2}
             </span>
           </h1>
 
           {/* Subtitle */}
           <p className="text-slate-300 text-sm sm:text-base md:text-lg max-w-2xl font-normal leading-relaxed">
-            Instant AI vector matching across <strong>CGD e-GP, state enterprise portals, and direct ministry tender boards</strong>.
+            {t.subtitle1} <strong>{t.subtitle2}</strong>.
           </p>
 
           {/* Search Input Box */}
@@ -113,13 +135,8 @@ export default function HomeSearch() {
 
             {/* Quick Keyword Pills */}
             <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-slate-400 mt-4 font-medium">
-              <span className="text-slate-500 font-semibold uppercase tracking-wider text-[11px]">Popular:</span>
-              {[
-                { label: 'Cloud Infrastructure', query: 'Cloud' },
-                { label: 'Cybersecurity', query: 'Cybersecurity' },
-                { label: 'Fiber Optics', query: 'Fiber' },
-                { label: 'AI System', query: 'AI' }
-              ].map((tag) => (
+              <span className="text-slate-500 font-semibold uppercase tracking-wider text-[11px]">{t.popular}</span>
+              {t.tags.map((tag) => (
                 <button
                   key={tag.query}
                   onClick={() => handleSearchSubmit(tag.query)}
@@ -137,14 +154,14 @@ export default function HomeSearch() {
               onClick={jumpToDigestSection}
               className="w-full sm:w-1/2 px-6 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50 active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span>Today's Digest</span>
+              <span>{t.todaysDigest}</span>
               <span>↓</span>
             </button>
             <button
               onClick={() => router.push('/search-feed')}
               className="w-full sm:w-1/2 px-6 py-3.5 bg-slate-900/90 hover:bg-slate-800 text-slate-200 border border-slate-700/80 rounded-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
             >
-              <span>Browse All TORs</span>
+              <span>{t.browseAll}</span>
               <span>→</span>
             </button>
           </div>
@@ -152,16 +169,16 @@ export default function HomeSearch() {
           {/* Statistics Grid */}
           <div className="pt-10 grid grid-cols-3 gap-6 border-t border-white/10 w-full max-w-2xl text-center">
             <div className="p-2">
-              <div className="text-2xl sm:text-3xl font-black text-white tracking-tight">6,420+</div>
-              <div className="text-[11px] sm:text-xs text-slate-400 font-medium uppercase tracking-wider mt-1">Multi-Site Tenders</div>
+              <div className="text-2xl sm:text-3xl font-black text-white tracking-tight">{t.statTendersVal}</div>
+              <div className="text-[11px] sm:text-xs text-slate-400 font-medium uppercase tracking-wider mt-1">{t.statTendersLabel}</div>
             </div>
             <div className="p-2 border-x border-white/10">
-              <div className="text-2xl sm:text-3xl font-black text-amber-300 tracking-tight">฿14.2B</div>
-              <div className="text-[11px] sm:text-xs text-slate-400 font-medium uppercase tracking-wider mt-1">Tracked Pipeline</div>
+              <div className="text-2xl sm:text-3xl font-black text-amber-300 tracking-tight">{t.statPipelineVal}</div>
+              <div className="text-[11px] sm:text-xs text-slate-400 font-medium uppercase tracking-wider mt-1">{t.statPipelineLabel}</div>
             </div>
             <div className="p-2">
-              <div className="text-2xl sm:text-3xl font-black text-emerald-400 tracking-tight">96%</div>
-              <div className="text-[11px] sm:text-xs text-slate-400 font-medium uppercase tracking-wider mt-1">Match Accuracy</div>
+              <div className="text-2xl sm:text-3xl font-black text-emerald-400 tracking-tight">{t.statAccuracyVal}</div>
+              <div className="text-[11px] sm:text-xs text-slate-400 font-medium uppercase tracking-wider mt-1">{t.statAccuracyLabel}</div>
             </div>
           </div>
 

@@ -1,8 +1,26 @@
+'use client';
+
+import React from 'react';
 import HomeSearch from "@/component/HomeSearch";
 import { initialTORs } from "@/utils/mockData";
 import DailyDigestSection from "@/component/DailyDigestSection";
+import { useApp } from "@/context/AppContext"; // Adjust path if necessary
+
+// Dictionary for Home Page layout text
+const i18n = {
+  en: {
+    companyName: "Acme Innovations Ltd.",
+  },
+  th: {
+    companyName: "บริษัท แอคมี่ อินโนเวชั่นส์ จำกัด",
+  },
+};
 
 export default function Home() {
+  const { lang: contextLang } = useApp();
+  const lang = (contextLang?.toLowerCase() as 'en' | 'th') || 'en';
+  const t = i18n[lang];
+
   // Defensive sort to ensure array safety
   const topMatches = Array.isArray(initialTORs)
     ? [...initialTORs].sort((a, b) => (b.matchScore || 0) - (a.matchScore || 0))
@@ -20,7 +38,7 @@ export default function Home() {
         <section id="daily-digest">
           <DailyDigestSection 
             topMatches={topMatches} 
-            userProfile={{ companyName: "Acme Innovations Ltd." }}
+            userProfile={{ companyName: t.companyName }}
           />
         </section>
       </main>
