@@ -14,6 +14,7 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from 'recharts';
+import { useApp } from '@/context/AppContext'; // Adjust path if necessary
 
 // 24-hour Latency Telemetry Data
 const LATENCY_HISTORICAL_DATA = [
@@ -46,7 +47,66 @@ const NODES: NodeConfig[] = [
   { key: 'fda', id: 'NODE-04', name: 'FDA MOPH Node', color: '#f59e0b', gradientId: 'gradFda', avgLatency: '310ms', p99: '420ms', errorRate: '0.2%', status: 'Healthy' },
 ];
 
+const i18n = {
+  en: {
+    backToAdmin: 'Back to Admin Console',
+    title: 'Proxy Latency & Diagnostic Overview',
+    subtitle: 'Real-time proxy node health metrics, response latency distributions, and root-cause indicators',
+    nodeDegraded: '1 Node Degraded',
+    runPing: 'Run Full Ping Diagnostic',
+    rootCauseTitle: 'Root-Cause Detected: ',
+    rootCauseMsg: 'High P99 latency spike (890ms) & 7.9% drop rate detected on target node NODE-03 (OCSC Procurement) around 09:00 AM.',
+    avgLatency: 'Avg Latency',
+    errorRate: 'Error Rate',
+    latencyTrendTitle: 'Proxy Network Latency Trend (24h)',
+    latencyTrendSub: 'Response latency (ms) over time',
+    allNodes: 'All Nodes',
+    distributionTitle: 'Latency Distribution (P50 vs P99)',
+    distributionSub: 'Filtered P50 vs P99 comparison',
+    incidentTitle: 'Incident Diagnostic & Auto-Healing Activity Log',
+    alertTriggered: '[ALERT TRIGGERED]',
+    alertMsg: 'High tail latency on NODE-03. P99 reached 1,420ms (Threshold: 600ms).',
+    autoHeal: '[AUTO-HEAL]',
+    autoHealMsg: 'ScraperAPI dynamic IP rotation engaged for host',
+    diagnostic: '[DIAGNOSTIC]',
+    diagnosticMsg: 'Direct ping probe to rest of nodes (NODE-01, NODE-02, NODE-04) returned normal latency under 400ms.',
+    pingAlert: 'Diagnostic ping executed across all nodes.',
+    statusHealthy: 'Healthy',
+    statusDegraded: 'Degraded',
+  },
+  th: {
+    backToAdmin: 'กลับสู่ระบบจัดการ',
+    title: 'ภาพรวมการตรวจสอบและเวลาตอบสนองของพร็อกซี',
+    subtitle: 'ตัวชี้วัดความสมบูรณ์ของโหนดพร็อกซีแบบเรียลไทม์ การกระจายความล่าช้า และตัวบ่งชี้สาเหตุหลัก',
+    nodeDegraded: '1 โหนดทำงานผิดปกติ',
+    runPing: 'ทดสอบการเชื่อมต่อทุกโหนด',
+    rootCauseTitle: 'ตรวจพบสาเหตุหลัก: ',
+    rootCauseMsg: 'พบความล่าช้า P99 สูงผิดปกติ (890ms) และอัตราข้อมูลสูญหาย 7.9% ที่โหนด NODE-03 (OCSC Procurement) เวลาประมาณ 09:00 น.',
+    avgLatency: 'ความล่าช้าเฉลี่ย',
+    errorRate: 'อัตราข้อผิดพลาด',
+    latencyTrendTitle: 'แนวโน้มความล่าช้าของเครือข่ายพร็อกซี (24 ชม.)',
+    latencyTrendSub: 'ระยะเวลาตอบสนอง (มิลลิวินาที) ตามช่วงเวลา',
+    allNodes: 'ทุกโหนด',
+    distributionTitle: 'การกระจายความล่าช้า (P50 เปรียบเทียบ P99)',
+    distributionSub: 'การเปรียบเทียบค่า P50 และ P99 ของโหนดที่เลือก',
+    incidentTitle: 'บันทึกการวินิจฉัยอุบัติการณ์และการแก้ไขอัตโนมัติ',
+    alertTriggered: '[แจ้งเตือน]',
+    alertMsg: 'พบความล่าช้าสูงที่ปลายทางโหนด NODE-03 ค่า P99 สูงถึง 1,420ms (เกณฑ์มาตรฐาน: 600ms)',
+    autoHeal: '[แก้ไขอัตโนมัติ]',
+    autoHealMsg: 'ระบบหมุนเวียน IP อัตโนมัติของ ScraperAPI เริ่มทำงานสำหรับโฮสต์',
+    diagnostic: '[การวินิจฉัย]',
+    diagnosticMsg: 'การทดสอบปิงไปยังโหนดที่เหลือ (NODE-01, NODE-02, NODE-04) ได้รับค่าความล่าช้าปกติไม่เกิน 400ms',
+    pingAlert: 'ดำเนินการทดสอบปิงทุกโหนดเรียบร้อยแล้ว',
+    statusHealthy: 'ปกติ',
+    statusDegraded: 'เฝ้าระวัง',
+  },
+};
+
 export default function OverviewPage() {
+  const { lang: contextLang } = useApp();
+  const lang = (contextLang?.toLowerCase() as 'en' | 'th') || 'en';
+  const t = i18n[lang];
+
   // State for active node isolation filter ("all" or key of specific node)
   const [activeNodeKey, setActiveNodeKey] = useState<string>('all');
 
@@ -56,34 +116,34 @@ export default function OverviewPage() {
     : NODES.filter((node) => node.key === activeNodeKey);
 
   return (
-    <div className="max-w-7xl mx-auto px-6 sm:px-8 py-10 w-full space-y-8">
+    <div className="max-w-7xl mx-auto px-6 sm:px-8 py-10 w-full space-y-8 bg-base-100 text-base-content min-h-screen">
       {/* Header Toolbar with Back to Admin Button */}
-      <div className="border-b border-base-200 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="border-b border-base-300 pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center space-x-3">
-            <Link href="/admin" className="btn btn-outline btn-sm gap-2 font-bold">
+            <Link href="/admin" className="btn btn-outline btn-sm gap-2 font-bold text-base-content">
               <i className="ri-arrow-left-line text-base"></i>
-              Back to Admin Console
+              {t.backToAdmin}
             </Link>
-            <h1 className="text-2xl font-black tracking-tight flex items-center gap-2">
+            <h1 className="text-2xl font-black tracking-tight flex items-center gap-2 text-base-content">
               <i className="ri-pulse-fill text-warning"></i>
-              Proxy Latency & Diagnostic Overview
+              {t.title}
             </h1>
           </div>
           <p className="text-xs text-base-content/70 mt-1 pl-1">
-            Real-time proxy node health metrics, response latency distributions, and root-cause indicators
+            {t.subtitle}
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <span className="badge badge-warning badge-sm gap-1 font-mono font-bold">
-            <i className="ri-alert-line"></i> 1 Node Degraded
+            <i className="ri-alert-line"></i> {t.nodeDegraded}
           </span>
           <button 
-            onClick={() => alert('Diagnostic ping executed across all nodes.')}
+            onClick={() => alert(t.pingAlert)}
             className="btn btn-primary btn-sm gap-2"
           >
-            <i className="ri-radar-line"></i> Run Full Ping Diagnostic
+            <i className="ri-radar-line"></i> {t.runPing}
           </button>
         </div>
       </div>
@@ -92,10 +152,8 @@ export default function OverviewPage() {
       <div className="alert alert-warning shadow-sm border border-warning/30 text-xs">
         <i className="ri-alert-fill text-lg"></i>
         <div>
-          <span className="font-bold uppercase tracking-wider">Root-Cause Detected: </span>
-          <span className="font-medium">
-            High P99 latency spike (890ms) & 7.9% drop rate detected on target node <span className="font-mono font-bold underline">NODE-03 (OCSC Procurement)</span> around 09:00 AM.
-          </span>
+          <span className="font-bold uppercase tracking-wider">{t.rootCauseTitle}</span>
+          <span className="font-medium">{t.rootCauseMsg}</span>
         </div>
       </div>
 
@@ -111,27 +169,27 @@ export default function OverviewPage() {
                 isSelected
                   ? 'border-primary ring-2 ring-primary/20'
                   : node.status === 'Degraded'
-                  ? 'border-error/50 bg-error/5'
-                  : 'border-base-200 hover:border-primary/50'
+                  ? 'border-error/50 bg-error/10'
+                  : 'border-base-300 hover:border-primary/50'
               }`}
             >
               <div className="flex justify-between items-start">
-                <span className="text-[10px] font-mono font-bold text-base-content/50">{node.id}</span>
+                <span className="text-[10px] font-mono font-bold text-base-content/60">{node.id}</span>
                 <span className={`badge badge-xs font-bold ${node.status === 'Healthy' ? 'badge-success' : 'badge-error'}`}>
-                  {node.status}
+                  {node.status === 'Healthy' ? t.statusHealthy : t.statusDegraded}
                 </span>
               </div>
               <div className="mt-2">
-                <h4 className="font-bold text-sm truncate">{node.name}</h4>
+                <h4 className="font-bold text-sm truncate text-base-content">{node.name}</h4>
                 <div className="flex justify-between items-baseline mt-2">
                   <div>
-                    <div className="text-[10px] text-base-content/60 uppercase">Avg Latency</div>
+                    <div className="text-[10px] text-base-content/60 uppercase">{t.avgLatency}</div>
                     <div className={`text-lg font-mono font-black ${node.status === 'Degraded' ? 'text-error' : 'text-base-content'}`}>
                       {node.avgLatency}
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[10px] text-base-content/60 uppercase">Error Rate</div>
+                    <div className="text-[10px] text-base-content/60 uppercase">{t.errorRate}</div>
                     <div className={`text-xs font-mono font-bold ${parseFloat(node.errorRate) > 2 ? 'text-error' : 'text-success'}`}>
                       {node.errorRate}
                     </div>
@@ -146,30 +204,30 @@ export default function OverviewPage() {
       {/* Latency Charts Section with Node Isolation Filter Bar */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Historical Latency Chart */}
-        <div className="lg:col-span-2 card bg-base-100 border border-base-200 shadow-sm p-5 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-base-200 pb-3">
+        <div className="lg:col-span-2 card bg-base-100 border border-base-300 shadow-sm p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-base-300 pb-3">
             <div>
-              <h3 className="font-bold text-sm flex items-center gap-2">
+              <h3 className="font-bold text-sm flex items-center gap-2 text-base-content">
                 <i className="ri-line-chart-line text-primary"></i>
-                Proxy Network Latency Trend (24h)
+                {t.latencyTrendTitle}
               </h3>
-              <p className="text-xs text-base-content/60">Response latency (ms) over time</p>
+              <p className="text-xs text-base-content/70">{t.latencyTrendSub}</p>
             </div>
 
             {/* Interactive Node Filter Pills */}
             <div className="flex flex-wrap items-center gap-1.5">
               <button
                 onClick={() => setActiveNodeKey('all')}
-                className={`btn btn-xs ${activeNodeKey === 'all' ? 'btn-neutral' : 'btn-ghost'}`}
+                className={`btn btn-xs ${activeNodeKey === 'all' ? 'btn-neutral' : 'btn-ghost text-base-content'}`}
               >
-                All Nodes
+                {t.allNodes}
               </button>
               {NODES.map((node) => (
                 <button
                   key={node.key}
                   onClick={() => setActiveNodeKey(node.key)}
                   className={`btn btn-xs gap-1 ${
-                    activeNodeKey === node.key ? 'btn-primary' : 'btn-outline'
+                    activeNodeKey === node.key ? 'btn-primary' : 'btn-outline text-base-content'
                   }`}
                 >
                   <span
@@ -194,15 +252,15 @@ export default function OverviewPage() {
                   ))}
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
-                <XAxis dataKey="time" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} />
+                <XAxis dataKey="time" tick={{ fontSize: 11, fill: 'currentColor' }} />
+                <YAxis tick={{ fontSize: 11, fill: 'currentColor' }} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#0f172a',
-                    borderColor: '#334155',
+                    backgroundColor: 'var(--bg-base-200, #1e293b)',
+                    borderColor: 'var(--tormax-border-dark, #334155)',
                     borderRadius: '0.5rem',
                     fontSize: '11px',
-                    color: '#fff',
+                    color: 'var(--foreground, #f8fafc)',
                   }}
                 />
                 <ReferenceLine
@@ -229,13 +287,13 @@ export default function OverviewPage() {
         </div>
 
         {/* Latency Percentile Distribution */}
-        <div className="card bg-base-100 border border-base-200 shadow-sm p-5 space-y-4">
-          <div className="border-b border-base-200 pb-3">
-            <h3 className="font-bold text-sm flex items-center gap-2">
+        <div className="card bg-base-100 border border-base-300 shadow-sm p-5 space-y-4">
+          <div className="border-b border-base-300 pb-3">
+            <h3 className="font-bold text-sm flex items-center gap-2 text-base-content">
               <i className="ri-bar-chart-2-line text-secondary"></i>
-              Latency Distribution (P50 vs P99)
+              {t.distributionTitle}
             </h3>
-            <p className="text-xs text-base-content/60">Filtered P50 vs P99 comparison</p>
+            <p className="text-xs text-base-content/70">{t.distributionSub}</p>
           </div>
 
           <div className="h-64 w-full pt-2">
@@ -249,15 +307,15 @@ export default function OverviewPage() {
                 margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
               >
                 <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
-                <XAxis dataKey="name" tick={{ fontSize: 10 }} />
-                <YAxis tick={{ fontSize: 10 }} />
+                <XAxis dataKey="name" tick={{ fontSize: 10, fill: 'currentColor' }} />
+                <YAxis tick={{ fontSize: 10, fill: 'currentColor' }} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#0f172a',
-                    borderColor: '#334155',
+                    backgroundColor: 'var(--bg-base-200, #1e293b)',
+                    borderColor: 'var(--tormax-border-dark, #334155)',
                     borderRadius: '0.5rem',
                     fontSize: '11px',
-                    color: '#fff',
+                    color: 'var(--foreground, #f8fafc)',
                   }}
                 />
                 <Bar dataKey="p50" fill="#6366f1" name="P50 Median (ms)" radius={[4, 4, 0, 0]} />
@@ -269,29 +327,30 @@ export default function OverviewPage() {
       </div>
 
       {/* Incident Log Timeline */}
-      <div className="card bg-base-100 border border-base-200 shadow-sm p-5 space-y-3">
-        <h3 className="font-bold text-sm flex items-center gap-2">
+      <div className="card bg-base-100 border border-base-300 shadow-sm p-5 space-y-3">
+        <h3 className="font-bold text-sm flex items-center gap-2 text-base-content">
           <i className="ri-history-line text-info"></i>
-          Incident Diagnostic & Auto-Healing Activity Log
+          {t.incidentTitle}
         </h3>
 
         <div className="space-y-3 text-xs pt-2">
           <div className="flex gap-4 items-start border-l-2 border-error pl-4 py-1">
-            <span className="font-mono text-base-content/50 whitespace-nowrap">09:12:44 AM</span>
-            <div>
-              <span className="font-bold text-error uppercase">[ALERT TRIGGERED]</span> High tail latency on NODE-03. P99 reached 1,420ms (Threshold: 600ms).
+            <span className="font-mono text-base-content/60 whitespace-nowrap">09:12:44 AM</span>
+            <div className="text-base-content">
+              <span className="font-bold text-error uppercase">{t.alertTriggered}</span> {t.alertMsg}
             </div>
           </div>
           <div className="flex gap-4 items-start border-l-2 border-warning pl-4 py-1">
-            <span className="font-mono text-base-content/50 whitespace-nowrap">09:14:02 AM</span>
-            <div>
-              <span className="font-bold text-warning uppercase">[AUTO-HEAL]</span> ScraperAPI dynamic IP rotation engaged for host <code className="font-mono bg-base-200 px-1 py-0.5 rounded">egp.ocsc.go.th</code>.
+            <span className="font-mono text-base-content/60 whitespace-nowrap">09:14:02 AM</span>
+            <div className="text-base-content">
+              <span className="font-bold text-warning uppercase">{t.autoHeal}</span> {t.autoHealMsg}{' '}
+              <code className="font-mono bg-base-200 px-1 py-0.5 rounded border border-base-300">egp.ocsc.go.th</code>.
             </div>
           </div>
           <div className="flex gap-4 items-start border-l-2 border-success pl-4 py-1">
-            <span className="font-mono text-base-content/50 whitespace-nowrap">09:15:30 AM</span>
-            <div>
-              <span className="font-bold text-success uppercase">[DIAGNOSTIC]</span> Direct ping probe to rest of nodes (NODE-01, NODE-02, NODE-04) returned normal latency under 400ms.
+            <span className="font-mono text-base-content/60 whitespace-nowrap">09:15:30 AM</span>
+            <div className="text-base-content">
+              <span className="font-bold text-success uppercase">{t.diagnostic}</span> {t.diagnosticMsg}
             </div>
           </div>
         </div>

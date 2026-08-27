@@ -180,16 +180,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Sync class on root document element whenever isDark changes
   useEffect(() => {
-    if (!mounted) return;
+  if (!mounted) return;
 
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  }, [isDark, mounted]);
+  if (isDark) {
+    document.documentElement.classList.add('dark');
+    document.documentElement.setAttribute('data-theme', 'dark'); // Add this line
+    localStorage.setItem('theme', 'dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+    document.documentElement.setAttribute('data-theme', 'light'); // Add this line
+    localStorage.setItem('theme', 'light');
+  }
+}, [isDark, mounted]);
 
   const toggleTheme = () => {
     setIsDark((prev) => !prev);
