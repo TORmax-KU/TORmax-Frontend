@@ -3,7 +3,7 @@
 import React from 'react';
 import { useApp } from '@/context/AppContext'; // Adjust path if necessary
 
-export interface FilterState {
+interface FilterState {
   query: string;
   method: string;
   agency: string;

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { initialTORs, Language } from '@/utils/mockData';
 import { FilterState, TORItem } from '@/types';
-import { FilterModal } from '@/component/FilterModal';
+import { FilterModal } from '@/component/Searchbar/FilterModal';
 import { useApp } from '@/context/AppContext';
 
 const INITIAL_FILTERS: FilterState = {

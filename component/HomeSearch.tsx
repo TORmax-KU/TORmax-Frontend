@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import MediaBlock from "./MediaBlock";
-import FilterModal from './Searchbar/FilterModal';
 import SearchInput from './Searchbar/SearchInput';
 import { useApp } from '@/context/AppContext'; // Adjust path if necessary
 

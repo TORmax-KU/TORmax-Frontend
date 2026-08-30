@@ -1,6 +1,5 @@
 
 import Footer from '@/component/Footer';
-import Header from '@/component/Header';
 import { Navbar } from '@/component/Navbar';
 import Script from 'next/script'
 
