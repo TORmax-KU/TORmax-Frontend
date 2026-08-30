@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import {
   AreaChart,
@@ -14,105 +14,22 @@ import {
   ResponsiveContainer,
   ReferenceLine,
 } from 'recharts';
-import { useApp } from '@/context/AppContext'; // Adjust path if necessary
-
-// 24-hour Latency Telemetry Data
-const LATENCY_HISTORICAL_DATA = [
-  { time: '00:00', egp2: 240, cgd: 380, ocsc: 520, fda: 310 },
-  { time: '03:00', egp2: 230, cgd: 395, ocsc: 540, fda: 295 },
-  { time: '06:00', egp2: 250, cgd: 410, ocsc: 610, fda: 320 },
-  { time: '09:00', egp2: 280, cgd: 450, ocsc: 890, fda: 340 }, // Spike on OCSC
-  { time: '12:00', egp2: 245, cgd: 420, ocsc: 940, fda: 310 },
-  { time: '15:00', egp2: 235, cgd: 405, ocsc: 780, fda: 305 },
-  { time: '18:00', egp2: 240, cgd: 390, ocsc: 590, fda: 300 },
-  { time: '21:00', egp2: 238, cgd: 385, ocsc: 530, fda: 298 },
-];
-
-interface NodeConfig {
-  key: string;
-  id: string;
-  name: string;
-  color: string;
-  gradientId: string;
-  avgLatency: string;
-  p99: string;
-  errorRate: string;
-  status: 'Healthy' | 'Degraded';
-}
-
-const NODES: NodeConfig[] = [
-  { key: 'egp2', id: 'NODE-01', name: 'BMA eGP2 Proxy', color: '#6366f1', gradientId: 'gradEgp2', avgLatency: '240ms', p99: '310ms', errorRate: '0.1%', status: 'Healthy' },
-  { key: 'cgd', id: 'NODE-02', name: 'CGD Main Portal', color: '#10b981', gradientId: 'gradCgd', avgLatency: '410ms', p99: '580ms', errorRate: '0.4%', status: 'Healthy' },
-  { key: 'ocsc', id: 'NODE-03', name: 'OCSC Procurement', color: '#ef4444', gradientId: 'gradOcsc', avgLatency: '890ms', p99: '1420ms', errorRate: '7.9%', status: 'Degraded' },
-  { key: 'fda', id: 'NODE-04', name: 'FDA MOPH Node', color: '#f59e0b', gradientId: 'gradFda', avgLatency: '310ms', p99: '420ms', errorRate: '0.2%', status: 'Healthy' },
-];
-
-const i18n = {
-  en: {
-    backToAdmin: 'Back to Admin Console',
-    title: 'Proxy Latency & Diagnostic Overview',
-    subtitle: 'Real-time proxy node health metrics, response latency distributions, and root-cause indicators',
-    nodeDegraded: '1 Node Degraded',
-    runPing: 'Run Full Ping Diagnostic',
-    rootCauseTitle: 'Root-Cause Detected: ',
-    rootCauseMsg: 'High P99 latency spike (890ms) & 7.9% drop rate detected on target node NODE-03 (OCSC Procurement) around 09:00 AM.',
-    avgLatency: 'Avg Latency',
-    errorRate: 'Error Rate',
-    latencyTrendTitle: 'Proxy Network Latency Trend (24h)',
-    latencyTrendSub: 'Response latency (ms) over time',
-    allNodes: 'All Nodes',
-    distributionTitle: 'Latency Distribution (P50 vs P99)',
-    distributionSub: 'Filtered P50 vs P99 comparison',
-    incidentTitle: 'Incident Diagnostic & Auto-Healing Activity Log',
-    alertTriggered: '[ALERT TRIGGERED]',
-    alertMsg: 'High tail latency on NODE-03. P99 reached 1,420ms (Threshold: 600ms).',
-    autoHeal: '[AUTO-HEAL]',
-    autoHealMsg: 'ScraperAPI dynamic IP rotation engaged for host',
-    diagnostic: '[DIAGNOSTIC]',
-    diagnosticMsg: 'Direct ping probe to rest of nodes (NODE-01, NODE-02, NODE-04) returned normal latency under 400ms.',
-    pingAlert: 'Diagnostic ping executed across all nodes.',
-    statusHealthy: 'Healthy',
-    statusDegraded: 'Degraded',
-  },
-  th: {
-    backToAdmin: 'กลับสู่ระบบจัดการ',
-    title: 'ภาพรวมการตรวจสอบและเวลาตอบสนองของพร็อกซี',
-    subtitle: 'ตัวชี้วัดความสมบูรณ์ของโหนดพร็อกซีแบบเรียลไทม์ การกระจายความล่าช้า และตัวบ่งชี้สาเหตุหลัก',
-    nodeDegraded: '1 โหนดทำงานผิดปกติ',
-    runPing: 'ทดสอบการเชื่อมต่อทุกโหนด',
-    rootCauseTitle: 'ตรวจพบสาเหตุหลัก: ',
-    rootCauseMsg: 'พบความล่าช้า P99 สูงผิดปกติ (890ms) และอัตราข้อมูลสูญหาย 7.9% ที่โหนด NODE-03 (OCSC Procurement) เวลาประมาณ 09:00 น.',
-    avgLatency: 'ความล่าช้าเฉลี่ย',
-    errorRate: 'อัตราข้อผิดพลาด',
-    latencyTrendTitle: 'แนวโน้มความล่าช้าของเครือข่ายพร็อกซี (24 ชม.)',
-    latencyTrendSub: 'ระยะเวลาตอบสนอง (มิลลิวินาที) ตามช่วงเวลา',
-    allNodes: 'ทุกโหนด',
-    distributionTitle: 'การกระจายความล่าช้า (P50 เปรียบเทียบ P99)',
-    distributionSub: 'การเปรียบเทียบค่า P50 และ P99 ของโหนดที่เลือก',
-    incidentTitle: 'บันทึกการวินิจฉัยอุบัติการณ์และการแก้ไขอัตโนมัติ',
-    alertTriggered: '[แจ้งเตือน]',
-    alertMsg: 'พบความล่าช้าสูงที่ปลายทางโหนด NODE-03 ค่า P99 สูงถึง 1,420ms (เกณฑ์มาตรฐาน: 600ms)',
-    autoHeal: '[แก้ไขอัตโนมัติ]',
-    autoHealMsg: 'ระบบหมุนเวียน IP อัตโนมัติของ ScraperAPI เริ่มทำงานสำหรับโฮสต์',
-    diagnostic: '[การวินิจฉัย]',
-    diagnosticMsg: 'การทดสอบปิงไปยังโหนดที่เหลือ (NODE-01, NODE-02, NODE-04) ได้รับค่าความล่าช้าปกติไม่เกิน 400ms',
-    pingAlert: 'ดำเนินการทดสอบปิงทุกโหนดเรียบร้อยแล้ว',
-    statusHealthy: 'ปกติ',
-    statusDegraded: 'เฝ้าระวัง',
-  },
-};
+import { useApp } from '@/context/AppContext';
+import { LATENCY_HISTORICAL_DATA } from '@/public/mockData/LatencyHistoricalData';
+import { overviewi18n } from '@/public/mockData/i18n/overview';
+import { NODES } from '@/public/mockData/Nodes';
 
 export default function OverviewPage() {
   const { lang: contextLang } = useApp();
   const lang = (contextLang?.toLowerCase() as 'en' | 'th') || 'en';
-  const t = i18n[lang];
+  const t = overviewi18n[lang];
 
   // State for active node isolation filter ("all" or key of specific node)
   const [activeNodeKey, setActiveNodeKey] = useState<string>('all');
 
   // Filter nodes according to selected filter state
-  const visibleNodes = activeNodeKey === 'all' 
-    ? NODES 
+  const visibleNodes = activeNodeKey === 'all'
+    ? NODES
     : NODES.filter((node) => node.key === activeNodeKey);
 
   return (
@@ -139,7 +56,7 @@ export default function OverviewPage() {
           <span className="badge badge-warning badge-sm gap-1 font-mono font-bold">
             <i className="ri-alert-line"></i> {t.nodeDegraded}
           </span>
-          <button 
+          <button
             onClick={() => alert(t.pingAlert)}
             className="btn btn-primary btn-sm gap-2"
           >
@@ -165,13 +82,12 @@ export default function OverviewPage() {
             <div
               key={node.id}
               onClick={() => setActiveNodeKey(isSelected ? 'all' : node.key)}
-              className={`card bg-base-100 border p-4 shadow-sm cursor-pointer transition-all ${
-                isSelected
-                  ? 'border-primary ring-2 ring-primary/20'
-                  : node.status === 'Degraded'
+              className={`card bg-base-100 border p-4 shadow-sm cursor-pointer transition-all ${isSelected
+                ? 'border-primary ring-2 ring-primary/20'
+                : node.status === 'Degraded'
                   ? 'border-error/50 bg-error/10'
                   : 'border-base-300 hover:border-primary/50'
-              }`}
+                }`}
             >
               <div className="flex justify-between items-start">
                 <span className="text-[10px] font-mono font-bold text-base-content/60">{node.id}</span>
@@ -226,9 +142,8 @@ export default function OverviewPage() {
                 <button
                   key={node.key}
                   onClick={() => setActiveNodeKey(node.key)}
-                  className={`btn btn-xs gap-1 ${
-                    activeNodeKey === node.key ? 'btn-primary' : 'btn-outline text-base-content'
-                  }`}
+                  className={`btn btn-xs gap-1 ${activeNodeKey === node.key ? 'btn-primary' : 'btn-outline text-base-content'
+                    }`}
                 >
                   <span
                     className="w-2 h-2 rounded-full inline-block"

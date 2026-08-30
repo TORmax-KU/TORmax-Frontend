@@ -11,184 +11,21 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { initialTORs, Language } from '@/utils/mockData';
+import { initialTORs } from '@/utils/mockData';
 import { TORItem } from '@/types';
 import { useApp } from '@/context/AppContext';
-
-interface LogEntry {
-  id: string;
-  time: string;
-  type: 'SYNC' | 'CREATE' | 'ALERT' | 'SCRAPE' | 'DIAGNOSTIC';
-  msg: string;
-}
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: 'Superadmin' | 'Analyst' | 'Vendor';
-  status: 'Active' | 'Suspended';
-  company: string;
-}
-
-const INITIAL_USERS: User[] = [
-  { id: 'USR-001', name: 'Somchai Prasert', email: 'somchai@techcorp.co.th', role: 'Superadmin', status: 'Active', company: 'TechCorp Thailand' },
-  { id: 'USR-002', name: 'Kanya Wong', email: 'kanya@cybersec.co.th', role: 'Analyst', status: 'Active', company: 'CyberSec Systems' },
-  { id: 'USR-003', name: 'Anan Srisai', email: 'anan@telecom.co.th', role: 'Vendor', status: 'Active', company: 'National Telecom Partner' },
-  { id: 'USR-004', name: 'Nipon Boon', email: 'nipon@infra.co.th', role: 'Vendor', status: 'Suspended', company: 'InfraCloud Solutions' },
-];
-
-const SCRAPING_TARGETS = [
-  { id: 'NODE-01', name: 'BMA Procurement eGP2', domain: 'egp2.bangkok.go.th', url: 'https://egp2.bangkok.go.th/project-search?&budgetYear=2569', frequency: '15m', latency: '240ms', status: 'Healthy', successRate: '99.4%' },
-  { id: 'NODE-02', name: 'CGD Main Announcement Portal', domain: 'process5.gprocurement.go.th', url: 'https://process5.gprocurement.go.th/egp-agpc01-web/announcement?keywordSearch=', frequency: '10m', latency: '410ms', status: 'Healthy', successRate: '98.8%' },
-  { id: 'NODE-03', name: 'Department of Science Service RSS', domain: 'dss.go.th', url: 'https://www.dss.go.th/procurement/rss-cgd', frequency: '30m', latency: '120ms', status: 'Healthy', successRate: '100%' },
-  { id: 'NODE-04', name: 'OCSC eGP Procurement', domain: 'egp.ocsc.go.th', url: 'https://egp.ocsc.go.th/procurement/all', frequency: '1h', latency: '580ms', status: 'Degraded', successRate: '92.1%' },
-  { id: 'NODE-05', name: 'FDA MOPH Procurement Search', domain: 'gprocurement.fda.moph.go.th', url: 'https://gprocurement.fda.moph.go.th/procurement_search', frequency: '30m', latency: '310ms', status: 'Healthy', successRate: '97.5%' },
-  { id: 'NODE-06', name: 'Phuket PAO Procurement', domain: 'egp.ppao.go.th', url: 'https://egp.ppao.go.th/', frequency: '2h', latency: '190ms', status: 'Healthy', successRate: '99.1%' },
-];
-
-const TELEMETRY_HISTORY_DATA = [
-  { time: '08:00', docsIngested: 120, healthRate: 97.2, avgLatency: 280, activeUsers: 14 },
-  { time: '10:00', docsIngested: 145, healthRate: 98.1, avgLatency: 265, activeUsers: 19 },
-  { time: '12:00', docsIngested: 180, healthRate: 99.0, avgLatency: 240, activeUsers: 24 },
-  { time: '14:00', docsIngested: 210, healthRate: 98.5, avgLatency: 255, activeUsers: 22 },
-  { time: '16:00', docsIngested: 235, healthRate: 98.2, avgLatency: 243, activeUsers: 18 },
-  { time: '18:00', docsIngested: 250, healthRate: 98.8, avgLatency: 230, activeUsers: 15 },
-];
-
-// Localization Dictionary
-const i18n = {
-  en: {
-    title: 'TORmax Executive Console',
-    subtitle: 'Ingestion telemetry, proxy orchestration, access governance, and infrastructure diagnostics',
-    liveCluster: 'Live Cluster',
-    telemetryMetrics: 'Telemetry Metrics',
-    executeSync: 'Execute ScraperAPI Sync',
-    targets: 'Targets',
-    telemetryTitle: 'System Telemetry & Historical Trends',
-    telemetrySubtitle: 'Real-time throughput and health telemetry across recent polling windows',
-    ingestedDocs: '● Ingested Docs',
-    scraperHealth: '● Scraper Health (%)',
-    tabOps: 'TOR Repository & Ops',
-    tabUsers: 'User Governance',
-    tabScraping: 'Web Scraping & Proxies',
-    tabDiagnostics: 'Network Diagnostics',
-    tabLogs: 'Diagnostic Log Console',
-    repoTitle: 'Ingested Document Repository',
-    repoSubtitle: 'Extracted procurement specs ready for vector querying',
-    colTorId: 'TOR ID',
-    colSource: 'Source Portal',
-    colTitle: 'Project Title',
-    colAgency: 'Procuring Agency',
-    colBudget: 'Budget Price',
-    colActions: 'Actions',
-    btnModify: 'Modify',
-    btnPurge: 'Purge',
-    userTitle: 'Platform Access Control & User Governance',
-    userSubtitle: 'Manage user authorization, permissions, and roles',
-    searchUserPlaceholder: 'Filter user, email, or company...',
-    colUserId: 'User ID',
-    colUserDetails: 'User Details',
-    colOrg: 'Organization',
-    colRole: 'Role',
-    colStatus: 'Status',
-    colAccessAction: 'Access Action',
-    btnSuspend: 'Suspend Access',
-    btnAuthorize: 'Authorize Access',
-    scraperTitle: 'ScraperAPI Proxy Cluster Settings',
-    scraperSubtitle: 'Configure request headers and IP rotation rules',
-    poolActive: 'Pool Active',
-    apiKeyLabel: 'ScraperAPI Token',
-    jsRendering: 'Headless JS Rendering',
-    residentialProxies: 'Thai Residential Proxies',
-    targetsTitle: 'Target Thai Procurement Portals',
-    interval: 'Interval',
-    btnScrape: 'Scrape',
-    diagTitle: 'ScraperAPI Proxy & Target Health Matrix',
-    diagSubtitle: 'Real-time latency and SSL handshake validation across targets',
-    colTargetNode: 'Target Node',
-    colDomainHost: 'Domain Host',
-    colLatency: 'Latency',
-    colSuccessRate: 'Success Rate',
-    colHealth: 'Node Health',
-    btnPing: 'Ping',
-    logTitle: 'System Operations & Diagnostic Log Console',
-    logSubtitle: 'Persistent operational event stream and diagnostic logs',
-    btnClear: 'Clear Terminal',
-    noLogs: 'No log items recorded. Console is idle.',
-    editTitle: 'Modify Procurement Record',
-    btnCancel: 'Cancel',
-    btnSave: 'Save Specification',
-  },
-  th: {
-    title: 'แผงควบคุมผู้บริหาร TORmax',
-    subtitle: 'การตรวจวัดการนำเข้าข้อมูล การจัดการพร็อกซี การกำกับดูแลสิทธิ์ และการวินิจฉัยโครงสร้างพื้นฐาน',
-    liveCluster: 'คลัสเตอร์เปิดทำงาน',
-    telemetryMetrics: 'เมตริกการวัดระยะไกล',
-    executeSync: 'ซิงค์ ScraperAPI',
-    targets: 'เป้าหมาย',
-    telemetryTitle: 'การวัดระยะไกลของระบบและแนวโน้มประวัติ',
-    telemetrySubtitle: 'ปริมาณข้อมูลที่ผ่านและการวัดความสมบูรณ์แบบเรียลไทม์',
-    ingestedDocs: '● เอกสารที่นำเข้า',
-    scraperHealth: '● ประสิทธิภาพการดึงข้อมูล (%)',
-    tabOps: 'คลัง TOR & การดำเนินงาน',
-    tabUsers: 'การกำกับดูแลผู้ใช้',
-    tabScraping: 'การดึงข้อมูลเว็บ & พร็อกซี',
-    tabDiagnostics: 'การวินิจฉัยเครือข่าย',
-    tabLogs: 'คอนโซลบันทึกการวินิจฉัย',
-    repoTitle: 'คลังจัดเก็บเอกสารที่นำเข้า',
-    repoSubtitle: 'ข้อกำหนดการจัดซื้อจัดจ้างที่สกัดแล้วพร้อมสำหรับการค้นหาแบบเวกเตอร์',
-    colTorId: 'รหัส TOR',
-    colSource: 'พอร์ตัลต้นทาง',
-    colTitle: 'ชื่อโครงการ',
-    colAgency: 'หน่วยงานที่จัดซื้อ',
-    colBudget: 'งบประมาณ',
-    colActions: 'การจัดการ',
-    btnModify: 'แก้ไข',
-    btnPurge: 'ลบข้อมูล',
-    userTitle: 'การควบคุมการเข้าถึงแพลตฟอร์มและการกำกับดูแลผู้ใช้',
-    userSubtitle: 'จัดการการอนุญาต สิทธิ์ และบทบาทของผู้ใช้งาน',
-    searchUserPlaceholder: 'ค้นหาผู้ใช้, อีเมล หรือบริษัท...',
-    colUserId: 'รหัสผู้ใช้',
-    colUserDetails: 'รายละเอียดผู้ใช้',
-    colOrg: 'องค์กร',
-    colRole: 'บทบาท',
-    colStatus: 'สถานะ',
-    colAccessAction: 'การจัดการสิทธิ์',
-    btnSuspend: 'ระงับการใช้งาน',
-    btnAuthorize: 'อนุมัติการใช้งาน',
-    scraperTitle: 'การตั้งค่ากลุ่มพร็อกซี ScraperAPI',
-    scraperSubtitle: 'กำหนดค่าส่วนหัวคำขอและกฎการหมุนเวียน IP',
-    poolActive: 'กลุ่มทำงานปกติ',
-    apiKeyLabel: 'โทเค็น ScraperAPI',
-    jsRendering: 'การแสดงผล JS แบบ Headless',
-    residentialProxies: 'พร็อกซีที่พักอาศัยในไทย',
-    targetsTitle: 'พอร์ตัลการจัดซื้อจัดจ้างเป้าหมายในไทย',
-    interval: 'ความถี่',
-    btnScrape: 'ดึงข้อมูล',
-    diagTitle: 'เมทริกซ์ความสมบูรณ์ของพร็อกซีและเป้าหมาย',
-    diagSubtitle: 'การตรวจสอบความล่าช้าและการตรวจสอบ SSL แบบเรียลไทม์',
-    colTargetNode: 'โหนดเป้าหมาย',
-    colDomainHost: 'โดเมนโฮสต์',
-    colLatency: 'ความล่าช้า',
-    colSuccessRate: 'อัตราความสำเร็จ',
-    colHealth: 'สถานะโหนด',
-    btnPing: 'ทดสอบการเชื่อมต่อ',
-    logTitle: 'คอนโซลบันทึกการดำเนินงานและวินิจฉัยระบบ',
-    logSubtitle: 'สตรีมเหตุการณ์การดำเนินงานและบันทึกการวินิจฉัยอย่างต่อเนื่อง',
-    btnClear: 'ล้างคอนโซล',
-    noLogs: 'ไม่มีรายการบันทึก คอนโซลว่างเปล่า',
-    editTitle: 'แก้ไขข้อมูลการจัดซื้อจัดจ้าง',
-    btnCancel: 'ยกเลิก',
-    btnSave: 'บันทึกข้อกำหนด',
-  },
-};
+import { Language } from '@/public/mockData/Language';
+import { LogEntry } from '@/interface/LogEntry';
+import { admini18n } from '@/public/mockData/i18n/admin';
+import { INITIAL_USERS } from '@/public/mockData/InitialUsers';
+import { SCRAPING_TARGETS } from '@/public/mockData/scrapingTargets';
+import { TELEMETRY_HISTORY_DATA } from '@/public/mockData/TelemetryHistoryData';
 
 export default function AdminPage() {
   // Consume language state from App Context
   const { lang: contextLang } = useApp();
   const activeLang: Language = (contextLang?.toLowerCase() as Language) === 'th' ? 'th' : 'en';
-  const t = i18n[activeLang];
+  const t = admini18n[activeLang];
 
   const [activeTab, setActiveTab] = useState<'ops' | 'users' | 'scraping' | 'diagnostics' | 'logs'>('ops');
   
