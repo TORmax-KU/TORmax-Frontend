@@ -1,159 +1,121 @@
-import Image from "next/image";
+'use client';
 
-export default function TORPage() {
+import React from 'react';
+import { useApp } from '@/context/AppContext';
+import { torpagei18n } from '@/public/mockData/i18n/torpage';
+import { Language } from '@/public/mockData/Language';
+import { DeliverablesList } from '@/component/tordetail/DeliverablesList';
+import { EmployerContact } from '@/component/tordetail/EmployerContact';
+import { FeasibilityMatrix } from '@/component/tordetail/FeasibilityMatrix';
+import { MultiPortalBanner } from '@/component/tordetail/MultiPortalBanner';
+import { ProjectSummary } from '@/component/tordetail/ProjectSummary';
+import { QualificationChecklist } from '@/component/tordetail/QualificationChecklist';
+import { SkillsTags } from '@/component/tordetail/SkillsTags';
+import { SubmissionCard } from '@/component/tordetail/SubmissionCard';
+import { TORHeader } from '@/component/tordetail/TORHeader';
+import { TORNotFound } from '@/component/tordetail/TORNotFound';
+import { useTORDetail } from '@/component/tordetail/useTORDetail';
+import { SubmissionModal } from '@/component/tordetail/SubmissionModal';
+
+export default function TORDetailPage() {
+  const { lang: contextLang } = useApp();
+  const activeLang: Language = (contextLang?.toLowerCase() as Language) === 'th' ? 'th' : 'en';
+  const t = torpagei18n[activeLang];
+
+  const {
+    tor,
+    userProfile,
+    passCount,
+    totalReqs,
+    passPct,
+    projectDeliverables,
+    tags,
+    showSubmitModal,
+    setShowSubmitModal,
+  } = useTORDetail(activeLang);
+
+  if (!tor) {
+    return <TORNotFound notFound={t.notFound} backToDirectory={t.backToDirectory} />;
+  }
+
   return (
-    <div style={{
-      display: 'flex',
-      gap: 30,
-      padding: 80,
-      paddingTop: 150
-    }}>
-      <aside className="w-[35%] shrink-0">
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body space-y-3">
-            <h2 className="card-title text-lg">Resources</h2>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans pb-16">
+      <TORHeader
+        id={tor.id}
+        sourcePortal={tor.sourcePortal}
+        price={tor.price}
+        name={tor.name}
+        employer={tor.employer}
+        backToDirectory={t.backToDirectory}
+      />
 
-            <a href="#" className="link link-primary">
-              For more information
-            </a>
+      <main className="max-w-5xl mx-auto px-6 sm:px-8 py-10 w-full grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column: Details & Checklist */}
+        <div className="lg:col-span-2 space-y-8">
+          <MultiPortalBanner
+            sourcePortal={tor.sourcePortal}
+            multiPortalNote={t.multiPortalNote}
+            synchronizedFrom={t.synchronizedFrom}
+            submissionPortal={t.submissionPortal}
+            onSubmissionClick={() => setShowSubmitModal(true)}
+          />
 
-            <a href="#" className="btn btn-sm btn-outline btn-primary w-full">
-              <svg xmlns="[W3](http://www.w3.org/2000/svg)" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                Download TOR (PDF)
-              </svg>
-            </a>
+          <ProjectSummary
+            desc={tor.desc}
+            method={tor.method}
+            deadline={tor.deadline}
+            t={t}
+          />
 
-            <a href="#" className="link link-primary">
-              Existing website
-            </a>
+          <DeliverablesList
+            deliverables={projectDeliverables}
+            t={t}
+          />
 
-            <div className="divider my-1"></div>
-
-            <h3 className="font-semibold text-sm">Contacts</h3>
-            <ul className="text-sm space-y-1">
-              <li>📧 tor@example.org</li>
-              <li>📞 +66 000 000 000</li>
-              <li>🌐 www.example.org</li>
-            </ul>
-          </div>
+          <QualificationChecklist
+            requirements={tor.requirements || []}
+            companyName={userProfile.companyName}
+            passCount={passCount}
+            totalReqs={totalReqs}
+            passPct={passPct}
+            t={t}
+          />
         </div>
-      </aside >
 
-      <div>
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body">
-            <div className="badge badge-primary badge-outline mb-2">Reference: TOR-2026-001</div>
-            <h1 className="card-title text-3xl">Terms of Reference</h1>
-            <p className="text-base-content/70">
-              Digital Skills Training for Rural Youth — 12-month implementation
-            </p>
+        {/* Right Sidebar */}
+        <div className="space-y-6">
+          <SubmissionCard
+            sourcePortal={tor.sourcePortal}
+            t={t}
+            onSubmitClick={() => setShowSubmitModal(true)}
+          />
 
-            {/* Project Info */}
-            <section className="mt-4">
-              <h2 className="text-xl font-bold mb-3">Project Information</h2>
-              <div className="overflow-x-auto">
-                <table className="table table-zebra">
-                  <tbody>
-                    <tr><td className="font-semibold w-1/3">Project Title</td><td>Digital Skills Training for Rural Youth</td></tr>
-                    <tr><td className="font-semibold">Location</td><td>Northern Region, Thailand</td></tr>
-                    <tr><td className="font-semibold">Duration</td><td>12 months</td></tr>
-                    <tr><td className="font-semibold">Budget Range</td><td>USD 120,000 – 150,000</td></tr>
-                    <tr><td className="font-semibold">Expected Start</td><td>October 2026</td></tr>
-                    <tr><td className="font-semibold">Submission Deadline</td><td>15 September 2026, 17:00 ICT</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </section>
+          <FeasibilityMatrix
+            budgetFit={tor.feasibility?.budgetFit ?? 0}
+            securityFit={tor.feasibility?.securityFit ?? 0}
+            t={t}
+          />
 
-            {/* Context */}
-            <section className="mt-6">
-              <h2 className="text-xl font-bold mb-2">Context</h2>
-              <p>
-                Youth unemployment in the northern region stands at 18%, with limited
-                access to digital skills in rural areas. This project addresses the gap
-                by delivering a certified 12-week digital literacy program to 500 young
-                people, training 20 local facilitators, and establishing a sustainable
-                community training hub.
-              </p>
-            </section>
+          <EmployerContact
+            employer={tor.employer}
+            t={t}
+          />
 
-            {/* Objectives */}
-            <section className="mt-6">
-              <h2 className="text-xl font-bold mb-2">Objectives</h2>
-              <ul className="list-disc list-inside space-y-1">
-                <li>Deliver a 12-week certified digital literacy curriculum</li>
-                <li>Train 20 local facilitators to sustain delivery</li>
-                <li>Establish a permanent community training hub</li>
-              </ul>
-            </section>
-
-            {/* Scope */}
-            <section className="mt-6">
-              <h2 className="text-xl font-bold mb-2">Scope of Work</h2>
-              <ol className="list-decimal list-inside space-y-1">
-                <li>Conduct a needs assessment of the target communities</li>
-                <li>Develop localized training materials</li>
-                <li>Deliver training sessions across 10 sites</li>
-                <li>Monitor progress and produce outcome reports</li>
-              </ol>
-            </section>
-
-            {/* Deliverables */}
-            <section className="mt-6">
-              <h2 className="text-xl font-bold mb-3">Deliverables</h2>
-              <div className="overflow-x-auto">
-                <table className="table table-zebra">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Deliverable</th>
-                      <th>Due Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr><td>1</td><td>Inception report</td><td>Nov 2026</td></tr>
-                    <tr><td>2</td><td>Training materials (draft)</td><td>Dec 2026</td></tr>
-                    <tr><td>3</td><td>Training delivery completed</td><td>Jul 2027</td></tr>
-                    <tr><td>4</td><td>Final report</td><td>Sep 2027</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </section>
-
-            {/* Timeline */}
-            <section className="mt-6">
-              <h2 className="text-xl font-bold mb-3">Timeline</h2>
-              <ul className="steps steps-vertical lg:steps-horizontal">
-                <li className="step step-primary">Phase 1: Preparation</li>
-                <li className="step step-primary">Phase 2: Implementation</li>
-                <li className="step step-primary">Phase 3: Reporting</li>
-              </ul>
-            </section>
-
-            {/* Evaluation criteria */}
-            <section className="mt-6">
-              <h2 className="text-xl font-bold mb-2">Evaluation Criteria</h2>
-              <div className="flex flex-wrap gap-2">
-                <div className="badge badge-lg badge-outline">Technical approach — 50%</div>
-                <div className="badge badge-lg badge-outline">Relevant experience — 30%</div>
-                <div className="badge badge-lg badge-outline">Budget — 20%</div>
-              </div>
-            </section>
-
-            {/* Contact */}
-            <section className="mt-6">
-              <h2 className="text-xl font-bold mb-2">Contact & Further Information</h2>
-              <p>
-                For questions, contact <strong>Jane Doe</strong> at{" "}
-                <a href="mailto:tor@example.org" className="link link-primary">tor@example.org</a>{" "}
-                or +66 000 000 000. Full details are available in the{" "}
-                <a href="#" className="link link-primary">TOR PDF</a>.
-              </p>
-            </section>
-          </div>
+          <SkillsTags
+            tags={tags}
+            t={t}
+          />
         </div>
-      </div>
-    </div >
+      </main>
+
+      <SubmissionModal
+        isOpen={showSubmitModal}
+        onClose={() => setShowSubmitModal(false)}
+        sourcePortal={tor.sourcePortal}
+        id={tor.id}
+        userProfile={userProfile}
+        t={t}
+      />
+    </div>
   );
 }

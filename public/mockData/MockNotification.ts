@@ -1,0 +1,47 @@
+import { NotificationItem } from "@/interface/NotificationItem";
+
+export const MOCK_NOTIFICATIONS: NotificationItem[] = [
+    {
+        id: 'notif-001',
+        type: 'deadline',
+        title: 'Submission Deadline Approaching',
+        titleTh: 'ใกล้ถึงกำหนดวันส่งข้อเสนอโครงการ',
+        message: 'Project TOR-2026-0610 (SOC Operations Upgrade) closes in 3 days.',
+        messageTh: 'โครงการ TOR-2026-0610 (ยกระดับศูนย์เฝ้าระวัง SOC) จะปิดรับในอีก 3 วัน',
+        timestamp: '10 minutes ago',
+        read: false,
+        link: '/tracked',
+    },
+    {
+        id: 'notif-002',
+        type: 'match',
+        title: 'New High-Match TOR Posted',
+        titleTh: 'พบเอกสาร TOR ใหม่ตรงกับความสนใจของคุณ',
+        message: 'Ministry of Digital Economy published a new cloud procurement tender matching your criteria.',
+        messageTh: 'กระทรวงดิจิทัลฯ ได้ประกาศ TOR ใหม่ด้านโครงสร้างพื้นฐานคลาวด์ ซึ่งตรงกับโปรไฟล์ของคุณ',
+        timestamp: '2 hours ago',
+        read: false,
+        link: '/search-feed',
+    },
+    {
+        id: 'notif-003',
+        type: 'update',
+        title: 'Addendum Document Uploaded',
+        titleTh: 'มีการอัปเดตเอกสารเพิ่มเติม (Addendum)',
+        message: 'Clarification PDF uploaded for TOR-2026-0891.',
+        messageTh: 'มีการเพิ่มเอกสารชี้แจงเพิ่มเติมสำหรับโครงการ TOR-2026-0891',
+        timestamp: '1 day ago',
+        read: true,
+        link: '/tracked',
+    },
+    {
+        id: 'notif-004',
+        type: 'system',
+        title: 'System Maintenance Notice',
+        titleTh: 'แจ้งปิดปรับปรุงระบบชั่วคราว',
+        message: 'TORmax core servers will undergo scheduled maintenance on Sunday, 02:00 AM - 04:00 AM UTC.',
+        messageTh: 'ระบบ TORmax จะทำการปรับปรุงเซิร์ฟเวอร์ตามแผนในวันอาทิตย์ เวลา 02:00 น. - 04:00 น.',
+        timestamp: '2 days ago',
+        read: true,
+    },
+];
