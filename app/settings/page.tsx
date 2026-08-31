@@ -1,16 +1,16 @@
 'use client';
 
 import { useState } from "react";
-import AccountSettings from "@/component/Settings/AccountSettings";
-import SecuritySettings from "@/component/Settings/SecuritySettings";
-import SettingsHeader from "@/component/Settings/SettingsHeader";
-import SettingsSidebar from "@/component/Settings/SettingsSidebar";
-import NotificationSettings from "@/component/Settings/NotificationSettings";
-import PrivacySettings from "@/component/Settings/PrivacySettings";
-import AppearanceSettings from "@/component/Settings/AppearanceSettings";
 
 import { defaultSettings, UserSettings } from "@/interface/settings";
 import { useApp } from "@/context/AppContext";
+import AccountSettings from "@/component/settings/AccountSettings";
+import AppearanceSettings from "@/component/settings/AppearanceSettings";
+import NotificationSettings from "@/component/settings/NotificationSettings";
+import PrivacySettings from "@/component/settings/PrivacySettings";
+import SecuritySettings from "@/component/settings/SecuritySettings";
+import SettingsHeader from "@/component/settings/SettingsHeader";
+import SettingsSidebar from "@/component/settings/SettingsSidebar";
 
 type SectionKey = 'account' | 'security' | 'notifications' | 'privacy' | 'appearance';
 
