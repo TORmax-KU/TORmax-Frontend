@@ -2,26 +2,18 @@
 
 import React from 'react';
 import HomeSearch from "@/component/HomeSearch";
-import { initialTORs, Language } from "@/utils/mockData";
+import { initialTORs } from "@/utils/mockData";
 import DailyDigestSection from "@/component/DailyDigestSection";
 import { useApp } from "@/context/AppContext";
-
-// Dictionary for Home Page layout text
-const i18n = {
-  en: {
-    companyName: "Acme Innovations Ltd.",
-  },
-  th: {
-    companyName: "บริษัท แอคมี่ อินโนเวชั่นส์ จำกัด",
-  },
-};
+import { Language } from '@/public/mockData/Language';
+import { homei18n } from '@/public/mockData/i18n/home';
 
 export default function Home() {
   const { lang: contextLang } = useApp();
   
   // Resolve active language key ('en' | 'th')
   const activeLang: Language = (contextLang?.toLowerCase() as Language) === 'th' ? 'th' : 'en';
-  const t = i18n[activeLang];
+  const t = homei18n[activeLang];
 
   // Extract array using the active language key from the initialTORs dictionary
   const rawTORList = initialTORs[activeLang] || initialTORs.en || [];
