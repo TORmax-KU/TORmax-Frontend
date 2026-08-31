@@ -186,6 +186,53 @@ export const initialLogs: Record<Language, SystemLog[]> = {
     ]
 };
 
+export const MOCK_TRACKED: TrackedProject[] = [
+    {
+        id: 'TOR-2026-0891',
+        title: 'Cloud Infrastructure Upgrade & Migration Project Phase 2',
+        titleTh: 'โครงการปรับปรุงและย้ายระบบโครงสร้างพื้นฐานคลาวด์ ระยะที่ 2',
+        agency: 'Ministry of Digital Economy and Society',
+        budget: '฿45,000,000',
+        submissionDeadline: '2026-09-15',
+        status: 'active',
+        category: 'IT & Cloud Infrastructure',
+        trackedDate: '2026-08-20',
+    },
+    {
+        id: 'TOR-2026-0742',
+        title: 'AI-Powered Smart Traffic Management Platform',
+        titleTh: 'แพลตฟอร์มบริหารจัดการจราจรอัจฉริยะด้วยระบบปัญญาประดิษฐ์',
+        agency: 'Bangkok Metropolitan Administration',
+        budget: '฿120,000,000',
+        submissionDeadline: '2026-09-02',
+        status: 'active',
+        category: 'Software & AI Solutions',
+        trackedDate: '2026-08-18',
+    },
+    {
+        id: 'TOR-2026-0610',
+        title: 'Cybersecurity Incident Response & SOC Operations Upgrade',
+        titleTh: 'โครงการยกระดับศูนย์เฝ้าระวังความปลอดภัยทางไซเบอร์ (SOC)',
+        agency: 'Bank of Thailand',
+        budget: '฿28,500,000',
+        submissionDeadline: '2026-08-28',
+        status: 'upcoming',
+        category: 'Cybersecurity',
+        trackedDate: '2026-08-10',
+    },
+    {
+        id: 'TOR-2026-0421',
+        title: 'National Healthcare Data Integration Portal',
+        titleTh: 'ระบบเชื่อมโยงข้อมูลสุขภาพแห่งชาติ',
+        agency: 'Ministry of Public Health',
+        budget: '฿85,000,000',
+        submissionDeadline: '2026-08-12',
+        status: 'closed',
+        category: 'Software Development',
+        trackedDate: '2026-07-25',
+    },
+];
+
 export function calculatePassRate(requirements: TORRequirement[]): { count: number; percentage: number } {
     const count = requirements.filter(r => r.pass).length;
     const percentage = Math.round((count / requirements.length) * 100);
