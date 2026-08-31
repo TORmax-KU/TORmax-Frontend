@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useSyncExternalStore } from 'react';
+import { createPortal } from 'react-dom';
 import { useApp } from '@/context/AppContext'; // Adjust path if necessary
 
 interface FilterState {
@@ -55,6 +56,16 @@ const i18n = {
   },
 };
 
+// Helper to check client rendering safely without trigger cascading renders
+const emptySubscribe = () => () => {};
+function useIsClient() {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+}
+
 export const FilterModal: React.FC<FilterModalProps> = ({
   isOpen,
   onClose,
@@ -64,33 +75,43 @@ export const FilterModal: React.FC<FilterModalProps> = ({
   agencies,
   methods,
 }) => {
+  const isClient = useIsClient();
   const { lang: contextLang } = useApp();
   const lang = (contextLang?.toLowerCase() as 'en' | 'th') || 'en';
   const t = i18n[lang];
 
   const [draft, setDraft] = React.useState<FilterState>(filters);
 
-  // Keep draft in sync when modal opens
-  React.useEffect(() => {
+  // Sync draft when filters or open state change during render
+  const [prevFilters, setPrevFilters] = React.useState(filters);
+  if (filters !== prevFilters) {
+    setPrevFilters(filters);
     setDraft(filters);
-  }, [filters, isOpen]);
+  }
 
-  if (!isOpen) return null;
+  if (!isClient || !isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     onApply(draft);
     onClose();
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
-      <div className="bg-white dark:bg-tormax-surfaceDark border border-slate-200 dark:border-tormax-borderDark rounded-2xl max-w-lg w-full p-6 space-y-6 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+  return createPortal(
+    <div 
+      className="fixed inset-0 z-[9999] min-h-[100svh] w-full flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white dark:bg-tormax-surfaceDark border border-slate-200 dark:border-tormax-borderDark rounded-2xl max-w-lg w-full p-6 space-y-6 shadow-2xl relative z-[10000] animate-in fade-in zoom-in-95 duration-150"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex justify-between items-center border-b border-slate-100 dark:border-tormax-borderDark pb-3">
           <h2 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
             <span>🎛️</span> {t.title}
           </h2>
           <button
+            type="button"
             onClick={onClose}
             className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg font-bold cursor-pointer"
           >
@@ -201,6 +222,7 @@ export const FilterModal: React.FC<FilterModalProps> = ({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

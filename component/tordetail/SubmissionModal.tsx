@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState, useSyncExternalStore } from 'react';
+import { createPortal } from 'react-dom';
 
 interface SubmissionModalProps {
   isOpen: boolean;
@@ -34,6 +35,16 @@ interface SubmissionModalProps {
   };
 }
 
+// Helper to check client rendering safely without triggering cascading renders
+const emptySubscribe = () => () => {};
+function useIsClient() {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
+}
+
 export function SubmissionModal({ 
   isOpen, 
   onClose, 
@@ -42,9 +53,10 @@ export function SubmissionModal({
   userProfile,
   t 
 }: SubmissionModalProps) {
+  const isClient = useIsClient();
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
-  if (!isOpen) return null;
+  if (!isClient || !isOpen) return null;
 
   const copyToClipboard = (text: string, fieldName: string) => {
     navigator.clipboard.writeText(text);
@@ -61,9 +73,15 @@ export function SubmissionModal({
     { label: t.bankAccount, key: 'bankAccount', val: userProfile.bankAccount },
   ];
 
-  return (
-    <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 max-w-xl w-full rounded-2xl shadow-2xl overflow-hidden space-y-5 p-6 animate-in fade-in zoom-in duration-200">
+  return createPortal(
+    <div 
+      className="fixed inset-0 z-[9999] min-h-[100svh] w-full flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4"
+      onClick={onClose}
+    >
+      <div 
+        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 max-w-xl w-full rounded-2xl shadow-2xl overflow-hidden space-y-5 p-6 relative z-[10000] animate-in fade-in zoom-in duration-200"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex justify-between items-start border-b border-slate-100 dark:border-slate-800 pb-4">
           <div>
             <h3 className="text-lg font-black text-slate-900 dark:text-white">
@@ -74,6 +92,7 @@ export function SubmissionModal({
             </p>
           </div>
           <button
+            type="button"
             onClick={onClose}
             className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-bold text-lg cursor-pointer"
           >
@@ -101,6 +120,7 @@ export function SubmissionModal({
                 </span>
               </div>
               <button
+                type="button"
                 onClick={() => copyToClipboard(field.val, field.key)}
                 className="text-[11px] text-tormax-purple dark:text-tormax-lavender hover:underline font-bold px-2 py-1 rounded bg-tormax-purple/10 border border-tormax-purple/20 cursor-pointer"
               >
@@ -121,6 +141,7 @@ export function SubmissionModal({
             <span>↗</span>
           </a>
           <button
+            type="button"
             onClick={onClose}
             className="py-3 px-4 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl transition-all cursor-pointer"
           >
@@ -128,6 +149,7 @@ export function SubmissionModal({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
