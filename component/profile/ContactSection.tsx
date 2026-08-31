@@ -2,6 +2,7 @@
 
 import { ProfileFormData } from '@/types/profile';
 import { FormField } from './FormField'
+
 interface ContactSectionProps {
   formData: ProfileFormData;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-interface SearchInputProps {
+interface HeroSearchInputProps {
     mode?: 'dark' | 'light';
     altLook?: boolean;
     onSearch?: (query: string) => void;
@@ -11,13 +11,13 @@ interface SearchInputProps {
     initialValue?: string;
 }
 
-export default function SearchInput({
+export default function HeroSearchInput({
     mode = 'dark',
     altLook = false,
     onSearch,
     placeholder = 'Search procurement titles, agencies, or TOR IDs...',
     initialValue = ''
-}: SearchInputProps) {
+}: HeroSearchInputProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [query, setQuery] = useState(initialValue);

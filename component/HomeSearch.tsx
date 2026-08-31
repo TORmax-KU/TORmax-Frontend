@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import MediaBlock from "./MediaBlock";
-import SearchInput from './Searchbar/SearchInput';
+import HeroSearchInput from './searchbar/HeroSearchInput';
 import { useApp } from '@/context/AppContext'; // Adjust path if necessary
 
 // Dictionary for HomeSearch hero text
@@ -126,7 +126,7 @@ export default function HomeSearch() {
 
           {/* Search Input Box */}
           <div className="w-full max-w-2xl pt-2">
-            <SearchInput
+            <HeroSearchInput
               mode="dark"
               altLook
               onSearch={handleSearchSubmit}
