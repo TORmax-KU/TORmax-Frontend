@@ -8,7 +8,7 @@ import {
 } from '@remixicon/react';
 import { MOCK_NOTIFICATIONS } from '@/public/mockData/MockNotification';
 import { NotificationItem } from '@/interface/NotificationItem';
-import { NotificationListItem } from '@/component/Notification/NotificationListItem';
+import { NotificationListItem } from '@/component/notification/NotificationListItem';
 
 export default function NotificationsPage() {
   const { lang } = useApp();
