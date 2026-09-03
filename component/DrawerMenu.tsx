@@ -177,13 +177,13 @@ export default function DrawerMenu({
           <div className="px-4 py-3 border-t border-slate-100 dark:border-[#2D2938] bg-slate-50/50 dark:bg-[#121118]/50">
             <div className="flex items-center justify-between gap-1">
               {/* Language Switcher */}
-              <button
+              {/* <button
                 onClick={toggleLanguage}
                 className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg border border-slate-200 dark:border-[#2D2938] text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors"
               >
                 <RiGlobalLine className="h-4 w-4" />
                 <span>{lang}</span>
-              </button>
+              </button> */}
 
               {/* Theme Switcher */}
               <button

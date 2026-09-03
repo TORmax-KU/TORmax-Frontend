@@ -94,12 +94,12 @@ export const Navbar: React.FC<NavbarProps> = ({ companyName }) => {
             {/* Utility Actions */}
             <div className="flex items-center space-x-2 shrink-0">
                 {/* Global Language Switcher */}
-                <button
+                {/* <button
                     onClick={toggleLanguage}
                     className="px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-[#2D2938] text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors"
                 >
                     🌐 {lang}
-                </button>
+                </button> */}
 
                 {/* Global Theme Switcher */}
                 <button
