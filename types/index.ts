@@ -78,4 +78,17 @@ export interface AuthUser {
   aboutMe?: string;
   role: 'Vendor' | 'JobLister' | 'Admin';
   status: 'Active' | 'Disabled';
+  companyName?: string;
+  taxId?: string;
+  registeredCapital?: string;
+  yearsInBusiness?: number;
+  iso27001?: boolean;
+  iso9001?: boolean;
+  iso20000?: boolean;
+  nbtcLicense?: boolean;
+  trackedKeywords?: string;
+  matchThreshold?: number;
+  dailyDigestEmail?: boolean;
+  smsAlerts?: boolean;
+  contactPhone?: string;
 }

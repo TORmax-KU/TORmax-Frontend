@@ -19,7 +19,7 @@ export function FormActions({
     if (onCancel) {
       onCancel();
     } else {
-      router.push('/home');
+      router.push('/');
     }
   };
 
