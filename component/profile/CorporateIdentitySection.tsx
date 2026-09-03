@@ -51,6 +51,8 @@ export function CorporateIdentitySection({
           value={formData.yearsInBusiness}
           onChange={onChange}
           type="number"
+          min={0}
+          max={200}
         />
       </div>
     </div>

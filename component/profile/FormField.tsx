@@ -7,15 +7,19 @@ interface FormFieldProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   type?: string;
   className?: string;
+  min?: number;
+  max?: number;
 }
 
-export function FormField({ 
-  id, 
-  label, 
-  value, 
-  onChange, 
+export function FormField({
+  id,
+  label,
+  value,
+  onChange,
   type = 'text',
-  className = ''
+  className = '',
+  min,
+  max,
 }: FormFieldProps) {
   return (
     <div className="space-y-2">
@@ -27,6 +31,8 @@ export function FormField({
         id={id}
         value={value}
         onChange={onChange}
+        min={min}
+        max={max}
         className={`w-full p-3 rounded-xl bg-slate-50 dark:bg-tormax-canvasDark border border-slate-200 dark:border-tormax-borderDark font-semibold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-tormax-purple ${className}`}
       />
     </div>
