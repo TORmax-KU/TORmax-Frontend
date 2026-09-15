@@ -14,4 +14,5 @@ export interface ProfileFormData {
   contactName: string;
   contactEmail: string;
   contactPhone: string;
+  skills: string[];
 }

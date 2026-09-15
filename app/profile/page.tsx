@@ -13,6 +13,7 @@ import { CorporateIdentitySection } from '@/component/profile/CorporateIdentityS
 import { FormActions } from '@/component/profile/FormActions';
 import { PreferencesSection } from '@/component/profile/PreferencesSection';
 import { ProfileHeader } from '@/component/profile/ProfileHeader';
+import { SkillsSection } from '@/component/profile/SkillsSection';
 
 const NUMBER_FIELD_RANGES: Record<string, { min: number; max: number }> = {
   yearsInBusiness: { min: 0, max: 200 },
@@ -35,6 +36,7 @@ const emptyFormData: ProfileFormData = {
   contactName: '',
   contactEmail: '',
   contactPhone: '',
+  skills: [],
 };
 
 export default function ProfilePage() {
@@ -85,6 +87,9 @@ export default function ProfilePage() {
         contactName: profile.realName || '',
         contactEmail: profile.email || '',
         contactPhone: profile.contactPhone || '',
+        skills: (profile.proficiency || [])
+          .map((skill) => (typeof skill === 'string' ? '' : skill.name))
+          .filter(Boolean),
       });
       setIsLoading(false);
     })();
@@ -134,6 +139,7 @@ export default function ProfilePage() {
         smsAlerts: formData.smsAlerts,
         realName: formData.contactName,
         contactPhone: formData.contactPhone,
+        skillNames: formData.skills,
       });
       await refetchUser();
       alert(t.savedAlert);
@@ -168,6 +174,12 @@ export default function ProfilePage() {
           <CorporateIdentitySection
             formData={formData}
             onChange={handleChange}
+            t={t}
+          />
+
+          <SkillsSection
+            skills={formData.skills}
+            onChange={(skills) => setFormData((prev) => ({ ...prev, skills }))}
             t={t}
           />
 

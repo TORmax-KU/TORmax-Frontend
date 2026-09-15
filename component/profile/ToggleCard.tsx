@@ -16,10 +16,10 @@ export function ToggleCard({
   onChange 
 }: ToggleCardProps) {
   return (
-    <label className="p-4 rounded-2xl border border-slate-200 dark:border-tormax-borderDark flex items-center justify-between cursor-pointer bg-slate-50 dark:bg-tormax-canvasDark hover:border-tormax-purple transition-colors">
+    <label className="p-4 rounded-2xl border border-slate-200 dark:border-tormax-borderDark flex items-center justify-between cursor-pointer bg-slate-50 dark:bg-[#090D16] hover:border-tormax-purple transition-colors">
       <div>
         <div className="font-bold text-slate-900 dark:text-slate-100">{title}</div>
-        <div className="text-[11px] text-slate-500">{description}</div>
+        <div className="text-[11px] text-slate-500 dark:text-slate-400">{description}</div>
       </div>
       <input
         type="checkbox"

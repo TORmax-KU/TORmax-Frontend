@@ -33,7 +33,7 @@ export function FormField({
         onChange={onChange}
         min={min}
         max={max}
-        className={`w-full p-3 rounded-xl bg-slate-50 dark:bg-tormax-canvasDark border border-slate-200 dark:border-tormax-borderDark font-semibold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-tormax-purple ${className}`}
+        className={`w-full p-3 rounded-xl bg-slate-50 dark:bg-[#090D16] border border-slate-200 dark:border-tormax-borderDark font-semibold text-slate-900 dark:text-slate-100 caret-slate-900 dark:caret-white focus:outline-none focus:ring-2 focus:ring-tormax-purple ${className}`}
       />
     </div>
   );

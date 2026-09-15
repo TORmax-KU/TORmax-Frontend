@@ -1,12 +1,13 @@
 'use client';
 
 import { ProfileFormData } from '@/types/profile';
+import { ProfileTranslations } from '@/public/mockData/i18n/profile';
 import { FormField }  from './FormField'
 
 interface CorporateIdentitySectionProps {
   formData: ProfileFormData;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  t: any;
+  t: ProfileTranslations;
 }
 
 export function CorporateIdentitySection({ 
@@ -20,7 +21,7 @@ export function CorporateIdentitySection({
         <h2 className="text-base font-bold font-display text-slate-900 dark:text-white">
           {t.sec1Title}
         </h2>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-slate-500 dark:text-slate-400">
           {t.sec1Desc}
         </p>
       </div>

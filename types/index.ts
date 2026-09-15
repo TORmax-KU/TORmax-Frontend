@@ -64,6 +64,12 @@ export interface AppNotification {
   read: boolean;
 }
 
+export interface Skill {
+  _id: string;
+  name: string;
+  category?: string;
+}
+
 export interface AuthUser {
   _id: string;
   googleId?: string;
@@ -86,4 +92,5 @@ export interface AuthUser {
   dailyDigestEmail?: boolean;
   smsAlerts?: boolean;
   contactPhone?: string;
+  proficiency?: Array<Skill | string>;
 }

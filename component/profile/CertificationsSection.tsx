@@ -1,13 +1,14 @@
 'use client';
 
 import { ProfileFormData } from '@/types/profile';
+import { ProfileTranslations } from '@/public/mockData/i18n/profile';
 import { ToggleCard } from './ToggleCard';
 
 
 interface CertificationsSectionProps {
   formData: ProfileFormData;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  t: any;
+  t: ProfileTranslations;
 }
 
 export function CertificationsSection({ 
@@ -48,7 +49,7 @@ export function CertificationsSection({
         <h2 className="text-base font-bold font-display text-slate-900 dark:text-white">
           {t.sec2Title}
         </h2>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-slate-500 dark:text-slate-400">
           {t.sec2Desc}
         </p>
       </div>

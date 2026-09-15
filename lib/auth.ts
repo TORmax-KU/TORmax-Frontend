@@ -39,7 +39,7 @@ export async function fetchUserById(id: string): Promise<AuthUser | null> {
 
 export async function updateUser(
   id: string,
-  patch: Partial<AuthUser>
+  patch: Partial<AuthUser> & { skillNames?: string[] }
 ): Promise<AuthUser | null> {
   const res = await fetch(`${API_BASE_URL}/api/users/${id}`, {
     method: 'PATCH',

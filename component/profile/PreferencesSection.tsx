@@ -1,12 +1,13 @@
 'use client';
 
 import { ProfileFormData } from '@/types/profile';
+import { ProfileTranslations } from '@/public/mockData/i18n/profile';
 import { ToggleCard } from './ToggleCard';
 
 interface PreferencesSectionProps {
   formData: ProfileFormData;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  t: any;
+  t: ProfileTranslations;
 }
 
 export function PreferencesSection({ 
@@ -20,7 +21,7 @@ export function PreferencesSection({
         <h2 className="text-base font-bold font-display text-slate-900 dark:text-white">
           {t.sec3Title}
         </h2>
-        <p className="text-xs text-slate-500">
+        <p className="text-xs text-slate-500 dark:text-slate-400">
           {t.sec3Desc}
         </p>
       </div>
@@ -35,7 +36,7 @@ export function PreferencesSection({
             id="trackedKeywords"
             value={formData.trackedKeywords}
             onChange={onChange}
-            className="w-full p-3 rounded-xl bg-slate-50 dark:bg-tormax-canvasDark border border-slate-200 dark:border-tormax-borderDark font-semibold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-tormax-purple"
+            className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#090D16] border border-slate-200 dark:border-tormax-borderDark font-semibold text-slate-900 dark:text-slate-100 caret-slate-900 dark:caret-white focus:outline-none focus:ring-2 focus:ring-tormax-purple"
           />
           <p className="text-[11px] text-slate-400">
             {t.keywordsHint}
