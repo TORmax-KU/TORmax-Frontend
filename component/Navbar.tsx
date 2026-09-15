@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { AppNotification } from '@/types';
+import { RiLogoutBoxRLine } from '@remixicon/react';
 import DrawerMenu from './DrawerMenu';
 import LogoSignature from './LogoSignature';
 
@@ -134,11 +135,14 @@ export const Navbar: React.FC<NavbarProps> = ({ companyName }) => {
                             </div>
                         </Link>
                         <button
+                            type="button"
                             onClick={logout}
-                            title="Log out"
-                            className="w-8 h-8 rounded-lg border border-slate-200 dark:border-[#2D2938] flex items-center justify-center text-xs hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors"
+                            title="Sign out"
+                            aria-label="Sign out"
+                            className="h-8 px-2.5 rounded-lg border border-slate-200 dark:border-[#3A3547] flex items-center justify-center gap-1.5 text-[11px] font-semibold text-slate-500 dark:text-slate-300 bg-white dark:bg-[#24212D] hover:text-rose-600 dark:hover:text-rose-300 hover:border-rose-200 dark:hover:border-rose-400/30 hover:bg-rose-50 dark:hover:bg-rose-400/10 active:scale-[0.97] transition-all duration-150"
                         >
-                            ↪️
+                            <RiLogoutBoxRLine className="h-4 w-4" aria-hidden="true" />
+                            <span className="hidden xl:inline">Sign out</span>
                         </button>
                     </div>
                 )}
