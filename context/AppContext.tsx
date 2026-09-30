@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
-type Language = 'EN' | 'TH';
+type Language = 'TH' | 'EN';
 
 interface AppContextType {
   isDark: boolean;
@@ -161,7 +161,7 @@ const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isDark, setIsDark] = useState<boolean>(false);
-  const [lang, setLang] = useState<Language>('EN');
+  const [lang, setLang] = useState<Language>('TH');
   const [mounted, setMounted] = useState<boolean>(false);
 
   // Initialize state from local storage or media preferences
@@ -199,7 +199,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   const toggleLanguage = () => {
     setLang((prev) => {
-      const next = prev === 'EN' ? 'TH' : 'EN';
+      const next = prev === 'TH' ? 'EN' : 'TH';
       localStorage.setItem('lang', next);
       return next;
     });
