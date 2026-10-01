@@ -1,10 +1,10 @@
 'use client';
 
-import { TORItem } from '@/types';
+import { ProjectCard } from '@/lib/projects';
 import { TORCard } from './TORCard';
 
 interface TORListProps {
-  items: TORItem[];
+  items: ProjectCard[];
   t: {
     source: string;
     method: string;

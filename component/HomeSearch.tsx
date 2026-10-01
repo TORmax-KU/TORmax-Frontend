@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import MediaBlock from "./MediaBlock";
-import HeroSearchInput from './searchbar/HeroSearchInput';
+import HeroSearchInput from './HeroSearchInput';
 import { useApp } from '@/context/AppContext'; // Adjust path if necessary
 
 // Dictionary for HomeSearch hero text
@@ -12,8 +12,8 @@ const i18n = {
     activeTenders: '6,420+ Active Tenders Consolidated',
     heading1: 'What project are you',
     heading2: 'looking for?',
-    subtitle1: 'Instant AI vector matching across',
-    subtitle2: 'CGD e-GP, state enterprise portals, and direct ministry tender boards',
+    subtitle1: 'Search saved TORs by',
+    subtitle2: 'project title, agency, TOR ID, summary, or required skills',
     popular: 'Popular:',
     todaysDigest: "Today's Digest",
     browseAll: 'Browse All TORs',
@@ -34,8 +34,8 @@ const i18n = {
     activeTenders: 'รวบรวมประกาศจัดซื้อจัดจ้างมากกว่า 6,420+ รายการ',
     heading1: 'คุณกำลังมองหา',
     heading2: 'โครงการใดที่ใช่?',
-    subtitle1: 'ค้นหาด้วยระบบ AI เวกเตอร์อัจฉริยะครอบคลุม',
-    subtitle2: 'ระบบ e-GP กรมบัญชีกลาง, พอร์ทัลรัฐวิสาหกิจ และบอร์ดจัดซื้อจัดจ้างของกระทรวงโดยตรง',
+    subtitle1: 'ค้นหา TOR ในฐานข้อมูลด้วย',
+    subtitle2: 'ชื่อโครงการ หน่วยงาน รหัส TOR สรุป หรือทักษะที่จำเป็น',
     popular: 'คำค้นยอดนิยม:',
     todaysDigest: 'สรุปประจำวัน',
     browseAll: 'ดูรายการ TOR ทั้งหมด',
@@ -126,11 +126,11 @@ export default function HomeSearch() {
 
           {/* Search Input Box */}
           <div className="w-full max-w-2xl pt-2">
-            <HeroSearchInput
+            <Suspense fallback={<div className="h-16" />}><HeroSearchInput
               mode="dark"
               altLook
               onSearch={handleSearchSubmit}
-            />
+            /></Suspense>
 
             {/* Quick Keyword Pills */}
             <div className="flex flex-wrap items-center justify-center gap-2 text-xs text-slate-400 mt-4 font-medium">

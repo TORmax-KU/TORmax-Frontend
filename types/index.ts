@@ -22,7 +22,8 @@ export interface TORItem {
     matchScore: number;
     deadline: string;
     desc: string;
-    method: 'e-Bidding' | 'e-Market' | 'Direct Selection';
+    method: string;
+    deliverables?: string[];
     requirements: TORRequirement[];
     feasibility: TORFeasibility;
 }
@@ -50,8 +51,8 @@ export interface FilterState {
     query: string;
     method: string;
     agency: string;
-    minBudget: number;
-    maxBudget: number;
+    minBudget: number | '';
+    maxBudget: number | '';
     requireIso: boolean;
     requireCapital: boolean;
 }

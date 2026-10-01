@@ -17,7 +17,7 @@ export function ProjectSummary({ desc, method, deadline, t }: ProjectSummaryProp
       <h2 className="text-sm font-bold font-display uppercase tracking-wider text-tormax-purple dark:text-tormax-lavender">
         {t.projectSummary}
       </h2>
-      <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
+      <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium whitespace-pre-line">
         {desc}
       </p>
       <div className="grid grid-cols-2 gap-4 pt-3 text-xs border-t border-slate-100 dark:border-tormax-borderDark">

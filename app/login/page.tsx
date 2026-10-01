@@ -1,12 +1,16 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import LogoSignature from '@/component/LogoSignature';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 
 export default function GoogleLoginPage() {
+    return <Suspense fallback={<div className="p-10 text-center">Loading...</div>}><GoogleLoginContent /></Suspense>;
+}
+
+function GoogleLoginContent() {
     const { lang, toggleLanguage } = useApp();
     const { user, isLoading: isAuthLoading, loginWithGoogle } = useAuth();
     const [isLoading, setIsLoading] = useState(false);

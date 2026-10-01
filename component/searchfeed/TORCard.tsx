@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { TORItem } from '@/types';
+import { ProjectCard } from '@/lib/projects';
 
 interface TORCardProps {
-  item: TORItem;
+  item: ProjectCard;
   t: {
     source: string;
     method: string;
@@ -25,7 +25,7 @@ export function TORCard({ item, t }: TORCardProps) {
             {t.source} {item.sourcePortal}
           </span>
           <span className="text-xs font-mono font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded">
-            {item.id}
+            {item.displayId}
           </span>
         </div>
       </div>
@@ -42,6 +42,8 @@ export function TORCard({ item, t }: TORCardProps) {
         </span>
       </div>
 
+      <p className="text-sm text-slate-600 dark:text-slate-300 line-clamp-3">{item.desc}</p>
+      <div className="flex flex-wrap gap-2">{item.tags.map(tag => <span key={tag} className="text-xs rounded bg-slate-100 dark:bg-slate-800 px-2 py-1">{tag}</span>)}</div>
       <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-tormax-borderDark text-xs">
         <span className="text-slate-400 font-medium">{t.deadline} {item.deadline}</span>
         <Link

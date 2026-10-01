@@ -11,8 +11,8 @@ import DrawerMenu from './DrawerMenu';
 import LogoSignature from './LogoSignature';
 
 export interface NavbarProps {
-    companyName: string;
-    taxId: string;
+    companyName?: string;
+    taxId?: string;
 }
 
 const mockNotifications: AppNotification[] = [

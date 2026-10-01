@@ -3,7 +3,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { TORItem } from '@/types';
-import { calculatePassRate, Language } from '@/utils/mockData';
+import { calculatePassRate } from '@/utils/mockData';
+import { Language } from '@/public/mockData/Language';
 import { useApp } from '@/context/AppContext';
 
 export interface TORCardProps {

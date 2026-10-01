@@ -13,6 +13,8 @@ export function SearchInput({ value, onChange, placeholder }: SearchInputProps) 
     <div className="relative flex-1">
       <input
         type="text"
+        aria-label={placeholder}
+        maxLength={300}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
@@ -21,6 +23,7 @@ export function SearchInput({ value, onChange, placeholder }: SearchInputProps) 
       {value && (
         <button
           onClick={handleClear}
+          aria-label="Clear search"
           className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs font-bold cursor-pointer"
         >
           ✕

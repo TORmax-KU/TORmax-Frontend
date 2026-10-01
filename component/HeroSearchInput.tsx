@@ -64,6 +64,8 @@ export default function HeroSearchInput({
                 {/* Text Input */}
                 <input
                     type="text"
+                    maxLength={300}
+                    aria-label={placeholder}
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder={placeholder}

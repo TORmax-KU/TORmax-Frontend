@@ -1,6 +1,8 @@
 'use client';
 
 import React from 'react';
+import { useParams } from 'next/navigation';
+import { DatabaseTORDetail } from '@/component/tordetail/DatabaseTORDetail';
 import { useApp } from '@/context/AppContext';
 import { torpagei18n } from '@/public/mockData/i18n/torpage';
 import { Language } from '@/public/mockData/Language';
@@ -18,6 +20,12 @@ import { useTORDetail } from '@/component/tordetail/useTORDetail';
 import { SubmissionModal } from '@/component/tordetail/SubmissionModal';
 
 export default function TORDetailPage() {
+  const params = useParams<{ 'tor-id': string }>();
+  const id = params['tor-id'];
+  return /^[a-f\d]{24}$/i.test(id) ? <DatabaseTORDetail id={id} /> : <DemoTORDetailPage />;
+}
+
+function DemoTORDetailPage() {
   const { lang: contextLang } = useApp();
   const activeLang: Language = (contextLang?.toLowerCase() as Language) === 'th' ? 'th' : 'en';
   const t = torpagei18n[activeLang];
