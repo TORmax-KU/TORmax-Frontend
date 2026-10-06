@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import { TrackedProject } from '@/interface/TrackProject';
-import { MOCK_TRACKED } from '@/utils/mockData';
 
 export function useTrackedProjects() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'upcoming' | 'closed'>('all');
-  const [projects, setProjects] = useState<TrackedProject[]>(MOCK_TRACKED);
+  // Tracking is not connected to the database yet; never show demo bids as saved work.
+  const [projects, setProjects] = useState<TrackedProject[]>([]);
 
   const handleUntrack = (id: string) => {
     setProjects((prev) => prev.filter((p) => p.id !== id));

@@ -1,7 +1,7 @@
 import { AuthUser } from '@/types';
 
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 
 export function getGoogleLoginUrl(): string {
   return `${API_BASE_URL}/auth/google`;

@@ -76,7 +76,7 @@ export function TrackedProjectCard({ project, lang, onUntrack }: TrackedProjectC
         </span>
 
         <Link
-          href={`/tor/${project.id}`}
+          href={`/tor-page/${project.id}`}
           className="inline-flex items-center gap-1 text-[#5B3E96] dark:text-[#9B82C1] font-bold hover:underline"
         >
           <span>{lang === 'EN' ? 'View TOR Details' : 'ดูรายละเอียด TOR'}</span>

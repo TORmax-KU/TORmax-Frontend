@@ -1,3 +1,22 @@
+# Local setup without Docker
+
+Use Node.js 22+ and start the backend with your own MongoDB first; see
+`csp-backend/README.md` for database and source-access setup.
+
+```powershell
+npm ci
+Copy-Item .env.example .env.local
+npm run dev
+```
+
+Copy the environment example only if `.env.local` does not exist. The API defaults
+to `http://localhost:5001`; the website runs on `http://localhost:3000`.
+
+Home and search use the live database. The backend attempts a national e-GP sync
+on startup and every five minutes. **Real import remains blocked by e-GP access
+verification and pending detail mapping**; an empty database is shown honestly,
+with an ingestion-status message, rather than filled with demo projects.
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started

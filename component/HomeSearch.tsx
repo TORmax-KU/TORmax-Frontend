@@ -9,7 +9,7 @@ import { useApp } from '@/context/AppContext'; // Adjust path if necessary
 // Dictionary for HomeSearch hero text
 const i18n = {
   en: {
-    activeTenders: '6,420+ Active Tenders Consolidated',
+    activeTenders: 'Software, systems & IT procurement',
     heading1: 'What project are you',
     heading2: 'looking for?',
     subtitle1: 'Search saved TORs by',
@@ -17,12 +17,6 @@ const i18n = {
     popular: 'Popular:',
     todaysDigest: "Today's Digest",
     browseAll: 'Browse All TORs',
-    statTendersVal: '6,420+',
-    statTendersLabel: 'Multi-Site Tenders',
-    statPipelineVal: '฿14.2B',
-    statPipelineLabel: 'Tracked Pipeline',
-    statAccuracyVal: '96%',
-    statAccuracyLabel: 'Match Accuracy',
     tags: [
       { label: 'Cloud Infrastructure', query: 'Cloud' },
       { label: 'Cybersecurity', query: 'Cybersecurity' },
@@ -31,7 +25,7 @@ const i18n = {
     ],
   },
   th: {
-    activeTenders: 'รวบรวมประกาศจัดซื้อจัดจ้างมากกว่า 6,420+ รายการ',
+    activeTenders: 'งานจัดซื้อจัดจ้างซอฟต์แวร์ ระบบ และเทคโนโลยี',
     heading1: 'คุณกำลังมองหา',
     heading2: 'โครงการใดที่ใช่?',
     subtitle1: 'ค้นหา TOR ในฐานข้อมูลด้วย',
@@ -39,12 +33,6 @@ const i18n = {
     popular: 'คำค้นยอดนิยม:',
     todaysDigest: 'สรุปประจำวัน',
     browseAll: 'ดูรายการ TOR ทั้งหมด',
-    statTendersVal: '6,420+',
-    statTendersLabel: 'โครงการจากทุกแหล่ง',
-    statPipelineVal: '14.2 พันล้านบาท',
-    statPipelineLabel: 'มูลค่าโครงการในระบบ',
-    statAccuracyVal: '96%',
-    statAccuracyLabel: 'ความแม่นยำในการจับคู่',
     tags: [
       { label: 'ระบบคลาวด์', query: 'Cloud' },
       { label: 'ความปลอดภัยไซเบอร์', query: 'Cybersecurity' },
@@ -165,21 +153,6 @@ export default function HomeSearch() {
             </button>
           </div>
 
-          {/* Statistics Grid */}
-          <div className="pt-10 grid grid-cols-3 gap-6 border-t border-white/10 w-full max-w-2xl text-center">
-            <div className="p-2">
-              <div className="text-2xl sm:text-3xl font-black text-white tracking-tight">{t.statTendersVal}</div>
-              <div className="text-[11px] sm:text-xs text-slate-400 font-medium uppercase tracking-wider mt-1">{t.statTendersLabel}</div>
-            </div>
-            <div className="p-2 border-x border-white/10">
-              <div className="text-2xl sm:text-3xl font-black text-amber-300 tracking-tight">{t.statPipelineVal}</div>
-              <div className="text-[11px] sm:text-xs text-slate-400 font-medium uppercase tracking-wider mt-1">{t.statPipelineLabel}</div>
-            </div>
-            <div className="p-2">
-              <div className="text-2xl sm:text-3xl font-black text-emerald-400 tracking-tight">{t.statAccuracyVal}</div>
-              <div className="text-[11px] sm:text-xs text-slate-400 font-medium uppercase tracking-wider mt-1">{t.statAccuracyLabel}</div>
-            </div>
-          </div>
 
         </div>
       </div>

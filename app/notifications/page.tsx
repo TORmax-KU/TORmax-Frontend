@@ -6,13 +6,12 @@ import {
   RiNotificationLine,
   RiCheckDoubleLine,
 } from '@remixicon/react';
-import { MOCK_NOTIFICATIONS } from '@/public/mockData/MockNotification';
 import { NotificationItem } from '@/interface/NotificationItem';
 import { NotificationListItem } from '@/component/Notification/NotificationListItem';
 
 export default function NotificationsPage() {
   const { lang } = useApp();
-  const [notifications, setNotifications] = useState<NotificationItem[]>(MOCK_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
 
   const markAllAsRead = () => {

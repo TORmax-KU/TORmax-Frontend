@@ -15,18 +15,12 @@ export interface NavbarProps {
     taxId?: string;
 }
 
-const mockNotifications: AppNotification[] = [
-    { id: '1', title: 'New TOR match: MDES Data Exchange (96%)', time: '10m ago', read: false },
-    { id: '2', title: 'Daily Digest dispatched to your email', time: '2h ago', read: false },
-    { id: '3', title: 'Ingestion system completed e-GP sync', time: '5h ago', read: true }
-];
-
 export const Navbar: React.FC<NavbarProps> = ({ companyName }) => {
     const { isDark, toggleTheme, lang, toggleLanguage, t } = useApp();
     const { user, logout } = useAuth();
     const [searchQuery, setSearchQuery] = useState('');
     const [showNotifications, setShowNotifications] = useState(false);
-    const [notifications, setNotifications] = useState<AppNotification[]>(mockNotifications);
+    const [notifications, setNotifications] = useState<AppNotification[]>([]);
 
     const router = useRouter();
 

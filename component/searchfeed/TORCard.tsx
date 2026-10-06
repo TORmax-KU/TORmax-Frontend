@@ -43,9 +43,10 @@ export function TORCard({ item, t }: TORCardProps) {
       </div>
 
       <p className="text-sm text-slate-600 dark:text-slate-300 line-clamp-3">{item.desc}</p>
+      <span className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${item.availability === 'open' ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200' : 'bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200'}`}>{item.availabilityLabel}</span>
       <div className="flex flex-wrap gap-2">{item.tags.map(tag => <span key={tag} className="text-xs rounded bg-slate-100 dark:bg-slate-800 px-2 py-1">{tag}</span>)}</div>
       <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-tormax-borderDark text-xs">
-        <span className="text-slate-400 font-medium">{t.deadline} {item.deadline}</span>
+        <span className="text-slate-900 dark:text-slate-100 font-bold pr-3">{t.deadline} {item.deadline} (GMT+7)</span>
         <Link
           href={`/tor-page/${item.id}`}
           className="px-4 py-2 bg-tormax-purple hover:bg-tormax-purpleDeep text-white font-bold rounded-xl transition-all shadow-sm active:scale-95"

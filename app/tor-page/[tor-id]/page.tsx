@@ -48,6 +48,7 @@ function DemoTORDetailPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 font-sans pb-16">
+      <div className="bg-amber-100 text-amber-950 px-6 py-3 text-center font-semibold text-sm">{activeLang === 'th' ? 'หน้าตัวอย่างเท่านั้น — ไม่ใช่งานที่เปิดรับสมัครจริง' : 'Demo page only — this is not a real open opportunity.'}</div>
       <TORHeader
         id={tor.id}
         sourcePortal={tor.sourcePortal}
