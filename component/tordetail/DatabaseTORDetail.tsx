@@ -16,7 +16,7 @@ export function DatabaseTORDetail({ id }: { id: string }) {
   const t = torpagei18n[activeLang];
   const [retry, setRetry] = useState(0);
   const [result, setResult] = useState<{ key: string; project?: Project; error?: number }>();
-  const key = `${id}:${retry}`;
+  const key = id;
   useEffect(() => {
     const timer = setInterval(() => setRetry(value => value + 1), 60000);
     return () => clearInterval(timer);
@@ -33,7 +33,7 @@ export function DatabaseTORDetail({ id }: { id: string }) {
     }
     void load();
     return () => controller.abort();
-  }, [id, key]);
+  }, [id, key, retry]);
   if (result?.key !== key) return <p role="status" className="p-10 text-center">{th ? 'กำลังโหลด TOR...' : 'Loading TOR...'}</p>;
   if (!result.project) return <div role="alert" className="p-10 text-center space-y-4"><p>{result.error === 404 ? t.notFound : th ? 'โหลด TOR ไม่สำเร็จ' : 'Could not load TOR.'}</p><button className="underline mr-4" onClick={() => setRetry(value => value + 1)}>{th ? 'ลองอีกครั้ง' : 'Retry'}</button><Link className="underline" href="/search-feed">{t.backToDirectory}</Link></div>;
   const project = result.project;

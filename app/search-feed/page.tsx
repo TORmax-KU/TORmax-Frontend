@@ -26,16 +26,16 @@ function SearchFeedContent() {
     if (value) apiParams.set(key, value);
   }
   const requestKey = apiParams.toString();
-  const loading = result?.key !== `${requestKey}:${retry}`;
+  const loading = result?.key !== requestKey;
 
   useEffect(() => {
     const controller = new AbortController();
     const timer = setTimeout(async () => {
       try {
         const data = await getProjects(new URLSearchParams(requestKey), controller.signal);
-        if (!controller.signal.aborted) setResult({ key: `${requestKey}:${retry}`, data });
+        if (!controller.signal.aborted) setResult({ key: requestKey, data });
       } catch {
-        if (!controller.signal.aborted) setResult({ key: `${requestKey}:${retry}`, error: true });
+        if (!controller.signal.aborted) setResult({ key: requestKey, error: true });
       }
     }, 300);
     return () => { clearTimeout(timer); controller.abort(); };

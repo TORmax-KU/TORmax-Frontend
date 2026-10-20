@@ -18,6 +18,7 @@ test('missing dates and unverified or terminal states never promise an open bid'
 test('date-only deadlines use Bangkok calendar days without invented hours', () => {
   assert.equal(submissionSummary({ ...project, deadlinePrecision: 'date' }, 'en', now), '1 calendar day until closing date');
   assert.match(submissionSummary({ ...project, deadlinePrecision: 'date' }, 'en', Date.parse('2026-10-21T00:01:00+07:00')), /Closes today/);
+  assert.match(submissionSummary({ ...project, deadlinePrecision: 'date' }, 'en', Date.parse('2026-10-21T20:00:00+07:00')), /Closes today/);
 });
 test('unknown precision never renders UTC midnight as a confirmed 07:00 deadline', () => {
   for (const deadlinePrecision of ['date', 'unknown', undefined]) {

@@ -51,6 +51,8 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [profileLoaded, setProfileLoaded] = useState(false);
+  const [retry, setRetry] = useState(0);
 
   useEffect(() => {
     if (isAuthLoading) return;
@@ -61,6 +63,9 @@ export default function ProfilePage() {
     }
 
     let cancelled = false;
+    setIsLoading(true);
+    setProfileLoaded(false);
+    setError(null);
     (async () => {
       const profile = await fetchUserById(user._id);
       if (cancelled) return;
@@ -91,13 +96,14 @@ export default function ProfilePage() {
           .map((skill) => (typeof skill === 'string' ? '' : skill.name))
           .filter(Boolean),
       });
+      setProfileLoaded(true);
       setIsLoading(false);
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [user, isAuthLoading, router]);
+  }, [user, isAuthLoading, router, retry]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value, type, checked } = e.target;
@@ -118,7 +124,7 @@ export default function ProfilePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user || !profileLoaded || isSaving) return;
 
     setIsSaving(true);
     setError(null);
@@ -170,7 +176,9 @@ export default function ProfilePage() {
           </div>
         )}
 
+        {!profileLoaded && <button type="button" className="underline" onClick={() => setRetry(value => value + 1)}>{activeLang === 'th' ? 'ลองอีกครั้ง' : 'Retry'}</button>}
         <form onSubmit={handleSubmit} className="space-y-8">
+          <fieldset disabled={!profileLoaded || isSaving} className="space-y-8">
           <CorporateIdentitySection
             formData={formData}
             onChange={handleChange}
@@ -204,7 +212,9 @@ export default function ProfilePage() {
           <FormActions
             cancelText={t.cancel}
             saveText={isSaving ? '...' : t.save}
+            disabled={!profileLoaded || isSaving}
           />
+          </fieldset>
         </form>
       </main>
     </div>

@@ -6,12 +6,14 @@ interface FormActionsProps {
   onCancel?: () => void;
   cancelText: string;
   saveText: string;
+  disabled?: boolean;
 }
 
 export function FormActions({ 
   onCancel, 
   cancelText, 
-  saveText 
+  saveText,
+  disabled = false,
 }: FormActionsProps) {
   const router = useRouter();
 
@@ -34,6 +36,7 @@ export function FormActions({
       </button>
       <button
         type="submit"
+        disabled={disabled}
         className="px-8 py-3 bg-tormax-purple hover:bg-tormax-purpleDeep text-white font-bold text-xs rounded-xl shadow-md transition-all active:scale-95 cursor-pointer"
       >
         {saveText}

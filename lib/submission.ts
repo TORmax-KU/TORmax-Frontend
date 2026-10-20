@@ -21,13 +21,13 @@ export function submissionSummary(project: SubmissionInfo, lang: 'th' | 'en', no
   const deadline = project.deadline ? Date.parse(project.deadline) : NaN;
   const start = project.submissionStartAt ? Date.parse(project.submissionStartAt) : NaN;
   const terminal = ['closed', 'awarded', 'cancelled', 'draft'].includes(project.availability || '');
+  const bangkokDay = (value: number) => Math.floor((value + 7 * 3600000) / 86400000);
   if (terminal) return th ? 'ไม่อยู่ในช่วงเปิดรับข้อเสนอ' : 'Not accepting submissions';
-  if (Number.isFinite(deadline) && deadline <= now) return th ? 'หมดเวลายื่นข้อเสนอแล้ว' : 'Submission deadline has passed';
+  if (Number.isFinite(deadline) && (project.deadlinePrecision === 'datetime' ? deadline <= now : bangkokDay(deadline) < bangkokDay(now))) return th ? 'หมดเวลายื่นข้อเสนอแล้ว' : 'Submission deadline has passed';
   if (!Number.isFinite(deadline)) return th ? 'ยังคำนวณเวลาที่เหลือไม่ได้ — ต้นทางไม่ระบุวันปิดรับ' : 'Time remaining unknown — no closing deadline provided';
   if (project.availability !== 'open') return th ? 'ยังยืนยันการเปิดรับไม่ได้ — ตรวจสอบประกาศต้นทาง' : 'Availability unconfirmed — check the source announcement';
   const futureStart = Number.isFinite(start) && start > now;
   if (project.deadlinePrecision !== 'datetime' && !futureStart) {
-    const bangkokDay = (value: number) => Math.floor((value + 7 * 3600000) / 86400000);
     const days = Math.max(0, bangkokDay(deadline) - bangkokDay(now));
     return th
       ? `${days === 0 ? 'ปิดรับวันนี้' : `อีก ${days} วันถึงวันปิดรับ`}`

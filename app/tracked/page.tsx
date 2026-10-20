@@ -26,6 +26,9 @@ export default function TrackedProjectsPage() {
                     lang={lang}
                     browseText={lang === 'EN' ? 'Browse Directory' : 'ค้นหาเอกสาร TOR'}
                 />
+                <p role="status" className="rounded-xl border border-slate-200 dark:border-slate-700 p-4 text-sm">
+                    {lang === 'EN' ? 'Saved projects are not connected yet. Browse the TOR directory for current opportunities.' : 'ฟีเจอร์บันทึกโครงการยังไม่พร้อมใช้งาน สามารถค้นหาโครงการได้จากคลังเอกสาร TOR'}
+                </p>
 
                 <TrackedSearchFilters
                     searchQuery={searchQuery}

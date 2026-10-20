@@ -166,14 +166,18 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Initialize state from local storage or media preferences
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
+    let savedTheme: string | null = null;
+    let savedLang: string | null = null;
+    try {
+      savedTheme = localStorage.getItem('theme');
+      savedLang = localStorage.getItem('lang');
+    } catch { /* Browser storage can be blocked; preferences still work in memory. */ }
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const shouldBeDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
 
     setIsDark(shouldBeDark);
     
-    const savedLang = localStorage.getItem('lang') as Language;
-    if (savedLang) setLang(savedLang);
+    if (savedLang === 'TH' || savedLang === 'EN') setLang(savedLang);
 
     setMounted(true);
   }, []);
@@ -185,11 +189,11 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   if (isDark) {
     document.documentElement.classList.add('dark');
     document.documentElement.setAttribute('data-theme', 'dark'); // Add this line
-    localStorage.setItem('theme', 'dark');
+    try { localStorage.setItem('theme', 'dark'); } catch {}
   } else {
     document.documentElement.classList.remove('dark');
     document.documentElement.setAttribute('data-theme', 'light'); // Add this line
-    localStorage.setItem('theme', 'light');
+    try { localStorage.setItem('theme', 'light'); } catch {}
   }
 }, [isDark, mounted]);
 
@@ -200,7 +204,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const toggleLanguage = () => {
     setLang((prev) => {
       const next = prev === 'TH' ? 'EN' : 'TH';
-      localStorage.setItem('lang', next);
+      try { localStorage.setItem('lang', next); } catch {}
       return next;
     });
   };
