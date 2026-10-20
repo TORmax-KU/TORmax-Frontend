@@ -20,7 +20,7 @@ function SearchFeedContent() {
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [retry, setRetry] = useState(0);
   const [result, setResult] = useState<{ key: string; data?: ProjectResults; error?: boolean }>();
-  const apiParams = new URLSearchParams({ search: query.trim(), limit: '20' });
+  const apiParams = new URLSearchParams({ search: query.trim(), limit: '20', availability: 'all' });
   for (const key of ['agency', 'minBudget', 'maxBudget', 'page', 'deadlineYear', 'deadlineFrom', 'deadlineTo', 'availability', 'method', 'sort']) {
     const value = params.get(key);
     if (value) apiParams.set(key, value);
@@ -54,6 +54,12 @@ function SearchFeedContent() {
     window.history.replaceState(null, '', `/search-feed${next.size ? `?${next}` : ''}`);
   };
   const data = !loading ? result?.data : undefined;
+  useEffect(() => {
+    if (!data || data.page <= 1 || data.projects.length > 0) return;
+    const next = new URLSearchParams(window.location.search);
+    next.delete('page');
+    window.history.replaceState(null, '', `/search-feed?${next}`);
+  }, [data]);
   const fieldClass = 'w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm';
 
   return (
@@ -62,8 +68,9 @@ function SearchFeedContent() {
       <SearchInput value={query} onChange={value => update('q', value)} placeholder={th ? 'ค้นหาชื่อโครงการ หน่วยงาน รหัส TOR สรุป หรือทักษะ...' : 'Search title, agency, TOR ID, summary, or skills...'} />
       <IngestionNotice status={result?.data?.ingestion} lang={activeLang} />
       <div className="flex gap-2 flex-wrap" aria-label={th ? 'สถานะการเปิดรับ' : 'Availability'}>
-        {[['open', th ? 'ยังไม่ถึงวันปิดรับ' : 'Before closing deadline'], ['unknown', th ? 'ไม่พบกำหนดปิดรับ' : 'Deadline unknown']].map(([value, label]) => <button key={value} aria-pressed={(params.get('availability') || 'open') === value} onClick={() => update('availability', value)} className={`rounded-full px-4 py-2 text-sm border ${(params.get('availability') || 'open') === value ? 'bg-tormax-purple text-white border-tormax-purple' : 'border-slate-300 dark:border-slate-700'}`}>{label}</button>)}
+        {[['all', th ? 'ทั้งหมดที่ตรวจสอบแล้ว' : 'All verified listings'], ['open', th ? 'ยังไม่ถึงวันปิดรับ' : 'Before closing deadline'], ['unknown', th ? 'ไม่พบกำหนดปิดรับ' : 'Deadline unknown']].map(([value, label]) => <button key={value} aria-pressed={(params.get('availability') || 'all') === value} onClick={() => update('availability', value)} className={`rounded-full px-4 py-2 text-sm border ${(params.get('availability') || 'all') === value ? 'bg-tormax-purple text-white border-tormax-purple' : 'border-slate-300 dark:border-slate-700'}`}>{label}</button>)}
       </div>
+      <p className="text-sm text-slate-500">{th ? 'ค้นหาจากรายการที่ตรวจสอบล่าสุด รวมงานที่ยังไม่ถึงวันปิดรับและงานที่ยังไม่ทราบวันปิดรับ • ต้นทางไม่ระบุข้อมูล หมายถึงไม่มีข้อมูลในช่องนั้น ไม่ใช่ไม่มีข้อกำหนด' : 'Search covers recently verified listings, including unknown deadlines. “Not provided by source” means a field is missing, not that no requirement applies.'}</p>
       {params.get('availability') === 'unknown' && <p className="text-sm text-amber-700 dark:text-amber-300">{th ? 'ไม่พบวันปิดรับไม่ได้หมายความว่าส่งได้เรื่อย ๆ กรุณายืนยันกับหน่วยงานก่อนเตรียมยื่นข้อเสนอ' : 'A missing deadline does not mean submissions remain open. Confirm with the agency before preparing a bid.'}</p>}
       {filtersOpen && <div className="grid sm:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
         <label className="text-sm space-y-2"><span>{th ? 'ปีที่ปิดรับ (พ.ศ.)' : 'Closing year (B.E.)'}</span><input className={fieldClass} type="number" min="2543" max="2743" placeholder={String(new Date().getFullYear() + 543)} disabled={params.get('availability') === 'unknown'} value={params.get('deadlineYear') || ''} onChange={e => update('deadlineYear', e.target.value)} /></label>

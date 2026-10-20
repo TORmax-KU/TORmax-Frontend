@@ -1,4 +1,5 @@
 import { API_BASE_URL } from './auth';
+import { formatSubmissionDeadline } from './submission';
 
 export interface Project {
   _id: string;
@@ -59,8 +60,10 @@ export async function getProjects(params: URLSearchParams, signal: AbortSignal):
 }
 
 export function projectCard(project: Project, lang: 'th' | 'en') {
-  const unknown = lang === 'th' ? 'ไม่ระบุ' : 'Not specified';
+  const unknown = lang === 'th' ? 'ต้นทางไม่ระบุข้อมูล' : 'Not provided by source';
   return {
+    submission: { availability: project.availability, deadline: project.deadline, deadlinePrecision: project.deadlinePrecision, submissionStartAt: project.submissionStartAt },
+    lang,
     id: project._id,
     displayId: project.externalId || project._id,
     name: project.title,
@@ -68,7 +71,7 @@ export function projectCard(project: Project, lang: 'th' | 'en') {
     price: project.budget == null ? unknown : new Intl.NumberFormat(lang === 'th' ? 'th-TH' : 'en-US', { style: 'currency', currency: 'THB', maximumFractionDigits: 0 }).format(project.budget),
     sourcePortal: project.source || unknown,
     method: project.procurementMethod || unknown,
-    deadline: project.deadline ? formatProcurementDate(project.deadline, lang, project.deadlinePrecision !== 'date') : (lang === 'th' ? 'ไม่พบกำหนดปิดรับ — กรุณาตรวจสอบกับหน่วยงาน' : 'Unknown — confirm with the agency'),
+    deadline: formatSubmissionDeadline(project, lang),
     availability: project.availability || 'unverified',
     availabilityLabel: availabilityLabel(project.availability, lang),
     published: formatProcurementDate(project.announcedAt, lang, false),

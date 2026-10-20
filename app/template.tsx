@@ -13,7 +13,7 @@ export default async function Template({
         <div>
                 <Navbar/>
                 <div className="animate-fadeIn transition-opacity duration-300">
-                    {children} {/* Now has access to mock data */}
+                    {children}
                     <Script src='https://static.matterport.com/showcase-sdk/latest.js' />
                 </div>
                 <Footer />
