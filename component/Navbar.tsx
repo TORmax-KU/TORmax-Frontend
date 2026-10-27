@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { AppNotification } from '@/types';
@@ -16,20 +15,10 @@ export interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ companyName }) => {
-    const { isDark, toggleTheme, lang, toggleLanguage, t } = useApp();
+    const { isDark, setTheme, lang, toggleLanguage, t } = useApp();
     const { user, logout } = useAuth();
-    const [searchQuery, setSearchQuery] = useState('');
     const [showNotifications, setShowNotifications] = useState(false);
     const [notifications, setNotifications] = useState<AppNotification[]>([]);
-
-    const router = useRouter();
-
-    // Handle Search Execution
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter' && searchQuery.trim()) {
-            router.push(`/search-feed?q=${encodeURIComponent(searchQuery.trim())}`);
-        }
-    };
 
     // Notification Handling
     const unreadCount = notifications.filter((n) => !n.read).length;
@@ -67,21 +56,6 @@ export const Navbar: React.FC<NavbarProps> = ({ companyName }) => {
                 </div>
             </div>
 
-            {/* Quick Search */}
-            <div className="flex-1 max-w-md hidden sm:block relative">
-                <div className="relative flex items-center">
-                    <span className="absolute left-3.5 text-slate-400 text-xs">🔍</span>
-                    <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        placeholder={t('quickSearch')}
-                        className="w-full pl-9 pr-12 py-2 text-xs font-medium bg-slate-100 dark:bg-[#121118] border border-transparent dark:border-[#2D2938] focus:border-[#5B3E96] rounded-xl focus:outline-none transition-all text-slate-900 dark:text-slate-100 placeholder-slate-400"
-                    />
-                </div>
-            </div>
-
             {/* Utility Actions */}
             <div className="flex items-center space-x-2 shrink-0">
                 {/* Global Language Switcher */}
@@ -92,13 +66,19 @@ export const Navbar: React.FC<NavbarProps> = ({ companyName }) => {
                     🌐 {lang}
                 </button> */}
 
-                {/* Global Theme Switcher */}
-                <button
-                    onClick={toggleTheme}
-                    className="w-8 h-8 rounded-lg border border-slate-200 dark:border-[#2D2938] text-xs hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors flex items-center justify-center"
-                >
-                    {isDark ? '🌙' : '☀️'}
-                </button>
+                {/* Global Theme Selector Dropdown */}
+                <div className="relative inline-flex items-center">
+                    <select
+                        value={isDark ? 'dark' : 'light'}
+                        onChange={(e) => setTheme(e.target.value as 'light' | 'dark')}
+                        aria-label="Select theme"
+                        className="h-8 pl-2.5 pr-6 text-xs font-semibold rounded-lg border border-slate-200 dark:border-[#2D2938] bg-white dark:bg-[#1C1A24] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#2D2938] transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#5B3E96] appearance-none"
+                    >
+                        <option value="light">☀️ ธีมสว่าง</option>
+                        <option value="dark">🌙 ธีมมืด</option>
+                    </select>
+                    <span className="pointer-events-none absolute right-2 text-[9px] text-slate-400">▼</span>
+                </div>
 
                 {/* Notification Link */}
                 <Link

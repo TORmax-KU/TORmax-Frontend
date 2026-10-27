@@ -13,11 +13,7 @@ import {
   RiCloseLine,
   RiMenuLine,
   RiSettings4Line,
-  RiMoonLine,
-  RiSunLine,
-  RiGlobalLine,
-  RiLogoutBoxRLine,
-  RiShieldCheckLine
+  RiLogoutBoxRLine
 } from "@remixicon/react";
 
 interface DrawerMenuProps {
@@ -43,11 +39,14 @@ export default function DrawerMenu({
   const [isOpen, setIsOpen] = useState(false);
   
   // Hook directly into your global AppContext
-  const { isDark, toggleTheme, lang, toggleLanguage } = useApp();
+  const { isDark, setTheme, lang } = useApp();
 
   // Close drawer on route change
   useEffect(() => {
-    setIsOpen(false);
+    const rafId = requestAnimationFrame(() => {
+      setIsOpen(false);
+    });
+    return () => cancelAnimationFrame(rafId);
   }, [pathname]);
 
   const mainNavItems: NavItem[] = [
@@ -164,24 +163,20 @@ export default function DrawerMenu({
 
           {/* Footer Actions */}
           <div className="px-4 py-3 border-t border-slate-100 dark:border-[#2D2938] bg-slate-50/50 dark:bg-[#121118]/50">
-            <div className="flex items-center justify-between gap-1">
-              {/* Language Switcher */}
-              {/* <button
-                onClick={toggleLanguage}
-                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg border border-slate-200 dark:border-[#2D2938] text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors"
-              >
-                <RiGlobalLine className="h-4 w-4" />
-                <span>{lang}</span>
-              </button> */}
-
-              {/* Theme Switcher */}
-              <button
-                onClick={toggleTheme}
-                className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg border border-slate-200 dark:border-[#2D2938] text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors"
-              >
-                {isDark ? <RiSunLine className="h-4 w-4" /> : <RiMoonLine className="h-4 w-4" />}
-                <span>{isDark ? 'Light' : 'Dark'}</span>
-              </button>
+            <div className="flex items-center justify-between gap-2">
+              {/* Theme Selector Dropdown */}
+              <div className="flex-1 relative flex items-center">
+                <select
+                  value={isDark ? 'dark' : 'light'}
+                  onChange={(e) => setTheme(e.target.value as 'light' | 'dark')}
+                  aria-label="Select theme"
+                  className="w-full py-2 pl-3 pr-7 rounded-lg border border-slate-200 dark:border-[#2D2938] text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-[#1C1A24] hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors cursor-pointer appearance-none"
+                >
+                  <option value="light">☀️ ธีมสว่าง</option>
+                  <option value="dark">🌙 ธีมมืด</option>
+                </select>
+                <span className="pointer-events-none absolute right-2.5 text-[9px] text-slate-400">▼</span>
+              </div>
 
               {/* Settings Link */}
               <Link
