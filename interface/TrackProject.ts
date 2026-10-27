@@ -5,6 +5,7 @@ export interface TrackedProject {
     agency: string;
     budget: string;
     submissionDeadline: string;
+    published?: string;
     status: 'active' | 'upcoming' | 'closed';
     category: string;
     trackedDate: string;

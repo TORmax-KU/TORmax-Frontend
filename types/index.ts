@@ -21,6 +21,7 @@ export interface TORItem {
     tags: string[];
     matchScore: number;
     deadline: string;
+    published?: string;
     desc: string;
     method: string;
     deliverables?: string[];

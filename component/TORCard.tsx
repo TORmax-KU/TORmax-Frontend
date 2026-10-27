@@ -6,6 +6,8 @@ import { TORItem } from '@/types';
 import { calculatePassRate } from '@/utils/requirements';
 import { Language } from '@/public/mockData/Language';
 import { useApp } from '@/context/AppContext';
+import { TORFacts } from './TORFacts';
+import { pendingExtraction } from '@/lib/projects';
 
 export interface TORCardProps {
   tor: TORItem;
@@ -50,10 +52,6 @@ export const TORCard: React.FC<TORCardProps> = ({ tor }) => {
           </span>
         </div>
 
-        {/* Pricing Display */}
-        <div className="text-2xl font-black font-display text-tormax-purple dark:text-tormax-lavender tracking-tight">
-          {tor.price}
-        </div>
 
         {/* Source Tag */}
         <span className="inline-block text-[10px] font-bold px-2.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
@@ -63,12 +61,14 @@ export const TORCard: React.FC<TORCardProps> = ({ tor }) => {
         {/* Title & Employer */}
         <div>
           <h3 className="text-base font-bold text-slate-900 dark:text-white line-clamp-2 leading-snug group-hover:text-tormax-purple dark:group-hover:text-tormax-lavender transition-colors">
-            {tor.name}
+            {tor.name || pendingExtraction(activeLang)}
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1 truncate">
             {tor.employer}
           </p>
         </div>
+
+        <TORFacts budget={tor.price || pendingExtraction(activeLang)} published={tor.published || pendingExtraction(activeLang)} deadline={tor.deadline || pendingExtraction(activeLang)} lang={activeLang} />
 
         {/* Optional Description */}
         {tor.desc && (
@@ -95,9 +95,6 @@ export const TORCard: React.FC<TORCardProps> = ({ tor }) => {
       {/* Footer: Deadline, Eligibility & Action */}
       <div className="pt-4 border-t border-slate-100 dark:border-tormax-borderDark flex items-center justify-between gap-2">
         <div>
-          <div className="text-[11px] font-medium text-slate-400">
-            ⏳ {tor.deadline}
-          </div>
           {passRate && tor.requirements && (
             <div className="text-[10px] font-bold text-slate-600 dark:text-slate-300 mt-0.5">
               {t.eligiblePrefix} {passRate.count}/{tor.requirements.length} ({passRate.percentage}%)

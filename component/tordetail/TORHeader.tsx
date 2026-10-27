@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { TORFacts } from '@/component/TORFacts';
 
 interface TORHeaderProps {
   id: string;
@@ -9,6 +10,9 @@ interface TORHeaderProps {
   name: string;
   employer: string;
   backToDirectory: string;
+  published: string;
+  deadline: string;
+  lang: 'th' | 'en';
 }
 
 export function TORHeader({ 
@@ -17,7 +21,10 @@ export function TORHeader({
   price, 
   name, 
   employer, 
-  backToDirectory 
+  backToDirectory,
+  published,
+  deadline,
+  lang,
 }: TORHeaderProps) {
   return (
     <header className="bg-slate-900 text-white min-h-[260px] px-6 sm:px-8 py-10 flex flex-col justify-center border-b border-slate-800">
@@ -34,13 +41,14 @@ export function TORHeader({
           <span>/</span>
           <span className="text-amber-400 font-bold">{sourcePortal}</span>
         </div>
-        <div className="text-3xl md:text-5xl font-black font-display text-tormax-lavender tracking-tight">
-          {price}
-        </div>
         <h1 className="text-2xl md:text-3xl font-extrabold text-white leading-tight">
           {name}
         </h1>
         <p className="text-sm font-semibold text-slate-300">🏛️ {employer}</p>
+        <div className="border-t border-slate-700 pt-5 mt-5">
+          <TORFacts budget={price} published={published} deadline={deadline} lang={lang} inverse />
+          <p className="text-xs text-slate-400 mt-3">{lang === 'th' ? 'วันที่ตามเวลาไทย (GMT+7) • แสดงเวลาเมื่อมีข้อมูลระบุเท่านั้น' : 'Dates use Thailand time (GMT+7). Times appear only when provided.'}</p>
+        </div>
       </div>
     </header>
   );

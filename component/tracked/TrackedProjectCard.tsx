@@ -3,14 +3,14 @@
 import Link from 'next/link';
 import {
   RiBuilding4Line,
-  RiCoinsLine,
-  RiCalendarEventLine,
   RiTimeLine,
   RiExternalLinkLine,
   RiDeleteBinLine,
 } from '@remixicon/react';
 import { TrackedProject } from '@/interface/TrackProject';
 import { StatusBadge } from './StatusBadge';
+import { TORFacts } from '@/component/TORFacts';
+import { pendingExtraction } from '@/lib/projects';
 
 interface TrackedProjectCardProps {
   project: TrackedProject;
@@ -19,6 +19,8 @@ interface TrackedProjectCardProps {
 }
 
 export function TrackedProjectCard({ project, lang, onUntrack }: TrackedProjectCardProps) {
+  const activeLang = lang.toLowerCase() === 'th' ? 'th' : 'en';
+  const pending = pendingExtraction(activeLang);
   return (
     <div className="bg-white dark:bg-[#1C1A24] rounded-2xl p-5 border border-slate-200 dark:border-[#2D2938] flex flex-col justify-between hover:border-[#5B3E96]/40 transition-all shadow-sm group">
       <div>
@@ -43,7 +45,7 @@ export function TrackedProjectCard({ project, lang, onUntrack }: TrackedProjectC
 
         {/* Title */}
         <h3 className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-[#5B3E96] dark:group-hover:text-[#9B82C1] transition-colors line-clamp-2">
-          {lang === 'EN' ? project.title : project.titleTh}
+          {(activeLang === 'en' ? project.title : project.titleTh) || project.title || pending}
         </h3>
 
         {/* Metadata */}
@@ -53,18 +55,7 @@ export function TrackedProjectCard({ project, lang, onUntrack }: TrackedProjectC
             <span className="truncate">{project.agency}</span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <RiCoinsLine className="h-4 w-4 text-slate-400 shrink-0" />
-            <span className="font-semibold text-slate-800 dark:text-slate-200">{project.budget}</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <RiCalendarEventLine className="h-4 w-4 text-slate-400 shrink-0" />
-            <span>
-              {lang === 'EN' ? 'Deadline: ' : 'วันสิ้นสุดเสนอราคา: '}
-              <strong className="text-slate-700 dark:text-slate-300 font-mono">{project.submissionDeadline}</strong>
-            </span>
-          </div>
+          <TORFacts budget={project.budget || pending} published={project.published || pending} deadline={project.submissionDeadline || pending} lang={activeLang} />
         </div>
       </div>
 

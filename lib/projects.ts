@@ -3,6 +3,9 @@ import { formatSubmissionDeadline } from './submission';
 
 export interface Project {
   _id: string;
+  analysisStatus?: 'pending' | 'processing' | 'completed' | 'failed' | 'awaiting_documents' | 'needs_review' | 'retry_pending';
+  analysisHold?: boolean;
+  analyzedAt?: string;
   title: string;
   agency?: string;
   budget?: number;
@@ -32,7 +35,7 @@ export interface Project {
   contact?: { name?: string; phone?: string; email?: string; address?: string };
   submissionLocation?: string;
   requiredSkills?: Array<{ _id: string; name: string } | string>;
-  aiAnalysis?: { mandatorySkillNames?: string[]; noMandatorySkillsReason?: string; skillEvidence?: Array<{ name: string; quote: string; page?: number; documentIndex?: number }> };
+  aiAnalysis?: { documentUrls?: string[]; fieldResults?: Partial<Record<'budget' | 'announcedAt' | 'deadline', { status: 'found' | 'not_found' | 'ambiguous'; reason: string; evidence?: { quote: string; page: number; documentIndex: number } | null }>>; mandatorySkillNames?: string[]; noMandatorySkillsReason?: string; skillEvidence?: Array<{ name: string; quote: string; page?: number; documentIndex?: number }> };
 }
 
 export interface IngestionStatus { status: string; code?: string; lastAttemptAt?: string; lastSuccessAt?: string; nextAttemptAt?: string; intervalMinutes: number }
@@ -66,18 +69,29 @@ export function projectCard(project: Project, lang: 'th' | 'en') {
     lang,
     id: project._id,
     displayId: project.externalId || project._id,
-    name: project.title,
+    name: project.title?.trim() || pendingExtraction(lang),
     employer: project.agency || unknown,
-    price: project.budget == null ? unknown : new Intl.NumberFormat(lang === 'th' ? 'th-TH' : 'en-US', { style: 'currency', currency: 'THB', maximumFractionDigits: 0 }).format(project.budget),
+    price: project.budget == null || !Number.isFinite(project.budget) || project.budget < 0 ? extractionFieldLabel(project, 'budget', lang) : new Intl.NumberFormat(lang === 'th' ? 'th-TH' : 'en-US', { style: 'currency', currency: 'THB', maximumFractionDigits: 2 }).format(project.budget),
     sourcePortal: project.source || unknown,
     method: project.procurementMethod || unknown,
-    deadline: formatSubmissionDeadline(project, lang),
+    deadline: project.deadline && Number.isFinite(Date.parse(project.deadline)) ? formatSubmissionDeadline(project, lang) : extractionFieldLabel(project, 'deadline', lang),
     availability: project.availability || 'unverified',
     availabilityLabel: availabilityLabel(project.availability, lang),
-    published: formatProcurementDate(project.announcedAt, lang, false),
-    desc: project.description || project.descriptions || (lang === 'th' ? 'ต้นทางยังไม่มีรายละเอียดขอบเขตงานที่ตรวจสอบได้' : 'Verified scope of work is not available yet.'),
+    published: project.announcedAt && Number.isFinite(Date.parse(project.announcedAt)) ? formatProcurementDate(project.announcedAt, lang, false) : extractionFieldLabel(project, 'announcedAt', lang),
+    desc: project.descriptions || (lang === 'th' ? 'รอ AI สรุปเอกสาร TOR' : 'Awaiting AI TOR summary'),
     tags: [...new Set([...(project.sourceSkillNames || []), ...(project.requiredSkills || []).flatMap(skill => typeof skill === 'string' ? [] : [skill.name]), ...(project.aiAnalysis?.mandatorySkillNames || [])])],
   };
 }
 
 export type ProjectCard = ReturnType<typeof projectCard>;
+
+export function pendingExtraction(lang: 'th' | 'en') {
+  return lang === 'th' ? 'รอ AI สกัดข้อมูล' : 'Pending AI extraction';
+}
+
+export function extractionFieldLabel(project: Project, field: 'budget' | 'announcedAt' | 'deadline', lang: 'th' | 'en') {
+  const status = project.aiAnalysis?.fieldResults?.[field]?.status;
+  if (status === 'not_found') return lang === 'th' ? 'ไม่พบในเอกสารที่วิเคราะห์' : 'Not found in analyzed documents';
+  if (status === 'ambiguous') return lang === 'th' ? 'ต้องตรวจสอบข้อมูล' : 'Needs review';
+  return pendingExtraction(lang);
+}
