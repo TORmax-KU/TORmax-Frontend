@@ -7,6 +7,7 @@ type Language = 'TH' | 'EN';
 interface AppContextType {
   isDark: boolean;
   toggleTheme: () => void;
+  setTheme: (theme: 'light' | 'dark') => void;
   lang: Language;
   toggleLanguage: () => void;
   t: (key: string) => string;
@@ -201,6 +202,10 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setIsDark((prev) => !prev);
   };
 
+  const setTheme = (theme: 'light' | 'dark') => {
+    setIsDark(theme === 'dark');
+  };
+
   const toggleLanguage = () => {
     setLang((prev) => {
       const next = prev === 'TH' ? 'EN' : 'TH';
@@ -214,7 +219,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   return (
-    <AppContext.Provider value={{ isDark, toggleTheme, lang, toggleLanguage, t }}>
+    <AppContext.Provider value={{ isDark, toggleTheme, setTheme, lang, toggleLanguage, t }}>
       {children}
     </AppContext.Provider>
   );

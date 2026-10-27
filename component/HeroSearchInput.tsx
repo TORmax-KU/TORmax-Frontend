@@ -8,6 +8,7 @@ interface HeroSearchInputProps {
     altLook?: boolean;
     onSearch?: (query: string) => void;
     placeholder?: string;
+    searchLabel?: string;
     initialValue?: string;
 }
 
@@ -16,6 +17,7 @@ export default function HeroSearchInput({
     altLook = false,
     onSearch,
     placeholder = 'Search procurement titles, agencies, or TOR IDs...',
+    searchLabel = 'ค้นหา',
     initialValue = ''
 }: HeroSearchInputProps) {
     const router = useRouter();
@@ -26,7 +28,8 @@ export default function HeroSearchInput({
     useEffect(() => {
         const urlQuery = searchParams.get('q');
         if (urlQuery !== null) {
-            setQuery(urlQuery);
+            const rafId = requestAnimationFrame(() => setQuery(urlQuery));
+            return () => cancelAnimationFrame(rafId);
         }
     }, [searchParams]);
 
@@ -92,7 +95,7 @@ export default function HeroSearchInput({
                         type="submit"
                         className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl transition-all active:scale-95 shadow-md flex items-center gap-2 cursor-pointer"
                     >
-                        <span>Search</span>
+                        <span>{searchLabel}</span>
                     </button>
                 </div>
             </div>
