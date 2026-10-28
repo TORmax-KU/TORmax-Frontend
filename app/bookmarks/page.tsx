@@ -16,7 +16,7 @@ export default function BookmarksPage() {
   const { lang } = useApp();
   const activeLang = lang?.toLowerCase() === 'th' ? 'th' : 'en';
   const th = activeLang === 'th';
-  const { ids, removeBookmark } = useBookmarks();
+  const { ids, loading, savedToAccount, removeBookmark } = useBookmarks();
   const [loaded, setLoaded] = useState<Record<string, Loaded>>({});
   const t = { source: th ? 'ที่มา' : 'Source', method: th ? 'วิธี' : 'Method', deadline: th ? 'ปิดรับ' : 'Closes', openSpec: th ? 'ดูรายละเอียด' : 'View details' };
 
@@ -55,7 +55,9 @@ export default function BookmarksPage() {
               {th ? 'บุ๊กมาร์ก' : 'Bookmarks'}
             </h1>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
-              {th ? 'โครงการที่คุณบันทึกไว้ในเบราว์เซอร์นี้' : 'Projects you saved in this browser.'}
+              {savedToAccount
+                ? (th ? 'โครงการที่บันทึกไว้ในบัญชีของคุณ' : 'Projects saved to your account.')
+                : (th ? 'บันทึกไว้ในเบราว์เซอร์นี้ เข้าสู่ระบบเพื่อใช้บุ๊กมาร์กได้ทุกอุปกรณ์' : 'Saved in this browser. Sign in to keep bookmarks across devices.')}
             </p>
           </div>
           <Link href="/search-feed" className="inline-flex items-center gap-1 text-sm font-bold text-tormax-purple dark:text-tormax-lavender">
@@ -63,7 +65,9 @@ export default function BookmarksPage() {
           </Link>
         </div>
 
-        {ids.length === 0 ? (
+        {loading ? (
+          <TORCardSkeleton count={3} label={th ? 'กำลังโหลด…' : 'Loading…'} className="space-y-4" />
+        ) : ids.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-10 text-center space-y-2">
             <RiBookmarkLine className="h-10 w-10 text-slate-300 dark:text-slate-600 mx-auto" />
             <h2 className="font-semibold">{th ? 'ยังไม่มีบุ๊กมาร์ก' : 'No bookmarks yet'}</h2>
