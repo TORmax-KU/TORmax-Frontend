@@ -35,7 +35,27 @@ export interface Project {
   contact?: { name?: string; phone?: string; email?: string; address?: string };
   submissionLocation?: string;
   requiredSkills?: Array<{ _id: string; name: string } | string>;
+  status?: 'Draft' | 'Public';
+  priceFlag?: PriceFlag;
+  priceAnalysis?: { category: string; benchmarkCategory: string; ratio: number; medianBudget: number; avgBudget: number; sampleSize: number; evaluatedAt: string } | null;
   aiAnalysis?: { documentUrls?: string[]; fieldResults?: Partial<Record<'budget' | 'announcedAt' | 'deadline', { status: 'found' | 'not_found' | 'ambiguous'; reason: string; evidence?: { quote: string; page: number; documentIndex: number } | null }>>; mandatorySkillNames?: string[]; noMandatorySkillsReason?: string; skillEvidence?: Array<{ name: string; quote: string; page?: number; documentIndex?: number }> };
+}
+
+export type PriceFlag = 'Normal' | 'Underpriced' | 'Overpriced' | 'ScopeMismatch';
+
+export function priceFlagLabel(flag: PriceFlag | undefined, lang: 'th' | 'en') {
+  const labels: Record<PriceFlag, [string, string]> = { Normal: ['งบประมาณปกติ', 'Typical budget'], Overpriced: ['งบสูงกว่าปกติ', 'Above typical budget'], Underpriced: ['งบต่ำกว่าปกติ', 'Below typical budget'], ScopeMismatch: ['งบไม่สอดคล้องกับขอบเขต', 'Budget/scope mismatch'] };
+  return labels[flag || 'Normal'][lang === 'th' ? 0 : 1];
+}
+
+// Explains the comparison behind a flag; null when no benchmark exists yet.
+export function priceComparison(project: Project, lang: 'th' | 'en') {
+  const analysis = project.priceAnalysis;
+  if (!analysis) return null;
+  const money = new Intl.NumberFormat(lang === 'th' ? 'th-TH' : 'en-US', { style: 'currency', currency: 'THB', maximumFractionDigits: 0 }).format(analysis.medianBudget);
+  return lang === 'th'
+    ? `${analysis.ratio} เท่าของค่ากลาง ${money} ในหมวด ${analysis.benchmarkCategory} (${analysis.sampleSize} โครงการ)`
+    : `${analysis.ratio}× the ${money} median for ${analysis.benchmarkCategory} (${analysis.sampleSize} TORs)`;
 }
 
 export interface IngestionStatus { status: string; code?: string; lastAttemptAt?: string; lastSuccessAt?: string; nextAttemptAt?: string; intervalMinutes: number }
@@ -77,6 +97,9 @@ export function projectCard(project: Project, lang: 'th' | 'en') {
     deadline: project.deadline && Number.isFinite(Date.parse(project.deadline)) ? formatSubmissionDeadline(project, lang) : extractionFieldLabel(project, 'deadline', lang),
     availability: project.availability || 'unverified',
     availabilityLabel: availabilityLabel(project.availability, lang),
+    priceFlag: project.priceAnalysis ? project.priceFlag || 'Normal' : null,
+    priceFlagLabel: priceFlagLabel(project.priceFlag, lang),
+    priceComparison: priceComparison(project, lang),
     published: project.announcedAt && Number.isFinite(Date.parse(project.announcedAt)) ? formatProcurementDate(project.announcedAt, lang, false) : extractionFieldLabel(project, 'announcedAt', lang),
     desc: project.descriptions || (lang === 'th' ? 'รอ AI สรุปเอกสาร TOR' : 'Awaiting AI TOR summary'),
     tags: [...new Set([...(project.sourceSkillNames || []), ...(project.requiredSkills || []).flatMap(skill => typeof skill === 'string' ? [] : [skill.name]), ...(project.aiAnalysis?.mandatorySkillNames || [])])],

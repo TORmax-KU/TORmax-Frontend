@@ -51,6 +51,7 @@ export function TORCard({ item, t }: TORCardProps) {
       </div>
       <SubmissionStatus project={item.submission} lang={item.lang} />
       <span className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${item.availability === 'open' ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200' : item.availability === 'draft' ? 'bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-200' : 'bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200'}`}>{item.availabilityLabel}</span>
+      {item.priceFlag && item.priceFlag !== 'Normal' && <span title={item.priceComparison || undefined} className="ml-2 inline-block rounded-full px-3 py-1 text-xs font-semibold bg-rose-50 text-rose-800 dark:bg-rose-950 dark:text-rose-200">{item.priceFlagLabel}</span>}
       <div className="flex flex-wrap gap-2">{item.tags.map(tag => <span key={tag} className="text-xs rounded bg-slate-100 dark:bg-slate-800 px-2 py-1">{tag}</span>)}</div>
       <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-tormax-borderDark text-xs">
         <Link

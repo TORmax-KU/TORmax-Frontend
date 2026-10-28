@@ -3,6 +3,11 @@ export interface ProfileFormData {
   taxId: string;
   registeredCapital: string;
   yearsInBusiness: number;
+  // Kept as typed text so invalid input can be highlighted instead of silently clamped.
+  minBudget: string;
+  maxBudget: string;
+  teamSize: string;
+  capacity: string;
   iso27001: boolean;
   iso9001: boolean;
   iso20000: boolean;
