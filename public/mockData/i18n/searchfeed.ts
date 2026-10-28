@@ -2,7 +2,7 @@ export const searchfeedi18n = {
   en: {
     title: 'Multi-Source TOR Directory',
     subtitle: 'Aggregated tenders across multiple public procurement platforms',
-    filterBtn: '🎛️ Advanced Filters & Source Portals',
+    filterBtn: 'Advanced Filters & Source Portals',
     searchPlaceholder: 'Filter directory by title, agency, or TOR ID...',
     showingResultsPrefix: 'Showing results for ',
     itemsFoundSuffix: ' items found',
@@ -10,13 +10,13 @@ export const searchfeedi18n = {
     source: 'Source:',
     method: 'Method:',
     deadline: 'Deadline:',
-    openSpec: 'Open TOR Spec →',
+    openSpec: 'Open TOR Spec',
     loading: 'Loading feed...',
   },
   th: {
     title: 'สารบัญเอกสาร TOR จากทุกแหล่ง',
     subtitle: 'รวบรวมประกาศจัดซื้อจัดจ้างจากพอร์ทัลภาครัฐหลากหลายช่องทาง',
-    filterBtn: '🎛️ ตัวกรองขั้นสูง & แหล่งข้อมูล',
+    filterBtn: 'ตัวกรองขั้นสูง & แหล่งข้อมูล',
     searchPlaceholder: 'กรองรายการตามชื่อโครงการ, หน่วยงาน หรือรหัส TOR...',
     showingResultsPrefix: 'แสดงผลลัพธ์สำหรับ ',
     itemsFoundSuffix: ' รายการ',
@@ -24,7 +24,7 @@ export const searchfeedi18n = {
     source: 'แหล่งที่มา:',
     method: 'วิธีการจัดซื้อ:',
     deadline: 'กำหนดยื่น:',
-    openSpec: 'ดูรายละเอียด TOR →',
+    openSpec: 'ดูรายละเอียด TOR',
     loading: 'กำลังโหลดข้อมูล...',
   },
 };

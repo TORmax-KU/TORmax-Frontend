@@ -2,6 +2,7 @@
 
 import React, { useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
+import { RiCloseLine, RiEqualizerLine } from '@remixicon/react';
 import { useApp } from '@/context/AppContext'; // Adjust path if necessary
 
 interface FilterState {
@@ -108,14 +109,15 @@ export const FilterModal: React.FC<FilterModalProps> = ({
       >
         <div className="flex justify-between items-center border-b border-slate-100 dark:border-tormax-borderDark pb-3">
           <h2 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
-            <span>🎛️</span> {t.title}
+            <RiEqualizerLine size={20} /> {t.title}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg font-bold cursor-pointer"
+            aria-label="Close"
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
           >
-            ✕
+            <RiCloseLine size={20} />
           </button>
         </div>
 

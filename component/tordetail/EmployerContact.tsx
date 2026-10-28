@@ -1,5 +1,7 @@
 'use client';
 
+import { RiMailLine, RiPhoneLine, RiUserLine } from '@remixicon/react';
+
 interface EmployerContactProps {
   employer: string;
   t: {
@@ -19,11 +21,11 @@ export function EmployerContact({ employer, t }: EmployerContactProps) {
           {employer}
         </div>
         <div className="flex items-center gap-2 text-slate-500">
-          <span>👤</span>
+          <RiUserLine size={14} />
           <span>{t.contactDivision}</span>
         </div>
         <div className="flex items-center gap-2 text-slate-500">
-          <span>📧</span>
+          <RiMailLine size={14} />
           <a
             href="mailto:procurement@gov.th"
             className="hover:underline text-tormax-purple dark:text-tormax-lavender font-mono"
@@ -32,7 +34,7 @@ export function EmployerContact({ employer, t }: EmployerContactProps) {
           </a>
         </div>
         <div className="flex items-center gap-2 text-slate-500">
-          <span>📞</span>
+          <RiPhoneLine size={14} />
           <span className="font-mono">+66 2 123 4567 ext 89</span>
         </div>
       </div>

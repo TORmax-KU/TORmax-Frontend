@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { AppNotification } from '@/types';
-import { RiLogoutBoxRLine } from '@remixicon/react';
+import { RiArrowDownSLine, RiLogoutBoxRLine, RiMoonLine, RiNotification3Line, RiSunLine } from '@remixicon/react';
 import DrawerMenu from './DrawerMenu';
 import LogoSignature from './LogoSignature';
 
@@ -72,12 +72,15 @@ export const Navbar: React.FC<NavbarProps> = ({ companyName }) => {
                         value={isDark ? 'dark' : 'light'}
                         onChange={(e) => setTheme(e.target.value as 'light' | 'dark')}
                         aria-label="Select theme"
-                        className="h-8 pl-2.5 pr-6 text-xs font-semibold rounded-lg border border-slate-200 dark:border-[#2D2938] bg-white dark:bg-[#1C1A24] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#2D2938] transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#5B3E96] appearance-none"
+                        className="h-8 pl-7 pr-6 text-xs font-semibold rounded-lg border border-slate-200 dark:border-[#2D2938] bg-white dark:bg-[#1C1A24] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#2D2938] transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#5B3E96] appearance-none"
                     >
-                    <option value="light">☀️ {lang === 'TH' ? 'ธีมสว่าง' : 'Light'}</option>
-                        <option value="dark">🌙 {lang === 'TH' ? 'ธีมมืด' : 'Dark'}</option>
+                        <option value="light">{lang === 'TH' ? 'ธีมสว่าง' : 'Light'}</option>
+                        <option value="dark">{lang === 'TH' ? 'ธีมมืด' : 'Dark'}</option>
                     </select>
-                    <span className="pointer-events-none absolute right-2 text-[9px] text-slate-400">▼</span>
+                    {isDark
+                        ? <RiMoonLine size={14} className="pointer-events-none absolute left-2 text-slate-400" />
+                        : <RiSunLine size={14} className="pointer-events-none absolute left-2 text-slate-400" />}
+                    <RiArrowDownSLine size={14} className="pointer-events-none absolute right-1.5 text-slate-400" />
                 </div>
 
                 {/* Notification Link */}
@@ -86,7 +89,7 @@ export const Navbar: React.FC<NavbarProps> = ({ companyName }) => {
                     className="w-8 h-8 rounded-lg border border-slate-200 dark:border-[#2D2938] flex items-center justify-center text-xs relative hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors"
                     title="Notifications"
                 >
-                    🔔
+                    <RiNotification3Line size={16} />
                     {unreadCount > 0 && (
                         <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center animate-pulse">
                             {unreadCount}

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { RiArrowLeftLine, RiGovernmentLine } from '@remixicon/react';
 import { TORFacts } from '@/component/TORFacts';
 
 interface TORHeaderProps {
@@ -32,9 +33,9 @@ export function TORHeader({
         <div className="flex items-center space-x-3 text-xs font-mono">
           <Link
             href="/search-feed"
-            className="text-tormax-lavender hover:underline transition-colors"
+            className="text-tormax-lavender hover:underline transition-colors inline-flex items-center gap-1"
           >
-            ← {backToDirectory}
+            <RiArrowLeftLine size={14} /> {backToDirectory}
           </Link>
           <span>/</span>
           <span className="text-slate-400">{id}</span>
@@ -44,7 +45,7 @@ export function TORHeader({
         <h1 className="text-2xl md:text-3xl font-extrabold text-white leading-tight">
           {name}
         </h1>
-        <p className="text-sm font-semibold text-slate-300">🏛️ {employer}</p>
+        <p className="text-sm font-semibold text-slate-300 flex items-center gap-1.5"><RiGovernmentLine size={16} /> {employer}</p>
         <div className="border-t border-slate-700 pt-5 mt-5">
           <TORFacts budget={price} published={published} deadline={deadline} lang={lang} inverse />
           <p className="text-xs text-slate-400 mt-3">{lang === 'th' ? 'วันที่ตามเวลาไทย (GMT+7) • แสดงเวลาเมื่อมีข้อมูลระบุเท่านั้น' : 'Dates use Thailand time (GMT+7). Times appear only when provided.'}</p>

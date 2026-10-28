@@ -2,6 +2,7 @@
 
 import React, { useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
+import { RiCheckLine, RiCloseLine, RiExternalLinkLine } from '@remixicon/react';
 
 interface SubmissionModalProps {
   isOpen: boolean;
@@ -94,9 +95,10 @@ export function SubmissionModal({
           <button
             type="button"
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 font-bold text-lg cursor-pointer"
+            aria-label="Close"
+            className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
           >
-            ✕
+            <RiCloseLine size={20} />
           </button>
         </div>
 
@@ -122,9 +124,9 @@ export function SubmissionModal({
               <button
                 type="button"
                 onClick={() => copyToClipboard(field.val, field.key)}
-                className="text-[11px] text-tormax-purple dark:text-tormax-lavender hover:underline font-bold px-2 py-1 rounded bg-tormax-purple/10 border border-tormax-purple/20 cursor-pointer"
+                className="text-[11px] text-tormax-purple dark:text-tormax-lavender hover:underline font-bold px-2 py-1 rounded bg-tormax-purple/10 border border-tormax-purple/20 cursor-pointer inline-flex items-center gap-1"
               >
-                {copiedField === field.key ? t.copied : t.copy}
+                {copiedField === field.key ? <><span>{t.copied}</span><RiCheckLine size={12} /></> : t.copy}
               </button>
             </div>
           ))}
@@ -138,7 +140,7 @@ export function SubmissionModal({
             className="flex-1 py-3 bg-tormax-purple hover:bg-tormax-purpleDeep text-white text-xs font-bold rounded-xl text-center shadow transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             <span>{t.proceedPortal} {sourcePortal} {t.proceedSuffix}</span>
-            <span>↗</span>
+            <RiExternalLinkLine size={14} />
           </a>
           <button
             type="button"

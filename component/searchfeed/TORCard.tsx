@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { RiArrowRightLine, RiGovernmentLine } from '@remixicon/react';
 import { ProjectCard } from '@/lib/projects';
 import { SubmissionStatus } from '@/component/SubmissionStatus';
 import { TORFacts } from '@/component/TORFacts';
@@ -34,7 +35,7 @@ export function TORCard({ item, t }: TORCardProps) {
       </h2>
 
       <div className="flex items-center space-x-3 text-xs text-slate-500 dark:text-slate-400 font-semibold">
-        <span>🏛️ {item.employer}</span>
+        <span className="inline-flex items-center gap-1"><RiGovernmentLine size={14} /> {item.employer}</span>
         <span>•</span>
         <span className="text-tormax-purple dark:text-tormax-lavender font-bold">
           {t.method} {item.method}
@@ -52,9 +53,10 @@ export function TORCard({ item, t }: TORCardProps) {
       <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-tormax-borderDark text-xs">
         <Link
           href={`/tor-page/${item.id}`}
-          className="px-4 py-2 bg-tormax-purple hover:bg-tormax-purpleDeep text-white font-bold rounded-xl transition-all shadow-sm active:scale-95"
+          className="inline-flex items-center gap-1 px-4 py-2 bg-tormax-purple hover:bg-tormax-purpleDeep text-white font-bold rounded-xl transition-all shadow-sm active:scale-95"
         >
           {t.openSpec}
+          <RiArrowRightLine size={14} />
         </Link>
       </div>
     </div>

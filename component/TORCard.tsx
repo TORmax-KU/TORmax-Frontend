@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { RiArrowRightLine, RiGlobalLine } from '@remixicon/react';
 import { TORItem } from '@/types';
 import { calculatePassRate } from '@/utils/requirements';
 import { Language } from '@/public/mockData/Language';
@@ -17,15 +18,15 @@ export interface TORCardProps {
 const i18n = {
   en: {
     matchSuffix: '% Match',
-    sourcePrefix: '🌐 Source:',
+    sourcePrefix: 'Source:',
     eligiblePrefix: 'Eligible:',
-    reviewSpec: 'Review Spec →',
+    reviewSpec: 'Review Spec',
   },
   th: {
     matchSuffix: '% ตรงสเปก',
-    sourcePrefix: '🌐 แหล่งที่มา:',
+    sourcePrefix: 'แหล่งที่มา:',
     eligiblePrefix: 'ผ่านคุณสมบัติ:',
-    reviewSpec: 'ดูข้อกำหนด →',
+    reviewSpec: 'ดูข้อกำหนด',
   },
 };
 
@@ -54,7 +55,8 @@ export const TORCard: React.FC<TORCardProps> = ({ tor }) => {
 
 
         {/* Source Tag */}
-        <span className="inline-block text-[10px] font-bold px-2.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+        <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+          <RiGlobalLine size={12} />
           {t.sourcePrefix} {tor.sourcePortal}
         </span>
 
@@ -104,9 +106,10 @@ export const TORCard: React.FC<TORCardProps> = ({ tor }) => {
 
         <Link 
           href={`/tor-page/${tor.id}`}
-          className="px-4 py-2 bg-tormax-purple hover:bg-tormax-purpleDeep text-white text-xs font-bold rounded-xl transition-all shadow-md active:scale-95 shrink-0"
+          className="inline-flex items-center gap-1 px-4 py-2 bg-tormax-purple hover:bg-tormax-purpleDeep text-white text-xs font-bold rounded-xl transition-all shadow-md active:scale-95 shrink-0"
         >
           {t.reviewSpec}
+          <RiArrowRightLine size={14} />
         </Link>
       </div>
     </div>
