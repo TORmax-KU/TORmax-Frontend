@@ -5,6 +5,7 @@ import { RiArrowRightLine, RiGovernmentLine } from '@remixicon/react';
 import { ProjectCard } from '@/lib/projects';
 import { SubmissionStatus } from '@/component/SubmissionStatus';
 import { TORFacts } from '@/component/TORFacts';
+import { BookmarkButton } from '@/component/BookmarkButton';
 
 interface TORCardProps {
   item: ProjectCard;
@@ -19,8 +20,8 @@ interface TORCardProps {
 export function TORCard({ item, t }: TORCardProps) {
   return (
     <div className="bg-white dark:bg-tormax-surfaceDark p-6 rounded-2xl border border-slate-200 dark:border-tormax-borderDark space-y-3 hover:border-tormax-purple dark:hover:border-tormax-lavender/50 transition-all shadow-sm hover:shadow-md group">
-      <div className="flex justify-between items-baseline flex-wrap gap-2">
-        <div className="flex items-center space-x-2">
+      <div className="flex justify-between items-start gap-2">
+        <div className="flex items-center flex-wrap gap-2">
           <span className="text-[10px] font-bold px-2.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
             {t.source} {item.sourcePortal}
           </span>
@@ -28,6 +29,7 @@ export function TORCard({ item, t }: TORCardProps) {
             {item.displayId}
           </span>
         </div>
+        <BookmarkButton id={item.id} lang={item.lang} />
       </div>
 
       <h2 className="text-lg font-bold text-slate-900 dark:text-white leading-snug group-hover:text-tormax-purple dark:group-hover:text-tormax-lavender transition-colors">
