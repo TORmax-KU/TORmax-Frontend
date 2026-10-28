@@ -8,7 +8,7 @@ export function ExtractionEvidence({ project, lang }: { project: Project; lang: 
     : { pending: 'Pending AI extraction', processing: 'AI is analyzing documents', completed: 'Documents analyzed', failed: 'Analysis failed — retry needed', awaiting_documents: 'Additional TOR documents needed', needs_review: 'Some fields need review', retry_pending: 'Automatic retry pending' };
   return <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-3">
     <h2 className="font-bold">{th ? 'สถานะการวิเคราะห์' : 'Extraction status'}</h2>
-    <p role="status" className="text-sm">{states[project.analysisStatus || 'pending'] || states.pending}</p>
+    <p role="status" className="text-sm">{project.analysisStatus === 'skipped' ? (th ? 'ข้ามการวิเคราะห์อัตโนมัติ' : 'Automatic analysis skipped') : states[project.analysisStatus || 'pending'] || states.pending}</p>
     {project.aiAnalysis?.fieldResults && <details>
       <summary className="text-sm cursor-pointer">{th ? 'หลักฐานงบประมาณและวันที่' : 'Budget and date evidence'}</summary>
       <dl className="space-y-4 mt-4 text-sm">{(Object.keys(labels) as Array<keyof typeof labels>).map(key => {

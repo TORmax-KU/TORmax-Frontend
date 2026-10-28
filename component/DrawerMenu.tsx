@@ -63,7 +63,7 @@ export default function DrawerMenu({
   };
 
   return (
-    <div className="drawer z-50">
+    <div className="drawer w-auto shrink-0 z-50">
       {/* Native DaisyUI Drawer Toggle */}
       <input 
         id="main-drawer" 
@@ -172,8 +172,8 @@ export default function DrawerMenu({
                   aria-label="Select theme"
                   className="w-full py-2 pl-3 pr-7 rounded-lg border border-slate-200 dark:border-[#2D2938] text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-[#1C1A24] hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors cursor-pointer appearance-none"
                 >
-                  <option value="light">☀️ ธีมสว่าง</option>
-                  <option value="dark">🌙 ธีมมืด</option>
+                  <option value="light">☀️ {lang === 'TH' ? 'ธีมสว่าง' : 'Light'}</option>
+                  <option value="dark">🌙 {lang === 'TH' ? 'ธีมมืด' : 'Dark'}</option>
                 </select>
                 <span className="pointer-events-none absolute right-2.5 text-[9px] text-slate-400">▼</span>
               </div>

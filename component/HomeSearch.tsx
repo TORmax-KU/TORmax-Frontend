@@ -18,7 +18,7 @@ const i18n = {
     todaysDigest: "Today's Digest",
     browseAll: 'Browse All TORs',
     searchPlaceholder: 'Search project title, agency, TOR ID, summary, or skills...',
-    searchLabel: 'ค้นหา',
+    searchLabel: 'Search',
     tags: [
       { label: 'Cloud Infrastructure', query: 'Cloud' },
       { label: 'Cybersecurity', query: 'Cybersecurity' },
@@ -60,13 +60,21 @@ export default function HomeSearch() {
       setIsVisible(true);
     });
 
+    const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
     const handleScroll = () => {
+      if (motionPreference.matches) {
+        setScrollY(0);
+        return;
+      }
       setScrollY(window.scrollY);
     };
 
+    handleScroll();
+    motionPreference.addEventListener('change', handleScroll);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
       cancelAnimationFrame(rafId);
+      motionPreference.removeEventListener('change', handleScroll);
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
@@ -82,7 +90,7 @@ export default function HomeSearch() {
   const jumpToDigestSection = () => {
     const el = document.getElementById('daily-digest');
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+      el.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
     }
   };
 
@@ -113,7 +121,7 @@ export default function HomeSearch() {
       <div
         className={`
           relative z-10 flex flex-col items-center justify-center min-h-[85vh] px-4 py-20 text-center
-          transition-all duration-700 ease-out
+          transition-all duration-700 ease-out motion-reduce:transition-none motion-reduce:transform-none
           ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}
         `}
       >
@@ -121,7 +129,7 @@ export default function HomeSearch() {
           
           {/* Status Badge */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/5 dark:bg-white/5 border border-slate-900/10 dark:border-white/10 backdrop-blur-md text-xs font-semibold text-slate-700 dark:text-slate-300 shadow-xs">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+            <span className="w-2 h-2 rounded-full bg-emerald-500 motion-safe:animate-ping" />
             <span className="w-2 h-2 rounded-full bg-emerald-500 -ml-4" />
             <span>{t.activeTenders}</span>
           </div>

@@ -29,8 +29,8 @@ export default function SettingsPage() {
             onChange={(e) => setTheme(e.target.value as 'light' | 'dark')}
             className="bg-transparent font-medium cursor-pointer outline-none text-slate-900 dark:text-white"
           >
-            <option value="light" className="text-slate-900 bg-white">{th ? 'สว่าง (Light)' : 'ธีมสว่าง'}</option>
-            <option value="dark" className="text-white bg-slate-900">{th ? 'มืด (Dark)' : 'ธีมมืด'}</option>
+            <option value="light" className="text-slate-900 bg-white">{th ? 'สว่าง (Light)' : 'Light'}</option>
+            <option value="dark" className="text-white bg-slate-900">{th ? 'มืด (Dark)' : 'Dark'}</option>
           </select>
         </label>
         <button type="button" onClick={toggleLanguage} className="border rounded-xl px-4 py-3">{th ? 'ภาษา: ไทย → English' : 'Language: English → ไทย'}</button>

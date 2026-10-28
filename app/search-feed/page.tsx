@@ -62,9 +62,9 @@ function SearchFeedContent() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 sm:px-8 py-10 w-full space-y-6">
-      <SearchHeader title={th ? 'TOR งาน IT ประกวดราคาอิเล็กทรอนิกส์ในกรุงเทพฯ' : 'Bangkok IT e-bidding TORs'} subtitle={th ? 'ตรวจสอบวันปิดรับ เอกสารต้นฉบับ และรายละเอียดก่อนยื่นข้อเสนอ' : 'Review closing deadlines, original documents and requirements before applying.'} onFilterClick={() => setFiltersOpen(!filtersOpen)} filterBtnText={th ? 'ตัวกรอง' : 'Filters'} />
+      <SearchHeader title={th ? 'TOR งาน IT ประกวดราคาอิเล็กทรอนิกส์' : 'IT e-bidding TORs'} subtitle={th ? 'ตรวจสอบวันปิดรับ เอกสารต้นฉบับ และรายละเอียดก่อนยื่นข้อเสนอ' : 'Review closing deadlines, original documents and requirements before applying.'} onFilterClick={() => setFiltersOpen(!filtersOpen)} filterBtnText={th ? 'ตัวกรอง' : 'Filters'} />
       <SearchInput value={query} onChange={value => update('q', value)} placeholder={th ? 'ค้นหาชื่อโครงการ หน่วยงาน รหัส TOR สรุป หรือทักษะ...' : 'Search title, agency, TOR ID, summary, or skills...'} />
-      <p className="text-sm text-slate-500">{th ? 'แสดงเฉพาะงาน IT แบบ e-bidding ของกรุงเทพฯ ที่ยังเปิดรับ พร้อมชื่อ งบประมาณ วันประกาศ วันปิดรับ และสรุป TOR จาก AI' : 'Shows only open Bangkok IT e-bidding TORs with a title, budget, publication date, deadline, and AI summary.'}</p>
+      <p className="text-sm text-slate-500">{th ? 'แสดงเฉพาะงาน IT แบบ e-bidding ที่ยังเปิดรับ พร้อมชื่อ งบประมาณ วันประกาศ วันปิดรับ และสรุป TOR จาก AI' : 'Shows only open IT e-bidding TORs with a title, budget, publication date, deadline, and AI summary.'}</p>
       {filtersOpen && <div className="grid sm:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
         <label className="text-sm space-y-2"><span>{th ? 'ปีที่ปิดรับ (พ.ศ.)' : 'Closing year (B.E.)'}</span><input className={fieldClass} type="number" min="2543" max="2743" placeholder={String(new Date().getFullYear() + 543)} value={params.get('deadlineYear') || ''} onChange={e => update('deadlineYear', e.target.value)} /></label>
         <label className="text-sm space-y-2"><span>{th ? 'ปิดรับตั้งแต่วันที่' : 'Closing from'}</span><input className={fieldClass} type="date" value={params.get('deadlineFrom') || ''} onChange={e => update('deadlineFrom', e.target.value)} /></label>

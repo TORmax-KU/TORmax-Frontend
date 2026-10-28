@@ -3,7 +3,7 @@ import { formatSubmissionDeadline } from './submission';
 
 export interface Project {
   _id: string;
-  analysisStatus?: 'pending' | 'processing' | 'completed' | 'failed' | 'awaiting_documents' | 'needs_review' | 'retry_pending';
+  analysisStatus?: 'pending' | 'processing' | 'completed' | 'failed' | 'awaiting_documents' | 'needs_review' | 'retry_pending' | 'skipped';
   analysisHold?: boolean;
   analyzedAt?: string;
   title: string;
@@ -72,7 +72,7 @@ export function projectCard(project: Project, lang: 'th' | 'en') {
     name: project.title?.trim() || pendingExtraction(lang),
     employer: project.agency || unknown,
     price: project.budget == null || !Number.isFinite(project.budget) || project.budget < 0 ? extractionFieldLabel(project, 'budget', lang) : new Intl.NumberFormat(lang === 'th' ? 'th-TH' : 'en-US', { style: 'currency', currency: 'THB', maximumFractionDigits: 2 }).format(project.budget),
-    sourcePortal: project.source || unknown,
+    sourcePortal: ({ 'tero-procurement': 'Tero Procurement', govspending: 'GovSpending / DGA', 'bangkok-egp': 'Bangkok e-GP' } as Record<string, string>)[project.source || ''] || project.source || unknown,
     method: project.procurementMethod || unknown,
     deadline: project.deadline && Number.isFinite(Date.parse(project.deadline)) ? formatSubmissionDeadline(project, lang) : extractionFieldLabel(project, 'deadline', lang),
     availability: project.availability || 'unverified',

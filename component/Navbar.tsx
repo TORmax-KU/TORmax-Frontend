@@ -27,7 +27,7 @@ export const Navbar: React.FC<NavbarProps> = ({ companyName }) => {
     };
 
     return (
-        <nav className="sticky top-0 z-40 bg-white/90 dark:bg-[#1C1A24]/90 backdrop-blur-md border-b border-slate-200 dark:border-[#2D2938] px-6 py-3 flex items-center justify-between gap-4">
+        <nav className="sticky top-0 z-40 bg-white/90 dark:bg-[#1C1A24]/90 backdrop-blur-md border-b border-slate-200 dark:border-[#2D2938] px-3 sm:px-6 py-3 flex items-center justify-between gap-2 sm:gap-4">
             {/* Brand & Links */}
             <div className="flex items-center space-x-6">
                 <div style={{
@@ -67,15 +67,15 @@ export const Navbar: React.FC<NavbarProps> = ({ companyName }) => {
                 </button> */}
 
                 {/* Global Theme Selector Dropdown */}
-                <div className="relative inline-flex items-center">
+                <div className="relative hidden sm:inline-flex items-center">
                     <select
                         value={isDark ? 'dark' : 'light'}
                         onChange={(e) => setTheme(e.target.value as 'light' | 'dark')}
                         aria-label="Select theme"
                         className="h-8 pl-2.5 pr-6 text-xs font-semibold rounded-lg border border-slate-200 dark:border-[#2D2938] bg-white dark:bg-[#1C1A24] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#2D2938] transition-colors cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#5B3E96] appearance-none"
                     >
-                        <option value="light">☀️ ธีมสว่าง</option>
-                        <option value="dark">🌙 ธีมมืด</option>
+                    <option value="light">☀️ {lang === 'TH' ? 'ธีมสว่าง' : 'Light'}</option>
+                        <option value="dark">🌙 {lang === 'TH' ? 'ธีมมืด' : 'Dark'}</option>
                     </select>
                     <span className="pointer-events-none absolute right-2 text-[9px] text-slate-400">▼</span>
                 </div>

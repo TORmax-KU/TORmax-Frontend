@@ -72,7 +72,7 @@ export default function HeroSearchInput({
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder={placeholder}
-                    className={`w-full py-4 pr-3 bg-transparent text-sm sm:text-base outline-none placeholder:text-slate-400 ${mode === 'dark' ? 'text-white' : 'text-slate-900'
+                    className={`min-w-0 w-full py-4 pr-3 bg-transparent text-sm sm:text-base outline-none placeholder:text-slate-400 ${mode === 'dark' ? 'text-white' : 'text-slate-900'
                         }`}
                 />
 
@@ -80,8 +80,9 @@ export default function HeroSearchInput({
                 {query && (
                     <button
                         type="button"
+                        aria-label={searchLabel === 'ค้นหา' ? 'ล้างคำค้นหา' : 'Clear search'}
                         onClick={() => setQuery('')}
-                        className="p-1 mr-1 text-slate-400 hover:text-slate-200 rounded-full hover:bg-white/10 transition-colors"
+                        className={`shrink-0 p-2 mr-1 rounded-full transition-colors ${mode === 'dark' ? 'text-slate-400 hover:text-white hover:bg-white/10' : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100'}`}
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
@@ -90,7 +91,7 @@ export default function HeroSearchInput({
                 )}
 
                 {/* Submit Action Button */}
-                <div className="pr-2">
+                <div className="shrink-0 pr-2">
                     <button
                         type="submit"
                         className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl transition-all active:scale-95 shadow-md flex items-center gap-2 cursor-pointer"
