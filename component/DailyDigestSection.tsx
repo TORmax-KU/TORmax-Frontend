@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { RiArrowRightLine } from '@remixicon/react';
 import { TORItem } from '@/types';
 import { TORCard } from './TORCard';
 import { useApp } from '@/context/AppContext';
@@ -22,7 +23,7 @@ const i18n = {
     subtitleSuffix: ' capabilities.',
     defaultCompany: 'Your Company',
     updatedAgo: 'Updated 2 Hours Ago',
-    viewDirectory: 'View Directory →',
+    viewDirectory: 'View Directory',
   },
   th: {
     title: 'สรุปประจำวัน — งานประกวดราคาคัดสรรวันนี้',
@@ -30,7 +31,7 @@ const i18n = {
     subtitleSuffix: '',
     defaultCompany: 'บริษัทของคุณ',
     updatedAgo: 'อัปเดตเมื่อ 2 ชั่วโมงที่แล้ว',
-    viewDirectory: 'ดูสารบัญทั้งหมด →',
+    viewDirectory: 'ดูสารบัญทั้งหมด',
   },
 };
 
@@ -69,9 +70,10 @@ export default function DailyDigestSection({
           </span>
           <Link
             href="/search-feed"
-            className="hidden sm:inline-flex text-xs font-bold text-[#5B3E96] dark:text-tormax-lavender hover:underline"
+            className="hidden sm:inline-flex items-center gap-1 text-xs font-bold text-[#5B3E96] dark:text-tormax-lavender hover:underline"
           >
             {t.viewDirectory}
+            <RiArrowRightLine size={14} />
           </Link>
         </div>
       </div>

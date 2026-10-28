@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { RiAlertLine, RiArrowRightLine, RiCheckLine } from '@remixicon/react';
 
 interface Requirement {
   text: string;
@@ -52,7 +53,7 @@ export function QualificationChecklist({
             className="text-xs font-bold text-[#5B3E96] dark:text-tormax-lavender underline hover:opacity-80 transition-opacity flex items-center gap-1"
           >
             <span>{t.updateProfile}</span>
-            <span>→</span>
+            <RiArrowRightLine size={14} />
           </Link>
           <span
             className={`text-xs font-mono font-bold px-2.5 py-1 rounded ${
@@ -78,13 +79,13 @@ export function QualificationChecklist({
           >
             <div className="flex items-start gap-3">
               <span
-                className={`text-base font-bold ${
+                className={`shrink-0 ${
                   req.pass
                     ? 'text-emerald-600 dark:text-emerald-400'
                     : 'text-amber-600 dark:text-amber-400'
                 }`}
               >
-                {req.pass ? '✓' : '⚠️'}
+                {req.pass ? <RiCheckLine size={18} /> : <RiAlertLine size={18} />}
               </span>
               <div className="space-y-1">
                 <p className="font-semibold text-slate-800 dark:text-slate-200">
@@ -105,7 +106,7 @@ export function QualificationChecklist({
                         className="font-bold text-amber-800 dark:text-amber-300 underline hover:text-[#5B3E96] dark:hover:text-tormax-lavender transition-colors flex items-center gap-0.5"
                       >
                         <span>{t.updateCredentialsLink}</span>
-                        <span className="text-xs">→</span>
+                        <RiArrowRightLine size={12} />
                       </Link>
                     </div>
                   )}

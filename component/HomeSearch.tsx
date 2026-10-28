@@ -2,6 +2,7 @@
 
 import { Suspense, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { RiArrowDownLine, RiArrowRightLine } from '@remixicon/react';
 import MediaBlock from "./MediaBlock";
 import HeroSearchInput from './HeroSearchInput';
 import { useApp } from '@/context/AppContext'; // Adjust path if necessary
@@ -179,14 +180,14 @@ export default function HomeSearch() {
               className="w-full sm:w-1/2 px-6 py-3.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50 active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer"
             >
               <span>{t.todaysDigest}</span>
-              <span>↓</span>
+              <RiArrowDownLine size={16} />
             </button>
             <button
               onClick={() => router.push('/search-feed')}
               className="w-full sm:w-1/2 px-6 py-3.5 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 shadow-sm dark:bg-slate-900/90 dark:hover:bg-slate-800 dark:text-slate-200 dark:border-slate-700/80 rounded-xl transition-all active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer font-semibold"
             >
               <span>{t.browseAll}</span>
-              <span>→</span>
+              <RiArrowRightLine size={16} />
             </button>
           </div>
 

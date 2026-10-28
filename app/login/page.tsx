@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { RiArrowDownSLine } from '@remixicon/react';
 import LogoSignature from '@/component/LogoSignature';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
@@ -148,7 +149,7 @@ function GoogleLoginContent() {
                             ไทย (Thai)
                         </option>
                     </select>
-                    <span className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-[10px]">▼</span>
+                    <RiArrowDownSLine size={14} className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
 
                 <div className="flex items-center gap-4">

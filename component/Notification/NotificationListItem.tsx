@@ -7,6 +7,7 @@ import {
     RiFileTextLine,
     RiInformationLine,
     RiDeleteBinLine,
+    RiArrowRightLine,
 } from '@remixicon/react';
 
 interface NotificationListItemProps {
@@ -70,7 +71,7 @@ export function NotificationListItem({
                             className="text-xs font-bold text-[#5B3E96] dark:text-[#9B82C1] hover:underline inline-flex items-center gap-1"
                         >
                             <span>{lang === 'EN' ? 'View Target' : 'ดูรายละเอียด'}</span>
-                            <span>→</span>
+                            <RiArrowRightLine size={14} />
                         </a>
                     </div>
                 )}

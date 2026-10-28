@@ -1,6 +1,7 @@
 'use client';
 
 import { ProfileFormData } from '@/types/profile';
+import { RiMailLine, RiSmartphoneLine } from '@remixicon/react';
 import { ProfileTranslations } from '@/public/mockData/i18n/profile';
 import { ToggleCard } from './ToggleCard';
 
@@ -67,6 +68,7 @@ export function PreferencesSection({
           <ToggleCard
             id="dailyDigestEmail"
             title={t.dailyEmail}
+            icon={<RiMailLine size={16} />}
             description={t.dailyEmailDesc}
             checked={formData.dailyDigestEmail}
             onChange={onChange}
@@ -74,6 +76,7 @@ export function PreferencesSection({
           <ToggleCard
             id="smsAlerts"
             title={t.smsAlerts}
+            icon={<RiSmartphoneLine size={16} />}
             description={t.smsAlertsDesc}
             checked={formData.smsAlerts}
             onChange={onChange}

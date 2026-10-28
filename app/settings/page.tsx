@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { RiArrowRightLine, RiTranslate2 } from '@remixicon/react';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 
@@ -33,7 +34,7 @@ export default function SettingsPage() {
             <option value="dark" className="text-white bg-slate-900">{th ? 'มืด (Dark)' : 'Dark'}</option>
           </select>
         </label>
-        <button type="button" onClick={toggleLanguage} className="border rounded-xl px-4 py-3">{th ? 'ภาษา: ไทย → English' : 'Language: English → ไทย'}</button>
+        <button type="button" onClick={toggleLanguage} className="border rounded-xl px-4 py-3 inline-flex items-center gap-2"><RiTranslate2 size={16} />{th ? 'ภาษา: ไทย' : 'Language: English'}<RiArrowRightLine size={14} />{th ? 'English' : 'ไทย'}</button>
       </div>
     </section>
   </main>;

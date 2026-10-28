@@ -7,7 +7,8 @@ import { searchfeedi18n } from '@/public/mockData/i18n/searchfeed';
 import { SearchHeader } from '@/component/searchfeed/SearchHeader';
 import { SearchInput } from '@/component/searchfeed/SearchInput';
 import { TORList } from '@/component/searchfeed/TORList';
-import { getProjects, projectCard, ProjectResults } from '@/lib/projects';
+import { TORCardSkeleton } from '@/component/TORCardSkeleton';
+import { availabilityLabel, getProjects, projectCard, ProjectResults } from '@/lib/projects';
 
 function SearchFeedContent() {
   const { lang } = useApp();
@@ -19,7 +20,7 @@ function SearchFeedContent() {
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [retry, setRetry] = useState(0);
   const [result, setResult] = useState<{ key: string; data?: ProjectResults; error?: boolean }>();
-  const apiParams = new URLSearchParams({ search: query.trim(), limit: '20', availability: 'open' });
+  const apiParams = new URLSearchParams({ search: query.trim(), limit: '20', availability: params.get('availability') || 'open' });
   for (const key of ['agency', 'minBudget', 'maxBudget', 'page', 'deadlineYear', 'deadlineFrom', 'deadlineTo', 'method', 'sort']) {
     const value = params.get(key);
     if (value) apiParams.set(key, value);
@@ -64,8 +65,9 @@ function SearchFeedContent() {
     <div className="max-w-6xl mx-auto px-6 sm:px-8 py-10 w-full space-y-6">
       <SearchHeader title={th ? 'TOR งาน IT ประกวดราคาอิเล็กทรอนิกส์' : 'IT e-bidding TORs'} subtitle={th ? 'ตรวจสอบวันปิดรับ เอกสารต้นฉบับ และรายละเอียดก่อนยื่นข้อเสนอ' : 'Review closing deadlines, original documents and requirements before applying.'} onFilterClick={() => setFiltersOpen(!filtersOpen)} filterBtnText={th ? 'ตัวกรอง' : 'Filters'} />
       <SearchInput value={query} onChange={value => update('q', value)} placeholder={th ? 'ค้นหาชื่อโครงการ หน่วยงาน รหัส TOR สรุป หรือทักษะ...' : 'Search title, agency, TOR ID, summary, or skills...'} />
-      <p className="text-sm text-slate-500">{th ? 'แสดงเฉพาะงาน IT แบบ e-bidding ที่ยังเปิดรับ พร้อมชื่อ งบประมาณ วันประกาศ วันปิดรับ และสรุป TOR จาก AI' : 'Shows only open IT e-bidding TORs with a title, budget, publication date, deadline, and AI summary.'}</p>
+      <p className="text-sm text-slate-500">{th ? 'แสดงงาน IT แบบ e-bidding ตามสถานะที่เลือก (เปิดรับหรือร่างประกาศ) พร้อมชื่อ งบประมาณ วันประกาศ วันปิดรับ และสรุป TOR จาก AI' : 'Shows IT e-bidding TORs in the selected status (open or draft) with a title, budget, publication date, deadline, and AI summary.'}</p>
       {filtersOpen && <div className="grid sm:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
+        <label className="text-sm space-y-2"><span>{th ? 'สถานะ' : 'Status'}</span><select className={fieldClass} value={params.get('availability') || 'open'} onChange={e => update('availability', e.target.value === 'open' ? '' : e.target.value)}>{['open', 'draft'].map(value => <option key={value} value={value}>{availabilityLabel(value, activeLang)}</option>)}</select></label>
         <label className="text-sm space-y-2"><span>{th ? 'ปีที่ปิดรับ (พ.ศ.)' : 'Closing year (B.E.)'}</span><input className={fieldClass} type="number" min="2543" max="2743" placeholder={String(new Date().getFullYear() + 543)} value={params.get('deadlineYear') || ''} onChange={e => update('deadlineYear', e.target.value)} /></label>
         <label className="text-sm space-y-2"><span>{th ? 'ปิดรับตั้งแต่วันที่' : 'Closing from'}</span><input className={fieldClass} type="date" value={params.get('deadlineFrom') || ''} onChange={e => update('deadlineFrom', e.target.value)} /></label>
         <label className="text-sm space-y-2"><span>{th ? 'ปิดรับถึงวันที่' : 'Closing through'}</span><input className={fieldClass} type="date" value={params.get('deadlineTo') || ''} onChange={e => update('deadlineTo', e.target.value)} /></label>
@@ -77,9 +79,9 @@ function SearchFeedContent() {
       </div>}
       {params.size > 0 && <button className="text-sm text-tormax-purple dark:text-tormax-lavender underline" onClick={() => window.history.replaceState(null, '', '/search-feed')}>{th ? 'ล้างการค้นหาและตัวกรอง' : 'Clear search and filters'}</button>}
       <div aria-live="polite" aria-busy={loading}>
-        {loading ? <p className="py-8 text-center">{t.loading}</p> : result?.error ? <div role="alert" className="py-8 text-center space-y-3"><p>{th ? 'โหลด TOR ไม่สำเร็จ ตรวจสอบการเชื่อมต่อและช่วงงบประมาณ แล้วลองใหม่' : 'Could not load TORs. Check your connection and budget range, then try again.'}</p><button className="underline" onClick={() => setRetry(value => value + 1)}>{th ? 'ลองอีกครั้ง' : 'Retry'}</button></div> : data && <>
+        {loading ? <TORCardSkeleton count={4} label={t.loading} className="space-y-4" /> : result?.error ? <div role="alert" className="py-8 text-center space-y-3"><p>{th ? 'โหลด TOR ไม่สำเร็จ ตรวจสอบการเชื่อมต่อและช่วงงบประมาณ แล้วลองใหม่' : 'Could not load TORs. Check your connection and budget range, then try again.'}</p><button className="underline" onClick={() => setRetry(value => value + 1)}>{th ? 'ลองอีกครั้ง' : 'Retry'}</button></div> : data && <>
           <p className="text-sm text-slate-500 mb-4">{data.total}{t.itemsFoundSuffix}</p>
-          {data.total === 0 ? <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-10 text-center space-y-2"><p className="font-semibold">{th ? 'ยังไม่มีงานที่ผ่านเงื่อนไขนี้' : 'No open, fully analyzed TORs match these filters.'}</p><p className="text-sm text-slate-500">{th ? 'งานจะแสดงเมื่อ AI วิเคราะห์ข้อมูลครบและยืนยันเอกสารต้นทางแล้ว' : 'Listings appear after AI extracts all required fields and source documents are verified.'}</p></div> : <TORList items={data.projects.map(project => projectCard(project, activeLang))} t={t} />}
+          {data.total === 0 ? <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-10 text-center space-y-2"><p className="font-semibold">{th ? 'ยังไม่มีงานที่ผ่านเงื่อนไขนี้' : 'No open, fully analyzed TORs match these filters.'}</p><p className="text-sm text-slate-500">{th ? 'งานจะแสดงเมื่อ AI วิเคราะห์ข้อมูลครบและยืนยันเอกสารต้นทางแล้ว' : 'Listings appear after AI extracts all required fields and source documents are verified.'}</p>{params.size > 0 && <button className="mt-2 rounded-xl bg-tormax-purple px-4 py-2 text-sm font-bold text-white hover:bg-tormax-purpleDeep" onClick={() => window.history.replaceState(null, '', '/search-feed')}>{th ? 'รีเซ็ตตัวกรอง' : 'Reset Filters'}</button>}</div> : <TORList items={data.projects.map(project => projectCard(project, activeLang))} t={t} />}
           {data.total > data.limit && <nav aria-label={th ? 'หน้าผลการค้นหา' : 'Search result pages'} className="flex justify-center items-center gap-4 pt-6">
             <button className="px-4 py-2 rounded-xl border disabled:opacity-40" disabled={data.page <= 1} onClick={() => update('page', String(data.page - 1))}>{th ? 'ก่อนหน้า' : 'Previous'}</button>
             <span>{data.page} / {Math.ceil(data.total / data.limit)}</span>

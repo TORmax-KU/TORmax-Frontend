@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { RiArrowRightLine, RiGovernmentLine } from '@remixicon/react';
 import { ProjectCard } from '@/lib/projects';
 import { SubmissionStatus } from '@/component/SubmissionStatus';
 import { TORFacts } from '@/component/TORFacts';
@@ -34,7 +35,7 @@ export function TORCard({ item, t }: TORCardProps) {
       </h2>
 
       <div className="flex items-center space-x-3 text-xs text-slate-500 dark:text-slate-400 font-semibold">
-        <span>🏛️ {item.employer}</span>
+        <span className="inline-flex items-center gap-1"><RiGovernmentLine size={14} /> {item.employer}</span>
         <span>•</span>
         <span className="text-tormax-purple dark:text-tormax-lavender font-bold">
           {t.method} {item.method}
@@ -47,14 +48,15 @@ export function TORCard({ item, t }: TORCardProps) {
         {item.submission.deadlinePrecision === 'datetime' && <p className="text-xs text-slate-500 mt-2">{item.lang === 'th' ? 'เวลาไทย (GMT+7)' : 'Thailand time (GMT+7)'}</p>}
       </div>
       <SubmissionStatus project={item.submission} lang={item.lang} />
-      <span className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${item.availability === 'open' ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200' : 'bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200'}`}>{item.availabilityLabel}</span>
+      <span className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${item.availability === 'open' ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200' : item.availability === 'draft' ? 'bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-200' : 'bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200'}`}>{item.availabilityLabel}</span>
       <div className="flex flex-wrap gap-2">{item.tags.map(tag => <span key={tag} className="text-xs rounded bg-slate-100 dark:bg-slate-800 px-2 py-1">{tag}</span>)}</div>
       <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-tormax-borderDark text-xs">
         <Link
           href={`/tor-page/${item.id}`}
-          className="px-4 py-2 bg-tormax-purple hover:bg-tormax-purpleDeep text-white font-bold rounded-xl transition-all shadow-sm active:scale-95"
+          className="inline-flex items-center gap-1 px-4 py-2 bg-tormax-purple hover:bg-tormax-purpleDeep text-white font-bold rounded-xl transition-all shadow-sm active:scale-95"
         >
           {t.openSpec}
+          <RiArrowRightLine size={14} />
         </Link>
       </div>
     </div>
