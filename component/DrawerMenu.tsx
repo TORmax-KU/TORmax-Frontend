@@ -57,7 +57,7 @@ export default function DrawerMenu({
     { label: 'Daily Digest', labelTh: 'สรุปรายวัน', href: '/#daily-digest', icon: <RiHomeLine className="h-5 w-5" /> },
     { label: 'TOR Directory', labelTh: 'คลังเอกสาร TOR', href: '/search-feed', icon: <RiBriefcaseLine className="h-5 w-5" /> },
     { label: 'Bookmarks', labelTh: 'บุ๊กมาร์ก', href: '/bookmarks', icon: <RiBookmarkLine className="h-5 w-5" /> },
-    { label: 'Tracked Projects', labelTh: 'โครงการที่ติดตาม', href: '/tracked', icon: <RiFileListLine className="h-5 w-5" /> },
+    // { label: 'Tracked Projects', labelTh: 'โครงการที่ติดตาม', href: '/tracked', icon: <RiFileListLine className="h-5 w-5" /> },
     { label: 'Notifications', labelTh: 'การแจ้งเตือน', href: '/notifications', icon: <RiNotificationLine className="h-5 w-5" />, badge: unreadCount },
     { label: 'Profile Settings', labelTh: 'ตั้งค่าโปรไฟล์', href: '/profile', icon: <RiUserLine className="h-5 w-5" /> },
   ];
