@@ -59,13 +59,6 @@ export interface FilterState {
 }
 
 
-export interface AppNotification {
-  id: string;
-  title: string;
-  time: string;
-  read: boolean;
-}
-
 export interface Skill {
   _id: string;
   name: string;

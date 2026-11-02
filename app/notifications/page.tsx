@@ -1,33 +1,21 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useApp } from '@/context/AppContext';
 import {
   RiNotificationLine,
   RiCheckDoubleLine,
 } from '@remixicon/react';
-import { NotificationItem } from '@/interface/NotificationItem';
 import { NotificationListItem } from '@/component/Notification/NotificationListItem';
+import { toNotificationItem, useNotifications } from '@/lib/notifications';
 
 export default function NotificationsPage() {
   const { lang } = useApp();
-  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const { items, unreadCount, status, signedOut, toggleRead, remove, markAllRead, retry } = useNotifications();
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
 
-  const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((item) => ({ ...item, read: true })));
-  };
-
-  const toggleRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, read: !item.read } : item))
-    );
-  };
-
-  const deleteNotif = (id: string) => {
-    setNotifications((prev) => prev.filter((item) => item.id !== id));
-  };
-
+  const notifications = items.map((item) => toNotificationItem(item, lang === 'TH'));
   const filteredList = notifications.filter((item) => {
     if (filter === 'unread') return !item.read;
     return true;
@@ -50,7 +38,8 @@ export default function NotificationsPage() {
           </div>
 
           <button
-            onClick={markAllAsRead}
+            onClick={markAllRead}
+            disabled={unreadCount === 0}
             className="btn btn-sm btn-ghost gap-1.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#2D2938] rounded-xl self-start sm:self-auto"
           >
             <RiCheckDoubleLine className="h-4 w-4 text-[#5B3E96] dark:text-[#9B82C1]" />
@@ -84,17 +73,47 @@ export default function NotificationsPage() {
           </div>
 
           <span className="text-xs font-semibold text-slate-400 px-3">
-            {notifications.filter((n) => !n.read).length} {lang === 'EN' ? 'unread' : 'รายการใหม่'}
+            {unreadCount} {lang === 'EN' ? 'unread' : 'รายการใหม่'}
           </span>
         </div>
 
         {/* List */}
-        {filteredList.length === 0 ? (
+        {signedOut ? (
+          <div className="bg-white dark:bg-[#1C1A24] rounded-2xl p-12 border border-slate-200 dark:border-[#2D2938] text-center space-y-3">
+            <RiNotificationLine className="h-10 w-10 text-slate-300 dark:text-slate-600 mx-auto" />
+            <h3 className="font-bold text-sm text-slate-700 dark:text-slate-300">
+              {lang === 'EN' ? 'Sign in to receive match alerts' : 'เข้าสู่ระบบเพื่อรับการแจ้งเตือน TOR ที่ตรงกับคุณ'}
+            </h3>
+            <Link href="/login" className="inline-block text-xs font-bold text-[#5B3E96] dark:text-[#9B82C1] hover:underline">
+              {lang === 'EN' ? 'Sign in' : 'เข้าสู่ระบบ'}
+            </Link>
+          </div>
+        ) : status === 'loading' ? (
+          <p role="status" className="p-12 text-center text-sm text-slate-500">
+            {lang === 'EN' ? 'Loading notifications…' : 'กำลังโหลดการแจ้งเตือน…'}
+          </p>
+        ) : status === 'error' ? (
+          <div className="bg-white dark:bg-[#1C1A24] rounded-2xl p-12 border border-slate-200 dark:border-[#2D2938] text-center space-y-3">
+            <h3 className="font-bold text-sm text-slate-700 dark:text-slate-300">
+              {lang === 'EN' ? 'Notifications could not be loaded' : 'โหลดการแจ้งเตือนไม่สำเร็จ'}
+            </h3>
+            <button onClick={retry} className="text-xs font-bold text-[#5B3E96] dark:text-[#9B82C1] hover:underline">
+              {lang === 'EN' ? 'Try again' : 'ลองอีกครั้ง'}
+            </button>
+          </div>
+        ) : filteredList.length === 0 ? (
           <div className="bg-white dark:bg-[#1C1A24] rounded-2xl p-12 border border-slate-200 dark:border-[#2D2938] text-center space-y-3">
             <RiNotificationLine className="h-10 w-10 text-slate-300 dark:text-slate-600 mx-auto" />
             <h3 className="font-bold text-sm text-slate-700 dark:text-slate-300">
               {lang === 'EN' ? 'No notifications to display' : 'ไม่มีรายการแจ้งเตือน'}
             </h3>
+            {filter === 'all' && (
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+                {lang === 'EN'
+                  ? 'Add your skills and budget range to your profile, and we will alert you when a TOR matches.'
+                  : 'เพิ่มทักษะและช่วงงบประมาณในโปรไฟล์ แล้วเราจะแจ้งเตือนเมื่อมี TOR ที่ตรงกับคุณ'}
+              </p>
+            )}
           </div>
         ) : (
           <div className="space-y-3">
@@ -104,7 +123,7 @@ export default function NotificationsPage() {
                 item={item}
                 lang={lang}
                 onToggleRead={toggleRead}
-                onDelete={deleteNotif}
+                onDelete={remove}
               />
             ))}
           </div>

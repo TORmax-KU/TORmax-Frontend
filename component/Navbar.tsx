@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
-import { AppNotification } from '@/types';
+import { useNotifications } from '@/lib/notifications';
 import { RiArrowDownSLine, RiLogoutBoxRLine, RiMoonLine, RiNotification3Line, RiSunLine } from '@remixicon/react';
 import DrawerMenu from './DrawerMenu';
 import LogoSignature from './LogoSignature';
@@ -17,14 +17,8 @@ export interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({ companyName }) => {
     const { isDark, setTheme, lang, toggleLanguage, t } = useApp();
     const { user, logout } = useAuth();
-    const [showNotifications, setShowNotifications] = useState(false);
-    const [notifications, setNotifications] = useState<AppNotification[]>([]);
-
-    // Notification Handling
-    const unreadCount = notifications.filter((n) => !n.read).length;
-    const markAllAsRead = () => {
-        setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-    };
+    // Polls while signed in so new match alerts appear without a page reload (SRS 3.1.3).
+    const { unreadCount } = useNotifications({ poll: true });
 
     return (
         <nav className="sticky top-0 z-40 bg-white/90 dark:bg-[#1C1A24]/90 backdrop-blur-md border-b border-slate-200 dark:border-[#2D2938] px-3 sm:px-6 py-3 flex items-center justify-between gap-2 sm:gap-4">
@@ -88,11 +82,12 @@ export const Navbar: React.FC<NavbarProps> = ({ companyName }) => {
                     href="/notifications"
                     className="w-8 h-8 rounded-lg border border-slate-200 dark:border-[#2D2938] flex items-center justify-center text-xs relative hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors"
                     title="Notifications"
+                    aria-label={unreadCount > 0 ? `Notifications (${unreadCount} unread)` : 'Notifications'}
                 >
                     <RiNotification3Line size={16} />
                     {unreadCount > 0 && (
-                        <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center animate-pulse">
-                            {unreadCount}
+                        <span className="absolute -top-1 -right-1 min-w-4 h-4 px-0.5 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center animate-pulse">
+                            {unreadCount > 9 ? '9+' : unreadCount}
                         </span>
                     )}
                 </Link>
