@@ -59,13 +59,6 @@ export interface FilterState {
 }
 
 
-export interface AppNotification {
-  id: string;
-  title: string;
-  time: string;
-  read: boolean;
-}
-
 export interface Skill {
   _id: string;
   name: string;
@@ -94,5 +87,9 @@ export interface AuthUser {
   dailyDigestEmail?: boolean;
   smsAlerts?: boolean;
   contactPhone?: string;
+  minBudget?: number | null;
+  maxBudget?: number | null;
+  teamSize?: number | null;
+  capacity?: number | null;
   proficiency?: Array<Skill | string>;
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { FormEvent, Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { RiArrowDownSLine } from '@remixicon/react';
 import LogoSignature from '@/component/LogoSignature';
@@ -13,8 +13,17 @@ export default function GoogleLoginPage() {
 
 function GoogleLoginContent() {
     const { lang, toggleLanguage } = useApp();
-    const { user, isLoading: isAuthLoading, loginWithGoogle } = useAuth();
+    const { user, isLoading: isAuthLoading, loginWithGoogle, loginWithPassword, register } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
+    const [mode, setMode] = useState<'signin' | 'signup'>('signin');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [realName, setRealName] = useState('');
+    const [role, setRole] = useState<'Vendor' | 'JobLister'>('Vendor');
+    const [formError, setFormError] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const th = lang === 'TH';
+    const isSignup = mode === 'signup';
     const router = useRouter();
     const searchParams = useSearchParams();
     const authFailed = searchParams.get('error') === 'auth_failed';
@@ -30,6 +39,32 @@ function GoogleLoginContent() {
         setIsLoading(true);
         loginWithGoogle();
     };
+
+    // On success the context sets `user`, and the effect above redirects home.
+    const handlePasswordSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+        setFormError('');
+        setIsSubmitting(true);
+        try {
+            if (isSignup) {
+                await register({ email, password, realName, role });
+            } else {
+                await loginWithPassword(email, password);
+            }
+        } catch (error) {
+            setFormError(error instanceof Error ? error.message : String(error));
+            setIsSubmitting(false);
+        }
+    };
+
+    const switchMode = () => {
+        setMode(isSignup ? 'signin' : 'signup');
+        setFormError('');
+    };
+
+    const inputClass =
+        'w-full h-12 px-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/60 text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200';
+    const labelClass = 'block mb-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300';
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-slate-200 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex flex-col items-center justify-center p-4 sm:p-6 text-slate-800 dark:text-slate-100 antialiased selection:bg-blue-500 selection:text-white transition-colors duration-300 relative">
@@ -49,7 +84,9 @@ function GoogleLoginContent() {
 
                 {/* Heading Section */}
                 <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white mb-2">
-                    {lang === 'TH' ? 'ยินดีต้อนรับกลับเข้าสู่ระบบ' : 'Welcome back'}
+                    {isSignup
+                        ? (th ? 'สร้างบัญชีของคุณ' : 'Create your account')
+                        : (th ? 'ยินดีต้อนรับกลับเข้าสู่ระบบ' : 'Welcome back')}
                 </h1>
                 <p className="text-sm text-slate-500 dark:text-slate-400 mb-8 max-w-xs">
                     {lang === 'TH'
@@ -105,28 +142,135 @@ function GoogleLoginContent() {
                     )}
                 </button>
 
-                {/* Visual Divider */}
-                <div className="w-full flex items-center my-6 gap-3">
-                    <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
-                    <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                        {lang === 'TH' ? 'ได้รับการคุ้มครองโดย Google' : 'Protected by Google'}
-                    </span>
-                    <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
-                </div>
-
                 {/* Scope / Terms Notice */}
-                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed text-center">
+                <p className="mt-3 text-xs text-slate-500 dark:text-slate-400 leading-relaxed text-center">
                     {lang === 'TH' ? (
                         <>
-                            ในการดำเนินการต่อ Google จะแชร์ชื่อ อีเมล การตั้งค่าภาษา และรูปโปรไฟล์ของคุณกับ{' '}
+                            หากดำเนินการต่อด้วย Google ระบบจะแชร์ชื่อ อีเมล การตั้งค่าภาษา และรูปโปรไฟล์ของคุณกับ{' '}
                             <span className="font-semibold text-slate-700 dark:text-slate-300">TORmax</span>
                         </>
                     ) : (
                         <>
-                            By continuing, Google will share your name, email address, language preference, and profile picture with{' '}
+                            If you continue with Google, it will share your name, email address, language preference, and profile picture with{' '}
                             <span className="font-semibold text-slate-700 dark:text-slate-300">TORmax</span>.
                         </>
                     )}
+                </p>
+
+                {/* Visual Divider */}
+                <div className="w-full flex items-center my-6 gap-3">
+                    <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
+                    <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                        {th ? 'หรือใช้อีเมล' : 'or use email'}
+                    </span>
+                    <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
+                </div>
+
+                {/* Email / Password Form (FR-01) */}
+                <form onSubmit={handlePasswordSubmit} className="w-full space-y-4 text-left">
+                    {isSignup && (
+                        <div>
+                            <label htmlFor="realName" className={labelClass}>
+                                {th ? 'ชื่อ-นามสกุล' : 'Full name'}
+                            </label>
+                            <input
+                                id="realName"
+                                type="text"
+                                autoComplete="name"
+                                value={realName}
+                                onChange={(e) => setRealName(e.target.value)}
+                                className={inputClass}
+                            />
+                        </div>
+                    )}
+
+                    <div>
+                        <label htmlFor="email" className={labelClass}>
+                            {th ? 'อีเมล' : 'Email'}
+                        </label>
+                        <input
+                            id="email"
+                            type="email"
+                            required
+                            autoComplete="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className={inputClass}
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="password" className={labelClass}>
+                            {th ? 'รหัสผ่าน' : 'Password'}
+                        </label>
+                        <input
+                            id="password"
+                            type="password"
+                            required
+                            minLength={isSignup ? 8 : undefined}
+                            autoComplete={isSignup ? 'new-password' : 'current-password'}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className={inputClass}
+                        />
+                        {isSignup && (
+                            <p className="mt-1.5 text-[11px] text-slate-400 dark:text-slate-500">
+                                {th ? 'อย่างน้อย 8 ตัวอักษร' : 'At least 8 characters'}
+                            </p>
+                        )}
+                    </div>
+
+                    {isSignup && (
+                        <fieldset>
+                            <legend className={labelClass}>{th ? 'ประเภทบัญชี' : 'Account type'}</legend>
+                            <div className="grid grid-cols-2 gap-2">
+                                {([
+                                    ['Vendor', th ? 'ผู้ให้บริการ' : 'Vendor', th ? 'ค้นหางาน TOR' : 'Find TOR opportunities'],
+                                    ['JobLister', th ? 'ผู้ประกาศงาน' : 'Job Lister', th ? 'ประกาศงานด้าน IT' : 'Post IT projects'],
+                                ] as const).map(([value, title, desc]) => (
+                                    <label
+                                        key={value}
+                                        className={`cursor-pointer rounded-2xl border p-3 transition-all duration-200 ${role === value
+                                            ? 'border-blue-500 bg-blue-500/5 ring-4 ring-blue-500/10'
+                                            : 'border-slate-200 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600'}`}
+                                    >
+                                        <input
+                                            type="radio"
+                                            name="role"
+                                            value={value}
+                                            checked={role === value}
+                                            onChange={() => setRole(value)}
+                                            className="sr-only"
+                                        />
+                                        <span className="block text-sm font-semibold text-slate-800 dark:text-slate-100">{title}</span>
+                                        <span className="block text-[11px] text-slate-500 dark:text-slate-400">{desc}</span>
+                                    </label>
+                                ))}
+                            </div>
+                        </fieldset>
+                    )}
+
+                    {formError && (
+                        <p role="alert" className="px-4 py-2.5 rounded-xl text-xs font-medium text-rose-600 bg-rose-500/10 border border-rose-500/20">
+                            {formError}
+                        </p>
+                    )}
+
+                    <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-full h-12 flex items-center justify-center gap-2 rounded-2xl bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500/30 active:scale-[0.99] transition-all duration-200 text-sm font-semibold text-white shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
+                    >
+                        {isSubmitting && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                        {isSignup ? (th ? 'สร้างบัญชี' : 'Create account') : (th ? 'เข้าสู่ระบบ' : 'Sign in')}
+                    </button>
+                </form>
+
+                <p className="mt-5 text-xs text-slate-500 dark:text-slate-400">
+                    {isSignup ? (th ? 'มีบัญชีอยู่แล้ว?' : 'Already have an account?') : (th ? 'ยังไม่มีบัญชี?' : "Don't have an account?")}{' '}
+                    <button type="button" onClick={switchMode} className="font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                        {isSignup ? (th ? 'เข้าสู่ระบบ' : 'Sign in') : (th ? 'สมัครสมาชิก' : 'Sign up')}
+                    </button>
                 </p>
             </div>
 

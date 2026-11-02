@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
 import { fetchUserById, updateUser } from '@/lib/auth';
-import { profilei18n } from '@/public/mockData/i18n/profile';
+import { profilei18n, ProfileTranslations } from '@/public/mockData/i18n/profile';
 import { ProfileFormData } from '@/types/profile';
+import { CapacityField, CapacitySection } from '@/component/profile/CapacitySection';
 import { CertificationsSection } from '@/component/profile/CertificationsSection';
 import { ContactSection } from '@/component/profile/ContactSection';
 import { CorporateIdentitySection } from '@/component/profile/CorporateIdentitySection';
@@ -20,11 +21,43 @@ const NUMBER_FIELD_RANGES: Record<string, { min: number; max: number }> = {
   matchThreshold: { min: 50, max: 95 },
 };
 
+// true = whole number. Blank means "not declared" and is saved as null.
+const CAPACITY_FIELDS: Record<CapacityField, boolean> = {
+  minBudget: false,
+  maxBudget: false,
+  teamSize: true,
+  capacity: true,
+};
+
+const toNumberOrNull = (value: string) => (value.trim() === '' ? null : Number(value));
+
+function validateCapacity(formData: ProfileFormData, t: ProfileTranslations) {
+  const errors: Partial<Record<CapacityField, string>> = {};
+  for (const [field, wholeNumber] of Object.entries(CAPACITY_FIELDS) as [CapacityField, boolean][]) {
+    const value = toNumberOrNull(formData[field]);
+    if (value === null) continue;
+    if (!Number.isFinite(value) || value < 0 || (wholeNumber && !Number.isInteger(value))) {
+      errors[field] = wholeNumber ? t.errWholeNumber : t.errNonNegative;
+    }
+  }
+  const min = toNumberOrNull(formData.minBudget);
+  const max = toNumberOrNull(formData.maxBudget);
+  if (!errors.minBudget && !errors.maxBudget && min !== null && max !== null && min > max) {
+    errors.minBudget = t.errBudgetRange;
+    errors.maxBudget = t.errBudgetRange;
+  }
+  return errors;
+}
+
 const emptyFormData: ProfileFormData = {
   companyName: '',
   taxId: '',
   registeredCapital: '',
   yearsInBusiness: 0,
+  minBudget: '',
+  maxBudget: '',
+  teamSize: '',
+  capacity: '',
   iso27001: false,
   iso9001: false,
   iso20000: false,
@@ -51,6 +84,7 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [capacityErrors, setCapacityErrors] = useState<Partial<Record<CapacityField, string>>>({});
   const [profileLoaded, setProfileLoaded] = useState(false);
   const [retry, setRetry] = useState(0);
 
@@ -81,6 +115,10 @@ export default function ProfilePage() {
         taxId: profile.taxId || '',
         registeredCapital: profile.registeredCapital || '',
         yearsInBusiness: profile.yearsInBusiness || 0,
+        minBudget: profile.minBudget == null ? '' : String(profile.minBudget),
+        maxBudget: profile.maxBudget == null ? '' : String(profile.maxBudget),
+        teamSize: profile.teamSize == null ? '' : String(profile.teamSize),
+        capacity: profile.capacity == null ? '' : String(profile.capacity),
         iso27001: profile.iso27001 ?? false,
         iso9001: profile.iso9001 ?? false,
         iso20000: profile.iso20000 ?? false,
@@ -120,11 +158,19 @@ export default function ProfilePage() {
     }
 
     setFormData((prev) => ({ ...prev, [id]: nextValue }));
+    if (id in CAPACITY_FIELDS) setCapacityErrors({});
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !profileLoaded || isSaving) return;
+
+    const errors = validateCapacity(formData, t);
+    setCapacityErrors(errors);
+    if (Object.keys(errors).length) {
+      setError(t.errFixFields);
+      return;
+    }
 
     setIsSaving(true);
     setError(null);
@@ -135,6 +181,10 @@ export default function ProfilePage() {
         taxId: formData.taxId,
         registeredCapital: formData.registeredCapital,
         yearsInBusiness: formData.yearsInBusiness,
+        minBudget: toNumberOrNull(formData.minBudget),
+        maxBudget: toNumberOrNull(formData.maxBudget),
+        teamSize: toNumberOrNull(formData.teamSize),
+        capacity: toNumberOrNull(formData.capacity),
         iso27001: formData.iso27001,
         iso9001: formData.iso9001,
         iso20000: formData.iso20000,
@@ -188,6 +238,13 @@ export default function ProfilePage() {
           <SkillsSection
             skills={formData.skills}
             onChange={(skills) => setFormData((prev) => ({ ...prev, skills }))}
+            t={t}
+          />
+
+          <CapacitySection
+            formData={formData}
+            onChange={handleChange}
+            errors={capacityErrors}
             t={t}
           />
 

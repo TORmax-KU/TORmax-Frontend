@@ -11,6 +11,37 @@ export function getLogoutUrl(): string {
   return `${API_BASE_URL}/auth/logout`;
 }
 
+export interface RegisterInput {
+  email: string;
+  password: string;
+  realName?: string;
+  role: 'Vendor' | 'JobLister';
+}
+
+async function postCredentials(path: string, body: object): Promise<AuthUser> {
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const data = await res.json().catch(() => null);
+    throw new Error(data?.message || data?.error || `Request failed (${res.status})`);
+  }
+
+  return await res.json();
+}
+
+export function loginWithPassword(email: string, password: string): Promise<AuthUser> {
+  return postCredentials('/auth/login', { email, password });
+}
+
+export function registerWithPassword(input: RegisterInput): Promise<AuthUser> {
+  return postCredentials('/auth/register', input);
+}
+
 export async function fetchCurrentUser(): Promise<AuthUser | null> {
   try {
     const res = await fetch(`${API_BASE_URL}/auth/me`, {

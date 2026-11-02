@@ -8,7 +8,7 @@ import { SearchHeader } from '@/component/searchfeed/SearchHeader';
 import { SearchInput } from '@/component/searchfeed/SearchInput';
 import { TORList } from '@/component/searchfeed/TORList';
 import { TORCardSkeleton } from '@/component/TORCardSkeleton';
-import { availabilityLabel, getProjects, projectCard, ProjectResults } from '@/lib/projects';
+import { availabilityLabel, getProjects, priceFlagLabel, projectCard, ProjectResults } from '@/lib/projects';
 
 function SearchFeedContent() {
   const { lang } = useApp();
@@ -21,7 +21,7 @@ function SearchFeedContent() {
   const [retry, setRetry] = useState(0);
   const [result, setResult] = useState<{ key: string; data?: ProjectResults; error?: boolean }>();
   const apiParams = new URLSearchParams({ search: query.trim(), limit: '20', availability: params.get('availability') || 'open' });
-  for (const key of ['agency', 'minBudget', 'maxBudget', 'page', 'deadlineYear', 'deadlineFrom', 'deadlineTo', 'method', 'sort']) {
+  for (const key of ['agency', 'minBudget', 'maxBudget', 'page', 'deadlineYear', 'deadlineFrom', 'deadlineTo', 'method', 'sort', 'priceFlag']) {
     const value = params.get(key);
     if (value) apiParams.set(key, value);
   }
@@ -53,6 +53,7 @@ function SearchFeedContent() {
     window.history.replaceState(null, '', `/search-feed${next.size ? `?${next}` : ''}`);
   };
   const data = !loading ? result?.data : undefined;
+  const drafts = params.get('availability') === 'draft';
   useEffect(() => {
     if (!data || data.page <= 1 || data.projects.length > 0) return;
     const next = new URLSearchParams(window.location.search);
@@ -76,12 +77,13 @@ function SearchFeedContent() {
         <label className="text-sm space-y-2"><span>{th ? 'งบประมาณสูงสุด (บาท)' : 'Maximum budget (THB)'}</span><input className={fieldClass} type="number" min="0" value={params.get('maxBudget') || ''} onChange={e => update('maxBudget', e.target.value)} /></label>
         <label className="text-sm space-y-2"><span>{th ? 'วิธีจัดซื้อจัดจ้าง' : 'Procurement method'}</span><input className={fieldClass} placeholder="e-bidding" value={params.get('method') || ''} onChange={e => update('method', e.target.value)} /></label>
         <label className="text-sm space-y-2"><span>{th ? 'เรียงตาม' : 'Sort by'}</span><select className={fieldClass} value={params.get('sort') || 'deadline'} onChange={e => update('sort', e.target.value)}><option value="deadline">{th ? 'ใกล้ปิดรับก่อน' : 'Closing soonest'}</option><option value="newest">{th ? 'ประกาศล่าสุด' : 'Recently announced'}</option><option value="budget">{th ? 'งบประมาณสูงสุด' : 'Highest budget'}</option></select></label>
+        <label className="text-sm space-y-2"><span>{th ? 'ตรวจสอบงบประมาณ' : 'Budget check'}</span><select className={fieldClass} value={params.get('priceFlag') || ''} onChange={e => update('priceFlag', e.target.value)}><option value="">{th ? 'ทั้งหมด' : 'Any'}</option>{(['Overpriced', 'Underpriced', 'Normal'] as const).map(flag => <option key={flag} value={flag}>{priceFlagLabel(flag, activeLang)}</option>)}</select></label>
       </div>}
       {params.size > 0 && <button className="text-sm text-tormax-purple dark:text-tormax-lavender underline" onClick={() => window.history.replaceState(null, '', '/search-feed')}>{th ? 'ล้างการค้นหาและตัวกรอง' : 'Clear search and filters'}</button>}
       <div aria-live="polite" aria-busy={loading}>
         {loading ? <TORCardSkeleton count={4} label={t.loading} className="space-y-4" /> : result?.error ? <div role="alert" className="py-8 text-center space-y-3"><p>{th ? 'โหลด TOR ไม่สำเร็จ ตรวจสอบการเชื่อมต่อและช่วงงบประมาณ แล้วลองใหม่' : 'Could not load TORs. Check your connection and budget range, then try again.'}</p><button className="underline" onClick={() => setRetry(value => value + 1)}>{th ? 'ลองอีกครั้ง' : 'Retry'}</button></div> : data && <>
           <p className="text-sm text-slate-500 mb-4">{data.total}{t.itemsFoundSuffix}</p>
-          {data.total === 0 ? <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-10 text-center space-y-2"><p className="font-semibold">{th ? 'ยังไม่มีงานที่ผ่านเงื่อนไขนี้' : 'No open, fully analyzed TORs match these filters.'}</p><p className="text-sm text-slate-500">{th ? 'งานจะแสดงเมื่อ AI วิเคราะห์ข้อมูลครบและยืนยันเอกสารต้นทางแล้ว' : 'Listings appear after AI extracts all required fields and source documents are verified.'}</p>{params.size > 0 && <button className="mt-2 rounded-xl bg-tormax-purple px-4 py-2 text-sm font-bold text-white hover:bg-tormax-purpleDeep" onClick={() => window.history.replaceState(null, '', '/search-feed')}>{th ? 'รีเซ็ตตัวกรอง' : 'Reset Filters'}</button>}</div> : <TORList items={data.projects.map(project => projectCard(project, activeLang))} t={t} />}
+          {data.total === 0 ? <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-10 text-center space-y-2"><p className="font-semibold">{drafts ? (th ? 'ยังไม่มีร่าง TOR ที่ตรงกับเงื่อนไขนี้' : 'No draft TORs match these filters.') : (th ? 'ยังไม่มีงานที่ผ่านเงื่อนไขนี้' : 'No open, fully analyzed TORs match these filters.')}</p><p className="text-sm text-slate-500">{drafts ? (th ? 'ร่าง TOR จะแสดงเมื่อพบในประกาศต้นทางภายใน 24 ชั่วโมงที่ผ่านมา ร่างส่วนใหญ่ยังไม่ระบุวันปิดรับ ตัวกรองวันปิดรับจึงอาจซ่อนร่างไว้' : 'Drafts appear while the source portal still lists them (checked within the last 24 hours). Most drafts have no closing date yet, so closing-date filters hide them.') : (th ? 'งานจะแสดงเมื่อ AI วิเคราะห์ข้อมูลครบและยืนยันเอกสารต้นทางแล้ว' : 'Listings appear after AI extracts all required fields and source documents are verified.')}</p>{params.size > 0 && <button className="mt-2 rounded-xl bg-tormax-purple px-4 py-2 text-sm font-bold text-white hover:bg-tormax-purpleDeep" onClick={() => window.history.replaceState(null, '', '/search-feed')}>{th ? 'รีเซ็ตตัวกรอง' : 'Reset Filters'}</button>}</div> : <TORList items={data.projects.map(project => projectCard(project, activeLang))} t={t} />}
           {data.total > data.limit && <nav aria-label={th ? 'หน้าผลการค้นหา' : 'Search result pages'} className="flex justify-center items-center gap-4 pt-6">
             <button className="px-4 py-2 rounded-xl border disabled:opacity-40" disabled={data.page <= 1} onClick={() => update('page', String(data.page - 1))}>{th ? 'ก่อนหน้า' : 'Previous'}</button>
             <span>{data.page} / {Math.ceil(data.total / data.limit)}</span>
