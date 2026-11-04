@@ -4,13 +4,12 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { RiArrowRightLine, RiBookmarkLine, RiDeleteBinLine } from '@remixicon/react';
 import { useApp } from '@/context/AppContext';
-import { API_BASE_URL } from '@/lib/auth';
 import { useBookmarks } from '@/lib/bookmarks';
 import { Project, projectCard } from '@/lib/projects';
 import { TORCard } from '@/component/searchfeed/TORCard';
 import { TORCardSkeleton } from '@/component/TORCardSkeleton';
-
-type Loaded = Project | 'missing' | 'error';
+import { ProjectLoadedState as Loaded } from '@/interface/ProjectLoadedState';
+import fetchBookmarks from '@/utils/fetchBookmarks';
 
 export default function BookmarksPage() {
   const { lang } = useApp();
@@ -25,19 +24,11 @@ export default function BookmarksPage() {
   const pendingKey = pending.join(',');
   useEffect(() => {
     if (!pendingKey) return;
-    const controller = new AbortController();
-    async function load(id: string): Promise<[string, Loaded]> {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/projects/${encodeURIComponent(id)}`, { signal: controller.signal });
-        if (response.status === 404) return [id, 'missing'];
-        if (!response.ok) return [id, 'error'];
-        return [id, await response.json()];
-      } catch { return [id, 'error']; }
-    }
-    void Promise.all(pendingKey.split(',').map(load)).then(entries => {
-      if (!controller.signal.aborted) setLoaded(prev => ({ ...prev, ...Object.fromEntries(entries) }));
+    let active = true;
+    void fetchBookmarks(pendingKey.split(',')).then(entries => {
+      if (active) setLoaded(prev => ({ ...prev, ...entries }));
     });
-    return () => controller.abort();
+    return () => { active = false; };
   }, [pendingKey]);
 
   const retryFailed = () => setLoaded(prev => Object.fromEntries(Object.entries(prev).filter(([, value]) => value !== 'error')));
