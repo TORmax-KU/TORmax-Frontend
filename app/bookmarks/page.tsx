@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { RiArrowRightLine, RiBookmarkLine, RiDeleteBinLine } from '@remixicon/react';
+import { RiArrowRightLine, RiBookmarkLine, RiDeleteBinLine, RiSearchLine } from '@remixicon/react';
 import { useApp } from '@/context/AppContext';
 import { useBookmarks } from '@/lib/bookmarks';
 import { Project, projectCard } from '@/lib/projects';
@@ -17,6 +17,7 @@ export default function BookmarksPage() {
   const th = activeLang === 'th';
   const { ids, loading, savedToAccount, removeBookmark } = useBookmarks();
   const [loaded, setLoaded] = useState<Record<string, Loaded>>({});
+  const [searchQuery, setSearchQuery] = useState('');
   const t = { source: th ? 'ที่มา' : 'Source', method: th ? 'วิธี' : 'Method', deadline: th ? 'ปิดรับ' : 'Closes', openSpec: th ? 'ดูรายละเอียด' : 'View details' };
 
   // Only fetch bookmarks that have not been loaded yet, so removing one does not reload the list.
@@ -33,6 +34,15 @@ export default function BookmarksPage() {
 
   const retryFailed = () => setLoaded(prev => Object.fromEntries(Object.entries(prev).filter(([, value]) => value !== 'error')));
   const projects = ids.map(id => loaded[id]).filter((value): value is Project => typeof value === 'object');
+  const normalizedQuery = searchQuery.trim().toLocaleLowerCase();
+  const filteredProjects = projects.filter(project => [
+    project.title,
+    project.agency,
+    project._id,
+    project.externalId,
+    project.source,
+    project.descriptions,
+  ].some(value => value?.toLocaleLowerCase().includes(normalizedQuery)));
   const missing = ids.filter(id => loaded[id] === 'missing');
   const failed = ids.some(id => loaded[id] === 'error');
 
@@ -82,9 +92,26 @@ export default function BookmarksPage() {
                 </button>
               </div>
             ))}
-            <div className="space-y-4">
-              {projects.map(project => <TORCard key={project._id} item={projectCard(project, activeLang)} t={t} />)}
+            <div className="relative">
+              <RiSearchLine className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={event => setSearchQuery(event.target.value)}
+                placeholder={th ? 'ค้นหาบุ๊กมาร์กตามชื่อ หน่วยงาน หรือรหัส…' : 'Search bookmarks by title, agency, or ID…'}
+                aria-label={th ? 'ค้นหาบุ๊กมาร์ก' : 'Search bookmarks'}
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-[#2D2938] bg-white dark:bg-[#1C1A24] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#5B3E96]"
+              />
             </div>
+            {filteredProjects.length > 0 ? (
+              <div className="space-y-4">
+                {filteredProjects.map(project => <TORCard key={project._id} item={projectCard(project, activeLang)} t={t} />)}
+              </div>
+            ) : projects.length > 0 && (
+              <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-10 text-center">
+                <p className="text-sm text-slate-500">{th ? 'ไม่พบบุ๊กมาร์กที่ตรงกัน' : 'No bookmarks match your search.'}</p>
+              </div>
+            )}
             {pending.length > 0 && <TORCardSkeleton count={Math.min(pending.length, 3)} label={th ? 'กำลังโหลด…' : 'Loading…'} className="space-y-4" />}
           </>
         )}
