@@ -28,6 +28,11 @@ export function TORCard({ item, t }: TORCardProps) {
           <span className="text-xs font-mono font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded">
             {item.displayId}
           </span>
+          {item.match != null && (
+            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200">
+              {item.lang === 'th' ? `ตรงกับโปรไฟล์ ${Math.round(item.match)}%` : `${Math.round(item.match)}% match`}
+            </span>
+          )}
         </div>
         <BookmarkButton id={item.id} lang={item.lang} />
       </div>
