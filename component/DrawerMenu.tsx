@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useApp } from "@/context/AppContext";
+import { useAuth } from "@/context/AuthContext";
 import { 
   RiHomeLine,
   RiUserLine,
@@ -45,6 +46,7 @@ export default function DrawerMenu({
   
   // Hook directly into your global AppContext
   const { isDark, setTheme, lang } = useApp();
+  const { user } = useAuth();
 
   // Close drawer on route change
   useEffect(() => {
@@ -59,6 +61,7 @@ export default function DrawerMenu({
     { label: 'TOR Directory', labelTh: 'คลังเอกสาร TOR', href: '/search-feed', icon: <RiBriefcaseLine className="h-5 w-5" /> },
     { label: 'Matched for You', labelTh: 'TOR ที่ตรงกับคุณ', href: '/matches', icon: <RiSparkling2Line className="h-5 w-5" /> },
     { label: 'Bookmarks', labelTh: 'โครงการที่ติดตามอยู่', href: '/bookmarks', icon: <RiBookmarkLine className="h-5 w-5" /> },
+    ...(user?.role === 'JobLister' ? [{ label: 'Manage Postings', labelTh: 'จัดการประกาศงาน', href: '/postings', icon: <RiFileListLine className="h-5 w-5" /> }] : []),
     { label: 'Notifications', labelTh: 'การแจ้งเตือน', href: '/notifications', icon: <RiNotificationLine className="h-5 w-5" />, badge: unreadCount },
     { label: 'Profile Settings', labelTh: 'ตั้งค่าโปรไฟล์', href: '/profile', icon: <RiUserLine className="h-5 w-5" /> },
   ];

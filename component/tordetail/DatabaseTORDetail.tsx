@@ -5,12 +5,14 @@ import Link from 'next/link';
 import { RiExternalLinkLine } from '@remixicon/react';
 import { useApp } from '@/context/AppContext';
 import { API_BASE_URL } from '@/lib/auth';
-import { Project, projectCard, formatProcurementDate, safeSourceUrl, pendingExtraction } from '@/lib/projects';
+import { DIRECT_SOURCE, Project, projectCard, formatProcurementDate, safeSourceUrl, pendingExtraction } from '@/lib/projects';
 import { torpagei18n } from '@/public/mockData/i18n/torpage';
 import { TORHeader } from './TORHeader';
 import { SubmissionStatus } from '@/component/SubmissionStatus';
 import { ExtractionEvidence } from './ExtractionEvidence';
 import { MatchPanel } from './MatchPanel';
+import { PriceComparison } from './PriceComparison';
+import { DirectPostingDetail } from './DirectPostingDetail';
 
 export function DatabaseTORDetail({ id }: { id: string }) {
   const { lang } = useApp();
@@ -40,6 +42,7 @@ export function DatabaseTORDetail({ id }: { id: string }) {
   if (result?.key !== key) return <p role="status" className="p-10 text-center">{th ? 'กำลังโหลด TOR...' : 'Loading TOR...'}</p>;
   if (!result.project) return <div role="alert" className="p-10 text-center space-y-4"><p>{result.error === 404 ? t.notFound : th ? 'โหลด TOR ไม่สำเร็จ' : 'Could not load TOR.'}</p><button className="underline mr-4" onClick={() => setRetry(value => value + 1)}>{th ? 'ลองอีกครั้ง' : 'Retry'}</button><Link className="underline" href="/search-feed">{t.backToDirectory}</Link></div>;
   const project = result.project;
+  if (project.source === DIRECT_SOURCE) return <DirectPostingDetail project={project} lang={activeLang} backToDirectory={t.backToDirectory} />;
   const tor = projectCard(project, activeLang);
   const sourceUrl = safeSourceUrl(project.sourceUrl);
   const documents = (project.documents || []).filter(document => safeSourceUrl(document.url));
@@ -55,7 +58,6 @@ export function DatabaseTORDetail({ id }: { id: string }) {
     [th ? 'วิธีจัดซื้อจัดจ้าง' : 'Procurement method', project.procurementMethod || unknown],
     [th ? 'งบประมาณ' : 'Budget', tor.price],
     [th ? 'ราคากลาง' : 'Reference price', money(project.referencePrice)],
-    [th ? 'เทียบงบประมาณกับหมวดเดียวกัน' : 'Budget vs. similar TORs', tor.priceComparison ? `${tor.priceFlagLabel} — ${tor.priceComparison}` : (th ? 'ยังมีข้อมูลเปรียบเทียบไม่พอ' : 'Not enough comparable budgets yet')],
     [th ? 'สถานะตามต้นทาง' : 'Source status', project.sourceStatus || unknown],
   ];
   const milestones = [
@@ -71,6 +73,7 @@ export function DatabaseTORDetail({ id }: { id: string }) {
       <div className="lg:col-span-2 space-y-6">
         <ExtractionEvidence project={project} lang={activeLang} />
         <section className={panel}><h2 className={sectionTitle}>{th ? 'ข้อมูลการจัดซื้อจัดจ้าง' : 'Procurement details'}</h2><dl className="grid sm:grid-cols-2 gap-5">{fields.map(([label, value]) => <div key={label}><dt className="text-xs text-slate-500 mb-1">{label}</dt><dd className="text-sm font-semibold break-words">{value}</dd></div>)}</dl></section>
+        <PriceComparison analysis={project.priceAnalysis} budget={project.budget} flag={project.priceFlag} lang={activeLang} />
         <section className={panel}>
           <h2 className={sectionTitle}>{th ? 'สรุป TOR' : 'TOR summary'}</h2>
           <p className="whitespace-pre-line text-sm leading-7">{project.descriptions || (project.analyzedAt ? (th ? 'เอกสารที่มีไม่เพียงพอสำหรับสรุปขอบเขต TOR' : 'Available documents do not contain enough TOR scope to summarize.') : pending)}</p>

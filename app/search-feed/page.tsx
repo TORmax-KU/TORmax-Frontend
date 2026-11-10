@@ -21,7 +21,7 @@ function SearchFeedContent() {
   const [retry, setRetry] = useState(0);
   const [result, setResult] = useState<{ key: string; data?: ProjectResults; error?: boolean }>();
   const apiParams = new URLSearchParams({ search: query.trim(), limit: '20', availability: params.get('availability') || 'open' });
-  for (const key of ['agency', 'minBudget', 'maxBudget', 'page', 'deadlineYear', 'deadlineFrom', 'deadlineTo', 'method', 'sort', 'priceFlag']) {
+  for (const key of ['agency', 'minBudget', 'maxBudget', 'page', 'deadlineYear', 'deadlineFrom', 'deadlineTo', 'method', 'sort', 'priceFlag', 'origin']) {
     const value = params.get(key);
     if (value) apiParams.set(key, value);
   }
@@ -64,9 +64,9 @@ function SearchFeedContent() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 sm:px-8 py-10 w-full space-y-6">
-      <SearchHeader title={th ? 'TOR งาน IT ประกวดราคาอิเล็กทรอนิกส์' : 'IT e-bidding TORs'} subtitle={th ? 'ตรวจสอบวันปิดรับ เอกสารต้นฉบับ และรายละเอียดก่อนยื่นข้อเสนอ' : 'Review closing deadlines, original documents and requirements before applying.'} onFilterClick={() => setFiltersOpen(!filtersOpen)} filterBtnText={th ? 'ตัวกรอง' : 'Filters'} />
+      <SearchHeader title={th ? 'TOR และประกาศงาน IT' : 'IT TORs & job postings'} subtitle={th ? 'ตรวจสอบวันปิดรับ เอกสารต้นฉบับ และรายละเอียดก่อนยื่นข้อเสนอ' : 'Review closing deadlines, original documents and requirements before applying.'} onFilterClick={() => setFiltersOpen(!filtersOpen)} filterBtnText={th ? 'ตัวกรอง' : 'Filters'} />
       <SearchInput value={query} onChange={value => update('q', value)} placeholder={th ? 'ค้นหาชื่อโครงการ หน่วยงาน รหัส TOR สรุป หรือทักษะ...' : 'Search title, agency, TOR ID, summary, or skills...'} />
-      <p className="text-sm text-slate-500">{th ? 'แสดงงาน IT แบบ e-bidding ตามสถานะที่เลือก (เปิดรับหรือร่างประกาศ) พร้อมชื่อ งบประมาณ วันประกาศ วันปิดรับ และสรุป TOR จาก AI' : 'Shows IT e-bidding TORs in the selected status (open or draft) with a title, budget, publication date, deadline, and AI summary.'}</p>
+      <p className="text-sm text-slate-500">{th ? 'แสดงงาน IT แบบ e-bidding ตามสถานะที่เลือก (เปิดรับหรือร่างประกาศ) พร้อมชื่อ งบประมาณ วันประกาศ วันปิดรับ และสรุป TOR จาก AI รวมถึงประกาศงานที่ผู้ประกาศลงบน TORmax โดยตรง' : 'Shows IT e-bidding TORs in the selected status (open or draft) with a title, budget, publication date, deadline, and AI summary, plus jobs posted directly on TORmax.'}</p>
       {filtersOpen && <div className="grid sm:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-2xl p-5">
         <label className="text-sm space-y-2"><span>{th ? 'สถานะ' : 'Status'}</span><select className={fieldClass} value={params.get('availability') || 'open'} onChange={e => update('availability', e.target.value === 'open' ? '' : e.target.value)}>{['open', 'draft'].map(value => <option key={value} value={value}>{availabilityLabel(value, activeLang)}</option>)}</select></label>
         <label className="text-sm space-y-2"><span>{th ? 'ปีที่ปิดรับ (พ.ศ.)' : 'Closing year (B.E.)'}</span><input className={fieldClass} type="number" min="2543" max="2743" placeholder={String(new Date().getFullYear() + 543)} value={params.get('deadlineYear') || ''} onChange={e => update('deadlineYear', e.target.value)} /></label>
@@ -77,7 +77,8 @@ function SearchFeedContent() {
         <label className="text-sm space-y-2"><span>{th ? 'งบประมาณสูงสุด (บาท)' : 'Maximum budget (THB)'}</span><input className={fieldClass} type="number" min="0" value={params.get('maxBudget') || ''} onChange={e => update('maxBudget', e.target.value)} /></label>
         <label className="text-sm space-y-2"><span>{th ? 'วิธีจัดซื้อจัดจ้าง' : 'Procurement method'}</span><input className={fieldClass} placeholder="e-bidding" value={params.get('method') || ''} onChange={e => update('method', e.target.value)} /></label>
         <label className="text-sm space-y-2"><span>{th ? 'เรียงตาม' : 'Sort by'}</span><select className={fieldClass} value={params.get('sort') || 'deadline'} onChange={e => update('sort', e.target.value)}><option value="deadline">{th ? 'ใกล้ปิดรับก่อน' : 'Closing soonest'}</option><option value="newest">{th ? 'ประกาศล่าสุด' : 'Recently announced'}</option><option value="budget">{th ? 'งบประมาณสูงสุด' : 'Highest budget'}</option></select></label>
-        <label className="text-sm space-y-2"><span>{th ? 'ตรวจสอบงบประมาณ' : 'Budget check'}</span><select className={fieldClass} value={params.get('priceFlag') || ''} onChange={e => update('priceFlag', e.target.value)}><option value="">{th ? 'ทั้งหมด' : 'Any'}</option>{(['Overpriced', 'Underpriced', 'Normal'] as const).map(flag => <option key={flag} value={flag}>{priceFlagLabel(flag, activeLang)}</option>)}</select></label>
+        <label className="text-sm space-y-2"><span>{th ? 'ตรวจสอบงบประมาณ' : 'Budget check'}</span><select className={fieldClass} value={params.get('priceFlag') || ''} onChange={e => update('priceFlag', e.target.value)}><option value="">{th ? 'ทั้งหมด' : 'Any'}</option>{(['Overpriced', 'Underpriced', 'ScopeMismatch', 'Normal'] as const).map(flag => <option key={flag} value={flag}>{priceFlagLabel(flag, activeLang)}</option>)}</select></label>
+        <label className="text-sm space-y-2"><span>{th ? 'แหล่งที่มา' : 'Source'}</span><select className={fieldClass} value={params.get('origin') || ''} onChange={e => update('origin', e.target.value)}><option value="">{th ? 'ทั้งหมด' : 'All'}</option><option value="government">{th ? 'TOR ภาครัฐ' : 'Government TORs'}</option><option value="direct">{th ? 'ประกาศตรงบน TORmax' : 'Direct postings'}</option></select></label>
       </div>}
       {params.size > 0 && <button className="text-sm text-tormax-purple dark:text-tormax-lavender underline" onClick={() => window.history.replaceState(null, '', '/search-feed')}>{th ? 'ล้างการค้นหาและตัวกรอง' : 'Clear search and filters'}</button>}
       <div aria-live="polite" aria-busy={loading}>

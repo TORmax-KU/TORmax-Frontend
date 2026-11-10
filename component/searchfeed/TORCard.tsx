@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { RiArrowRightLine, RiGovernmentLine } from '@remixicon/react';
+import { RiArrowRightLine, RiBuilding2Line, RiGovernmentLine } from '@remixicon/react';
 import { ProjectCard } from '@/lib/projects';
 import { SubmissionStatus } from '@/component/SubmissionStatus';
 import { TORFacts } from '@/component/TORFacts';
@@ -22,9 +22,15 @@ export function TORCard({ item, t }: TORCardProps) {
     <div className="bg-white dark:bg-tormax-surfaceDark p-6 rounded-2xl border border-slate-200 dark:border-tormax-borderDark space-y-3 hover:border-tormax-purple dark:hover:border-tormax-lavender/50 transition-all shadow-sm hover:shadow-md group">
       <div className="flex justify-between items-start gap-2">
         <div className="flex items-center flex-wrap gap-2">
-          <span className="text-[10px] font-bold px-2.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-            {t.source} {item.sourcePortal}
-          </span>
+          {item.isDirect ? (
+            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded bg-violet-50 dark:bg-violet-950 text-violet-800 dark:text-violet-200 border border-violet-200 dark:border-violet-800">
+              {item.sourcePortal}
+            </span>
+          ) : (
+            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+              {t.source} {item.sourcePortal}
+            </span>
+          )}
           <span className="text-xs font-mono font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded">
             {item.displayId}
           </span>
@@ -42,16 +48,16 @@ export function TORCard({ item, t }: TORCardProps) {
       </h2>
 
       <div className="flex items-center space-x-3 text-xs text-slate-500 dark:text-slate-400 font-semibold">
-        <span className="inline-flex items-center gap-1"><RiGovernmentLine size={14} /> {item.employer}</span>
+        <span className="inline-flex items-center gap-1">{item.isDirect ? <RiBuilding2Line size={14} /> : <RiGovernmentLine size={14} />} {item.employer}</span>
         <span>•</span>
         <span className="text-tormax-purple dark:text-tormax-lavender font-bold">
-          {t.method} {item.method}
+          {item.isDirect ? item.method : `${t.method} ${item.method}`}
         </span>
       </div>
 
       <p className="text-sm text-slate-600 dark:text-slate-300 line-clamp-3">{item.desc}</p>
       <div className="rounded-xl bg-slate-50 dark:bg-slate-900/50 p-3">
-        <TORFacts budget={item.price} published={item.published} deadline={item.deadline} lang={item.lang} />
+        <TORFacts budget={item.price} published={item.published} deadline={item.deadline} lang={item.lang} direct={item.isDirect} />
         {item.submission.deadlinePrecision === 'datetime' && <p className="text-xs text-slate-500 mt-2">{item.lang === 'th' ? 'เวลาไทย (GMT+7)' : 'Thailand time (GMT+7)'}</p>}
       </div>
       <SubmissionStatus project={item.submission} lang={item.lang} />

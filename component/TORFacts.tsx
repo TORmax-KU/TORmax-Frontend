@@ -1,12 +1,18 @@
-export function TORFacts({ budget, published, deadline, lang, inverse = false }: {
+export function TORFacts({ budget, published, deadline, lang, inverse = false, direct = false }: {
   budget: string;
   published: string;
   deadline: string;
   lang: 'th' | 'en';
   inverse?: boolean;
+  // Direct job postings: a budget range, a posting date and an application deadline.
+  direct?: boolean;
 }) {
   const th = lang === 'th';
-  const fields = [
+  const fields = direct ? [
+    [th ? 'ช่วงงบประมาณ' : 'Budget range', budget],
+    [th ? 'วันที่ประกาศ' : 'Posted', published],
+    [th ? 'ปิดรับสมัคร' : 'Application deadline', deadline],
+  ] : [
     [th ? 'งบประมาณ' : 'Budget', budget],
     [th ? 'วันที่เผยแพร่ประกาศ' : 'Announcement publication date', published],
     [th ? 'กำหนดปิดรับข้อเสนอ' : 'Bid submission deadline', deadline],
