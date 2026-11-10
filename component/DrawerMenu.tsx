@@ -17,7 +17,8 @@ import {
   RiLogoutBoxRLine,
   RiSunLine,
   RiMoonLine,
-  RiArrowDownSLine
+  RiArrowDownSLine,
+  RiSparkling2Line
 } from "@remixicon/react";
 
 interface DrawerMenuProps {
@@ -56,6 +57,7 @@ export default function DrawerMenu({
   const mainNavItems: NavItem[] = [
     { label: 'Daily Digest', labelTh: 'สรุปรายวัน', href: '/#daily-digest', icon: <RiHomeLine className="h-5 w-5" /> },
     { label: 'TOR Directory', labelTh: 'คลังเอกสาร TOR', href: '/search-feed', icon: <RiBriefcaseLine className="h-5 w-5" /> },
+    { label: 'Matched for You', labelTh: 'TOR ที่ตรงกับคุณ', href: '/matches', icon: <RiSparkling2Line className="h-5 w-5" /> },
     { label: 'Bookmarks', labelTh: 'โครงการที่ติดตามอยู่', href: '/bookmarks', icon: <RiBookmarkLine className="h-5 w-5" /> },
     { label: 'Notifications', labelTh: 'การแจ้งเตือน', href: '/notifications', icon: <RiNotificationLine className="h-5 w-5" />, badge: unreadCount },
     { label: 'Profile Settings', labelTh: 'ตั้งค่าโปรไฟล์', href: '/profile', icon: <RiUserLine className="h-5 w-5" /> },

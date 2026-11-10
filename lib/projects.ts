@@ -82,9 +82,11 @@ export async function getProjects(params: URLSearchParams, signal: AbortSignal):
   return response.json();
 }
 
-export function projectCard(project: Project, lang: 'th' | 'en') {
+// matchPercentage is set only on the vendor's matched-TOR list, where the card shows a match badge.
+export function projectCard(project: Project, lang: 'th' | 'en', matchPercentage: number | null = null) {
   const unknown = lang === 'th' ? 'ต้นทางไม่ระบุข้อมูล' : 'Not provided by source';
   return {
+    match: matchPercentage,
     submission: { availability: project.availability, deadline: project.deadline, deadlinePrecision: project.deadlinePrecision, submissionStartAt: project.submissionStartAt },
     lang,
     id: project._id,

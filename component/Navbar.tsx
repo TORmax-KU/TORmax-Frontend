@@ -47,6 +47,11 @@ export const Navbar: React.FC<NavbarProps> = ({ companyName }) => {
                     <Link href="/search-feed" className="px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors">
                         {t('torDirectory')}
                     </Link>
+                    {user && (
+                        <Link href="/matches" className="px-3 py-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors">
+                            {lang === 'TH' ? 'TOR ที่ตรงกับคุณ' : 'Matched for You'}
+                        </Link>
+                    )}
                 </div>
             </div>
 
