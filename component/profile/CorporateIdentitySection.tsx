@@ -3,6 +3,7 @@
 import { ProfileFormData } from '@/types/profile';
 import { ProfileTranslations } from '@/public/mockData/i18n/profile';
 import { FormField }  from './FormField'
+import { FormSection } from './FormSection';
 
 interface CorporateIdentitySectionProps {
   formData: ProfileFormData;
@@ -10,23 +11,14 @@ interface CorporateIdentitySectionProps {
   t: ProfileTranslations;
 }
 
-export function CorporateIdentitySection({ 
-  formData, 
-  onChange, 
-  t 
+export function CorporateIdentitySection({
+  formData,
+  onChange,
+  t
 }: CorporateIdentitySectionProps) {
   return (
-    <div className="bg-white dark:bg-tormax-surfaceDark border border-slate-200 dark:border-tormax-borderDark p-8 rounded-3xl space-y-6 shadow-sm">
-      <div className="border-b border-slate-100 dark:border-tormax-borderDark pb-3">
-        <h2 className="text-base font-bold font-display text-slate-900 dark:text-white">
-          {t.sec1Title}
-        </h2>
-        <p className="text-xs text-slate-500 dark:text-slate-400">
-          {t.sec1Desc}
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+    <FormSection title={t.sec1Title} description={t.sec1Desc}>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <FormField
           id="companyName"
           label={t.companyName}
@@ -56,6 +48,6 @@ export function CorporateIdentitySection({
           max={200}
         />
       </div>
-    </div>
+    </FormSection>
   );
 }

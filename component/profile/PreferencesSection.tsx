@@ -4,6 +4,7 @@ import { ProfileFormData } from '@/types/profile';
 import { RiMailLine, RiSmartphoneLine } from '@remixicon/react';
 import { ProfileTranslations } from '@/public/mockData/i18n/profile';
 import { ToggleCard } from './ToggleCard';
+import { FormSection } from './FormSection';
 
 interface PreferencesSectionProps {
   formData: ProfileFormData;
@@ -11,25 +12,16 @@ interface PreferencesSectionProps {
   t: ProfileTranslations;
 }
 
-export function PreferencesSection({ 
-  formData, 
-  onChange, 
-  t 
+export function PreferencesSection({
+  formData,
+  onChange,
+  t
 }: PreferencesSectionProps) {
   return (
-    <div className="bg-white dark:bg-tormax-surfaceDark border border-slate-200 dark:border-tormax-borderDark p-8 rounded-3xl space-y-6 shadow-sm">
-      <div className="border-b border-slate-100 dark:border-tormax-borderDark pb-3">
-        <h2 className="text-base font-bold font-display text-slate-900 dark:text-white">
-          {t.sec3Title}
-        </h2>
-        <p className="text-xs text-slate-500 dark:text-slate-400">
-          {t.sec3Desc}
-        </p>
-      </div>
-
-      <div className="space-y-6 text-xs">
-        <div className="space-y-2">
-          <label htmlFor="trackedKeywords" className="font-bold block text-slate-700 dark:text-slate-300">
+    <FormSection title={t.sec3Title} description={t.sec3Desc}>
+      <div className="space-y-6">
+        <div className="space-y-1.5">
+          <label htmlFor="trackedKeywords" className="ui-label">
             {t.trackedKeywords}
           </label>
           <input
@@ -37,19 +29,19 @@ export function PreferencesSection({
             id="trackedKeywords"
             value={formData.trackedKeywords}
             onChange={onChange}
-            className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#090D16] border border-slate-200 dark:border-tormax-borderDark font-semibold text-slate-900 dark:text-slate-100 caret-slate-900 dark:caret-white focus:outline-none focus:ring-2 focus:ring-tormax-purple"
+            className="ui-field"
           />
-          <p className="text-[11px] text-slate-400">
+          <p className="ui-hint">
             {t.keywordsHint}
           </p>
         </div>
 
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <label htmlFor="matchThreshold" className="font-bold text-slate-700 dark:text-slate-300">
+        <div className="space-y-3">
+          <div className="flex justify-between items-baseline">
+            <label htmlFor="matchThreshold" className="ui-label">
               {t.matchThreshold}
             </label>
-            <span className="font-bold text-tormax-purple dark:text-tormax-lavender text-sm">
+            <span className="text-sm font-semibold tabular-nums text-accent">
               {formData.matchThreshold}%
             </span>
           </div>
@@ -60,11 +52,11 @@ export function PreferencesSection({
             max="95"
             value={formData.matchThreshold}
             onChange={onChange}
-            className="w-full accent-tormax-purple cursor-pointer"
+            className="w-full cursor-pointer accent-brand"
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <ToggleCard
             id="dailyDigestEmail"
             title={t.dailyEmail}
@@ -83,6 +75,6 @@ export function PreferencesSection({
           />
         </div>
       </div>
-    </div>
+    </FormSection>
   );
 }

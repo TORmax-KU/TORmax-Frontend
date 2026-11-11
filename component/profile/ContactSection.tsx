@@ -3,6 +3,7 @@
 import { ProfileFormData } from '@/types/profile';
 import { ProfileTranslations } from '@/public/mockData/i18n/profile';
 import { FormField } from './FormField'
+import { FormSection } from './FormSection';
 
 interface ContactSectionProps {
   formData: ProfileFormData;
@@ -10,23 +11,14 @@ interface ContactSectionProps {
   t: ProfileTranslations;
 }
 
-export function ContactSection({ 
-  formData, 
-  onChange, 
-  t 
+export function ContactSection({
+  formData,
+  onChange,
+  t
 }: ContactSectionProps) {
   return (
-    <div className="bg-white dark:bg-tormax-surfaceDark border border-slate-200 dark:border-tormax-borderDark p-8 rounded-3xl space-y-6 shadow-sm">
-      <div className="border-b border-slate-100 dark:border-tormax-borderDark pb-3">
-        <h2 className="text-base font-bold font-display text-slate-900 dark:text-white">
-          {t.sec4Title}
-        </h2>
-        <p className="text-xs text-slate-500 dark:text-slate-400">
-          {t.sec4Desc}
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+    <FormSection title={t.sec4Title} description={t.sec4Desc}>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         <FormField
           id="contactName"
           label={t.contactName}
@@ -48,6 +40,6 @@ export function ContactSection({
           className="font-mono"
         />
       </div>
-    </div>
+    </FormSection>
   );
 }

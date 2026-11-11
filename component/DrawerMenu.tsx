@@ -4,7 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useApp } from "@/context/AppContext";
-import { 
+import { useAuth } from "@/context/AuthContext";
+import LogoSignature from "./LogoSignature";
+import {
   RiHomeLine,
   RiUserLine,
   RiBriefcaseLine,
@@ -17,7 +19,6 @@ import {
   RiLogoutBoxRLine,
   RiSunLine,
   RiMoonLine,
-  RiArrowDownSLine,
   RiSparkling2Line
 } from "@remixicon/react";
 
@@ -35,16 +36,17 @@ interface NavItem {
   badge?: number;
 }
 
-export default function DrawerMenu({ 
-  companyName = "Tech Solutions Co., Ltd.", 
+export default function DrawerMenu({
+  companyName = "Tech Solutions Co., Ltd.",
   taxId = "0105563012345",
-  unreadCount = 3 
+  unreadCount = 3
 }: DrawerMenuProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  
+
   // Hook directly into your global AppContext
   const { isDark, setTheme, lang } = useApp();
+  const { user } = useAuth();
 
   // Close drawer on route change
   useEffect(() => {
@@ -55,12 +57,13 @@ export default function DrawerMenu({
   }, [pathname]);
 
   const mainNavItems: NavItem[] = [
-    { label: 'Daily Digest', labelTh: 'สรุปรายวัน', href: '/#daily-digest', icon: <RiHomeLine className="h-5 w-5" /> },
-    { label: 'TOR Directory', labelTh: 'คลังเอกสาร TOR', href: '/search-feed', icon: <RiBriefcaseLine className="h-5 w-5" /> },
-    { label: 'Matched for You', labelTh: 'TOR ที่ตรงกับคุณ', href: '/matches', icon: <RiSparkling2Line className="h-5 w-5" /> },
-    { label: 'Bookmarks', labelTh: 'โครงการที่ติดตามอยู่', href: '/bookmarks', icon: <RiBookmarkLine className="h-5 w-5" /> },
-    { label: 'Notifications', labelTh: 'การแจ้งเตือน', href: '/notifications', icon: <RiNotificationLine className="h-5 w-5" />, badge: unreadCount },
-    { label: 'Profile Settings', labelTh: 'ตั้งค่าโปรไฟล์', href: '/profile', icon: <RiUserLine className="h-5 w-5" /> },
+    { label: 'Daily Digest', labelTh: 'สรุปรายวัน', href: '/#daily-digest', icon: <RiHomeLine className="h-[18px] w-[18px]" /> },
+    { label: 'TOR Directory', labelTh: 'คลังเอกสาร TOR', href: '/search-feed', icon: <RiBriefcaseLine className="h-[18px] w-[18px]" /> },
+    { label: 'Matched for You', labelTh: 'TOR ที่ตรงกับคุณ', href: '/matches', icon: <RiSparkling2Line className="h-[18px] w-[18px]" /> },
+    { label: 'Bookmarks', labelTh: 'โครงการที่ติดตามอยู่', href: '/bookmarks', icon: <RiBookmarkLine className="h-[18px] w-[18px]" /> },
+    ...(user?.role === 'JobLister' ? [{ label: 'Manage Postings', labelTh: 'จัดการประกาศงาน', href: '/postings', icon: <RiFileListLine className="h-[18px] w-[18px]" /> }] : []),
+    { label: 'Notifications', labelTh: 'การแจ้งเตือน', href: '/notifications', icon: <RiNotificationLine className="h-[18px] w-[18px]" />, badge: unreadCount },
+    { label: 'Profile Settings', labelTh: 'ตั้งค่าโปรไฟล์', href: '/profile', icon: <RiUserLine className="h-[18px] w-[18px]" /> },
   ];
 
   const isActive = (href: string) => {
@@ -71,19 +74,19 @@ export default function DrawerMenu({
   return (
     <div className="drawer w-auto shrink-0 z-50">
       {/* Native DaisyUI Drawer Toggle */}
-      <input 
-        id="main-drawer" 
-        type="checkbox" 
-        className="drawer-toggle" 
+      <input
+        id="main-drawer"
+        type="checkbox"
+        className="drawer-toggle"
         checked={isOpen}
         onChange={(e) => setIsOpen(e.target.checked)}
       />
 
       {/* DaisyUI Drawer Content Trigger */}
       <div className="drawer-content">
-        <label 
-          htmlFor="main-drawer" 
-          className="btn btn-ghost btn-circle drawer-button"
+        <label
+          htmlFor="main-drawer"
+          className="ui-icon-btn drawer-button"
           aria-label="Open menu"
         >
           <RiMenuLine className="h-5 w-5" />
@@ -92,28 +95,23 @@ export default function DrawerMenu({
 
       {/* DaisyUI Drawer Side Layout */}
       <div className="drawer-side z-[60]">
-        <label 
-          htmlFor="main-drawer" 
-          aria-label="close sidebar" 
-          className="drawer-overlay"
+        <label
+          htmlFor="main-drawer"
+          aria-label="close sidebar"
+          className="drawer-overlay !bg-black/30 backdrop-blur-[2px]"
         />
 
         {/* Sidebar Container */}
-        <div className="bg-white dark:bg-[#1C1A24] border-r border-slate-200 dark:border-[#2D2938] min-h-full w-80 p-0 flex flex-col shadow-2xl text-slate-800 dark:text-slate-100">
-          
+        <div className="bg-surface border-r border-line min-h-full w-[19rem] max-w-[85vw] flex flex-col shadow-float text-ink">
+
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 dark:border-[#2D2938]">
-            <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-8 h-8 rounded-xl bg-[#5B3E96] text-white flex items-center justify-center font-bold text-lg shadow">
-                T
-              </div>
-              <span className="text-xl font-black tracking-tight text-[#5B3E96] dark:text-white">
-                TOR<span className="text-[#9B82C1]">max</span>
-              </span>
+          <div className="flex items-center justify-between px-5 h-16">
+            <Link href="/" className="rounded-lg">
+              <LogoSignature />
             </Link>
-            <label 
-              htmlFor="main-drawer" 
-              className="btn btn-ghost btn-sm btn-square text-slate-400 hover:text-slate-600 dark:hover:text-white"
+            <label
+              htmlFor="main-drawer"
+              className="ui-icon-btn"
               aria-label="Close menu"
             >
               <RiCloseLine className="h-5 w-5" />
@@ -121,22 +119,22 @@ export default function DrawerMenu({
           </div>
 
           {/* User Profile Preview */}
-          <div className="px-5 py-4 border-b border-slate-100 dark:border-[#2D2938] bg-slate-50/50 dark:bg-[#121118]/50">
-            <Link href="/profile" onClick={() => setIsOpen(false)} className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-xl bg-[#3B2468] text-white flex items-center justify-center font-bold text-xs ring-2 ring-[#5B3E96]/40 shrink-0">
+          <div className="px-3 pb-3">
+            <Link href="/profile" onClick={() => setIsOpen(false)} className="flex items-center gap-3 rounded-control p-2.5 bg-surface-2 hover:bg-surface-3 transition-colors group">
+              <div className="w-9 h-9 rounded-full bg-brand-deep text-white flex items-center justify-center font-semibold text-[11px] tracking-wide shrink-0">
                 TT
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-xs text-slate-900 dark:text-white truncate group-hover:text-[#5B3E96] dark:group-hover:text-[#9B82C1] transition-colors">
+              <div className="flex-1 min-w-0 leading-tight">
+                <p className="font-medium text-[13px] text-ink truncate">
                   {companyName}
                 </p>
-                <p className="text-[10px] text-slate-400 truncate">Tax ID: {taxId}</p>
+                <p className="text-[11px] text-ink-3 truncate mt-0.5">Tax ID: {taxId}</p>
               </div>
             </Link>
           </div>
 
           {/* Main Navigation */}
-          <div className="flex-1 px-3 py-4 overflow-y-auto space-y-1">
+          <div className="flex-1 px-3 py-2 overflow-y-auto space-y-0.5">
             {mainNavItems.map((item) => {
               const active = isActive(item.href);
               return (
@@ -144,21 +142,22 @@ export default function DrawerMenu({
                   key={item.href}
                   href={item.href}
                   onClick={() => setIsOpen(false)}
+                  aria-current={active ? 'page' : undefined}
                   className={`
-                    flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold
-                    transition-all duration-150
-                    ${active 
-                      ? 'bg-[#5B3E96]/10 text-[#5B3E96] dark:text-[#9B82C1] font-bold' 
-                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#2D2938]'
+                    flex items-center gap-3 h-10 px-3 rounded-control text-sm font-medium
+                    transition-colors duration-150
+                    ${active
+                      ? 'bg-brand-tint text-accent'
+                      : 'text-ink-2 hover:bg-surface-2 hover:text-ink'
                     }
                   `}
                 >
-                  <span className={active ? 'text-[#5B3E96] dark:text-[#9B82C1]' : 'text-slate-400'}>
+                  <span className={active ? 'text-accent' : 'text-ink-3'}>
                     {item.icon}
                   </span>
                   <span className="flex-1">{lang === 'EN' ? item.label : item.labelTh}</span>
                   {!!item.badge && item.badge > 0 && (
-                    <span className="badge badge-error badge-xs font-bold text-white p-1">
+                    <span className="min-w-5 h-5 px-1.5 rounded-full bg-brand text-on-brand text-[11px] font-semibold flex items-center justify-center">
                       {item.badge}
                     </span>
                   )}
@@ -168,7 +167,7 @@ export default function DrawerMenu({
           </div>
 
           {/* Footer Actions */}
-          <div className="px-4 py-3 border-t border-slate-100 dark:border-[#2D2938] bg-slate-50/50 dark:bg-[#121118]/50">
+          <div className="px-4 py-4 border-t border-line">
             <div className="flex items-center justify-between gap-2">
               {/* Theme Selector Dropdown */}
               <div className="flex-1 relative flex items-center">
@@ -176,22 +175,21 @@ export default function DrawerMenu({
                   value={isDark ? 'dark' : 'light'}
                   onChange={(e) => setTheme(e.target.value as 'light' | 'dark')}
                   aria-label="Select theme"
-                  className="w-full py-2 pl-8 pr-7 rounded-lg border border-slate-200 dark:border-[#2D2938] text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-[#1C1A24] hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors cursor-pointer appearance-none"
+                  className="ui-field h-9 pl-9 text-[13px] font-medium"
                 >
                   <option value="light">{lang === 'TH' ? 'ธีมสว่าง' : 'Light'}</option>
                   <option value="dark">{lang === 'TH' ? 'ธีมมืด' : 'Dark'}</option>
                 </select>
                 {isDark
-                  ? <RiMoonLine size={14} className="pointer-events-none absolute left-3 text-slate-400" />
-                  : <RiSunLine size={14} className="pointer-events-none absolute left-3 text-slate-400" />}
-                <RiArrowDownSLine size={14} className="pointer-events-none absolute right-2 text-slate-400" />
+                  ? <RiMoonLine size={15} className="pointer-events-none absolute left-3 text-ink-3" />
+                  : <RiSunLine size={15} className="pointer-events-none absolute left-3 text-ink-3" />}
               </div>
 
               {/* Settings Link */}
               <Link
                 href="/settings"
                 onClick={() => setIsOpen(false)}
-                className="p-2 rounded-lg border border-slate-200 dark:border-[#2D2938] text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-[#2D2938] transition-colors"
+                className="ui-btn ui-btn-secondary h-9 w-9 px-0"
                 title="Settings"
               >
                 <RiSettings4Line className="h-4 w-4" />
@@ -199,11 +197,11 @@ export default function DrawerMenu({
             </div>
 
             {/* Version & Logout */}
-            <div className="mt-3 pt-3 border-t border-slate-200/50 dark:border-[#2D2938]/50 flex items-center justify-between text-[10px] text-slate-400">
+            <div className="mt-4 flex items-center justify-between text-xs text-ink-4">
               <span>TORmax v2.0.1</span>
-              <button 
+              <button
                 onClick={() => console.log('Logged out')}
-                className="flex items-center gap-1 text-rose-500 hover:underline font-semibold"
+                className="inline-flex items-center gap-1 text-danger font-medium hover:underline underline-offset-4"
               >
                 <RiLogoutBoxRLine className="h-3.5 w-3.5" />
                 <span>Logout</span>

@@ -209,26 +209,34 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="min-h-screen">
         <ProfileHeader title={t.title} subtitle={t.subtitle} />
+        <div role="status" aria-busy className="mx-auto w-full max-w-4xl space-y-5 px-4 pt-8 sm:px-6 lg:px-8">
+          {[0, 1].map(i => (
+            <div key={i} aria-hidden className="ui-section">
+              <div className="space-y-2"><div className="ui-skeleton h-4 w-40" /><div className="ui-skeleton h-3 w-64" /></div>
+              <div className="grid gap-5 md:grid-cols-2">{[0, 1, 2, 3].map(j => <div key={j} className="space-y-2"><div className="ui-skeleton h-3 w-24" /><div className="ui-skeleton h-10 w-full rounded-control" /></div>)}</div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen">
       <ProfileHeader title={t.title} subtitle={t.subtitle} />
 
-      <main className="max-w-5xl mx-auto px-6 sm:px-8 py-10 w-full space-y-8">
+      <main className="mx-auto w-full max-w-4xl space-y-5 px-4 pt-8 sm:px-6 lg:px-8">
         {error && (
-          <div className="rounded-xl border border-red-300 bg-red-50 dark:bg-red-950/40 dark:border-red-800 text-red-700 dark:text-red-300 text-xs p-4">
+          <div role="alert" className="ui-alert ui-alert-danger">
             {error}
           </div>
         )}
 
-        {!profileLoaded && <button type="button" className="underline" onClick={() => setRetry(value => value + 1)}>{activeLang === 'th' ? 'ลองอีกครั้ง' : 'Retry'}</button>}
-        <form onSubmit={handleSubmit} className="space-y-8">
-          <fieldset disabled={!profileLoaded || isSaving} className="space-y-8">
+        {!profileLoaded && <button type="button" className="ui-btn ui-btn-secondary ui-btn-sm" onClick={() => setRetry(value => value + 1)}>{activeLang === 'th' ? 'ลองอีกครั้ง' : 'Retry'}</button>}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <fieldset disabled={!profileLoaded || isSaving} className="space-y-5">
           <CorporateIdentitySection
             formData={formData}
             onChange={handleChange}

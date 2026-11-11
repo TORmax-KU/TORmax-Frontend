@@ -5,6 +5,8 @@ import {
   fetchCurrentUser,
   getGoogleLoginUrl,
   getLogoutUrl,
+  checkSession,
+  onSignedOut,
   loginWithPassword as postLogin,
   registerWithPassword as postRegister,
   RegisterInput,
@@ -37,6 +39,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     refetchUser();
   }, [refetchUser]);
+
+  // NFR-07: notice an idle-expired session when the tab regains focus or any request gets a 401,
+  // instead of showing a signed-in header until the next reload.
+  const signedIn = Boolean(user);
+  useEffect(() => {
+    if (!signedIn) return;
+    const check = async () => {
+      if (document.visibilityState === 'visible' && await checkSession() === 'signedOut') setUser(null);
+    };
+    const stop = onSignedOut(() => setUser(null));
+    document.addEventListener('visibilitychange', check);
+    window.addEventListener('focus', check);
+    return () => {
+      stop();
+      document.removeEventListener('visibilitychange', check);
+      window.removeEventListener('focus', check);
+    };
+  }, [signedIn]);
 
   const loginWithGoogle = () => {
     window.location.href = getGoogleLoginUrl();

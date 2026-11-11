@@ -62,40 +62,34 @@ function GoogleLoginContent() {
         setFormError('');
     };
 
-    const inputClass =
-        'w-full h-12 px-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/60 text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200';
-    const labelClass = 'block mb-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300';
+    const inputClass = 'ui-field h-11';
+    const labelClass = 'ui-label mb-1.5';
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-100 via-slate-50 to-slate-200 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex flex-col items-center justify-center p-4 sm:p-6 text-slate-800 dark:text-slate-100 antialiased selection:bg-blue-500 selection:text-white transition-colors duration-300 relative">
-
-
-            {/* Decorative background glow elements */}
-            <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-400/10 dark:bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2 translate-y-1/2 w-96 h-96 bg-indigo-400/10 dark:bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center px-4 py-12 sm:p-6 text-ink relative">
 
             {/* Main Container */}
-            <div className="relative w-full max-w-md bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-3xl p-8 sm:p-10 shadow-xl shadow-slate-200/50 dark:shadow-slate-950/50 border border-slate-200/80 dark:border-slate-800/80 flex flex-col items-center text-center transition-all duration-300">
+            <div className="relative w-full max-w-[26rem] ui-card rounded-panel p-7 sm:p-10 shadow-raised flex flex-col items-center text-center">
 
                 {/* Brand/Product Identity */}
-                <div className="flex items-center mb-5">
+                <div className="flex items-center mb-6">
                     <LogoSignature />
                 </div>
 
                 {/* Heading Section */}
-                <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white mb-2">
+                <h1 className="text-2xl font-semibold tracking-[-0.02em] text-ink mb-2">
                     {isSignup
                         ? (th ? 'สร้างบัญชีของคุณ' : 'Create your account')
                         : (th ? 'ยินดีต้อนรับกลับเข้าสู่ระบบ' : 'Welcome back')}
                 </h1>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mb-8 max-w-xs">
+                <p className="text-sm text-ink-3 mb-8 max-w-xs leading-relaxed">
                     {lang === 'TH'
                         ? 'เข้าสู่ระบบเพื่อเข้าใช้งานพื้นที่ทำงาน TORmax และระบบวิเคราะห์คุณสมบัติ'
                         : 'Sign in to access your TORmax workspace and qualification engine.'}
                 </p>
 
                 {authFailed && (
-                    <p className="w-full mb-4 px-4 py-2.5 rounded-xl text-xs font-medium text-rose-600 bg-rose-500/10 border border-rose-500/20">
+                    <p className="ui-alert ui-alert-danger w-full mb-4 text-left text-[13px]">
                         {lang === 'TH'
                             ? 'เข้าสู่ระบบไม่สำเร็จ กรุณาลองใหม่อีกครั้ง'
                             : 'Sign-in failed. Please try again.'}
@@ -106,18 +100,18 @@ function GoogleLoginContent() {
                 <button
                     onClick={handleGoogleLogin}
                     disabled={isLoading}
-                    className="relative w-full h-12 flex items-center justify-center gap-3 px-6 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 focus:outline-none focus:ring-4 focus:ring-blue-500/20 active:scale-[0.99] transition-all duration-200 text-sm font-semibold text-slate-700 dark:text-slate-200 shadow-sm disabled:opacity-70 disabled:cursor-not-allowed group"
+                    className="ui-btn ui-btn-secondary w-full h-11 gap-3 group"
                 >
                     {isLoading ? (
                         <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                            <span className="text-slate-500 dark:text-slate-400">
+                            <span className="ui-spinner text-brand-soft" aria-hidden />
+                            <span className="text-ink-3">
                                 {lang === 'TH' ? 'กำลังยืนยันตัวตน...' : 'Authenticating...'}
                             </span>
                         </div>
                     ) : (
                         <>
-                            <svg className="w-5 h-5 shrink-0 transition-transform duration-200 group-hover:scale-110" viewBox="0 0 24 24">
+                            <svg className="w-[18px] h-[18px] shrink-0" viewBox="0 0 24 24">
                                 <path
                                     fill="#4285F4"
                                     d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -143,33 +137,33 @@ function GoogleLoginContent() {
                 </button>
 
                 {/* Scope / Terms Notice */}
-                <p className="mt-3 text-xs text-slate-500 dark:text-slate-400 leading-relaxed text-center">
+                <p className="mt-3 text-xs text-ink-3 leading-relaxed text-center">
                     {lang === 'TH' ? (
                         <>
                             หากดำเนินการต่อด้วย Google ระบบจะแชร์ชื่อ อีเมล การตั้งค่าภาษา และรูปโปรไฟล์ของคุณกับ{' '}
-                            <span className="font-semibold text-slate-700 dark:text-slate-300">TORmax</span>
+                            <span className="font-medium text-ink-2">TORmax</span>
                         </>
                     ) : (
                         <>
                             If you continue with Google, it will share your name, email address, language preference, and profile picture with{' '}
-                            <span className="font-semibold text-slate-700 dark:text-slate-300">TORmax</span>.
+                            <span className="font-medium text-ink-2">TORmax</span>.
                         </>
                     )}
                 </p>
 
                 {/* Visual Divider */}
-                <div className="w-full flex items-center my-6 gap-3">
-                    <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
-                    <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                <div className="w-full flex items-center my-7 gap-3">
+                    <div className="flex-1 h-px bg-line" />
+                    <span className="text-[11px] font-medium text-ink-4 uppercase tracking-[0.08em]">
                         {th ? 'หรือใช้อีเมล' : 'or use email'}
                     </span>
-                    <div className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
+                    <div className="flex-1 h-px bg-line" />
                 </div>
 
                 {/* Email / Password Form (FR-01) */}
                 <form onSubmit={handlePasswordSubmit} className="w-full space-y-4 text-left">
                     {isSignup && (
-                        <div>
+                        <div className="ui-reveal">
                             <label htmlFor="realName" className={labelClass}>
                                 {th ? 'ชื่อ-นามสกุล' : 'Full name'}
                             </label>
@@ -214,14 +208,14 @@ function GoogleLoginContent() {
                             className={inputClass}
                         />
                         {isSignup && (
-                            <p className="mt-1.5 text-[11px] text-slate-400 dark:text-slate-500">
+                            <p className="ui-hint mt-1.5">
                                 {th ? 'อย่างน้อย 8 ตัวอักษร' : 'At least 8 characters'}
                             </p>
                         )}
                     </div>
 
                     {isSignup && (
-                        <fieldset>
+                        <fieldset className="ui-reveal">
                             <legend className={labelClass}>{th ? 'ประเภทบัญชี' : 'Account type'}</legend>
                             <div className="grid grid-cols-2 gap-2">
                                 {([
@@ -230,9 +224,9 @@ function GoogleLoginContent() {
                                 ] as const).map(([value, title, desc]) => (
                                     <label
                                         key={value}
-                                        className={`cursor-pointer rounded-2xl border p-3 transition-all duration-200 ${role === value
-                                            ? 'border-blue-500 bg-blue-500/5 ring-4 ring-blue-500/10'
-                                            : 'border-slate-200 dark:border-slate-700/80 hover:border-slate-300 dark:hover:border-slate-600'}`}
+                                        className={`cursor-pointer rounded-control border p-3 transition-colors duration-150 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-[var(--focus)] ${role === value
+                                            ? 'border-brand-soft bg-brand-tint shadow-[0_0_0_3px_var(--brand-tint)]'
+                                            : 'border-line-strong hover:bg-surface-2'}`}
                                     >
                                         <input
                                             type="radio"
@@ -242,8 +236,8 @@ function GoogleLoginContent() {
                                             onChange={() => setRole(value)}
                                             className="sr-only"
                                         />
-                                        <span className="block text-sm font-semibold text-slate-800 dark:text-slate-100">{title}</span>
-                                        <span className="block text-[11px] text-slate-500 dark:text-slate-400">{desc}</span>
+                                        <span className={`block text-sm font-medium ${role === value ? 'text-accent' : 'text-ink'}`}>{title}</span>
+                                        <span className="block text-[11px] text-ink-3 mt-0.5">{desc}</span>
                                     </label>
                                 ))}
                             </div>
@@ -251,7 +245,7 @@ function GoogleLoginContent() {
                     )}
 
                     {formError && (
-                        <p role="alert" className="px-4 py-2.5 rounded-xl text-xs font-medium text-rose-600 bg-rose-500/10 border border-rose-500/20">
+                        <p role="alert" className="ui-alert ui-alert-danger text-[13px]">
                             {formError}
                         </p>
                     )}
@@ -259,23 +253,23 @@ function GoogleLoginContent() {
                     <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="w-full h-12 flex items-center justify-center gap-2 rounded-2xl bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500/30 active:scale-[0.99] transition-all duration-200 text-sm font-semibold text-white shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
+                        className="ui-btn ui-btn-primary w-full h-11 mt-2"
                     >
-                        {isSubmitting && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />}
+                        {isSubmitting && <span className="ui-spinner" aria-hidden />}
                         {isSignup ? (th ? 'สร้างบัญชี' : 'Create account') : (th ? 'เข้าสู่ระบบ' : 'Sign in')}
                     </button>
                 </form>
 
-                <p className="mt-5 text-xs text-slate-500 dark:text-slate-400">
+                <p className="mt-6 text-[13px] text-ink-3">
                     {isSignup ? (th ? 'มีบัญชีอยู่แล้ว?' : 'Already have an account?') : (th ? 'ยังไม่มีบัญชี?' : "Don't have an account?")}{' '}
-                    <button type="button" onClick={switchMode} className="font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                    <button type="button" onClick={switchMode} className="ui-link cursor-pointer">
                         {isSignup ? (th ? 'เข้าสู่ระบบ' : 'Sign in') : (th ? 'สมัครสมาชิก' : 'Sign up')}
                     </button>
                 </p>
             </div>
 
             {/* Footer Controls */}
-            <footer className="w-full max-w-md mt-8 flex justify-between items-center px-4 text-xs font-medium text-slate-500 dark:text-slate-400">
+            <footer className="w-full max-w-[26rem] mt-6 flex justify-between items-center px-2 text-xs text-ink-3">
                 <div className="relative">
                     <select
                         value={lang.toLowerCase()}
@@ -284,12 +278,12 @@ function GoogleLoginContent() {
                                 toggleLanguage();
                             }
                         }}
-                        className="bg-transparent hover:text-slate-700 dark:hover:text-slate-200 focus:outline-none cursor-pointer pr-4 appearance-none"
+                        className="bg-transparent hover:text-ink focus:outline-none cursor-pointer pr-4 appearance-none transition-colors"
                     >
-                        <option value="en" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+                        <option value="en">
                             English (United States)
                         </option>
-                        <option value="th" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
+                        <option value="th">
                             ไทย (Thai)
                         </option>
                     </select>
@@ -297,13 +291,13 @@ function GoogleLoginContent() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <a href="#" className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+                    <a href="#" className="hover:text-ink transition-colors">
                         {lang === 'TH' ? 'ช่วยเหลือ' : 'Help'}
                     </a>
-                    <a href="#" className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+                    <a href="#" className="hover:text-ink transition-colors">
                         {lang === 'TH' ? 'ความเป็นส่วนตัว' : 'Privacy'}
                     </a>
-                    <a href="#" className="hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+                    <a href="#" className="hover:text-ink transition-colors">
                         {lang === 'TH' ? 'ข้อกำหนด' : 'Terms'}
                     </a>
                 </div>

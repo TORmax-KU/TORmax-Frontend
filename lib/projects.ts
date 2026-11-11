@@ -9,6 +9,11 @@ export interface Project {
   title: string;
   agency?: string;
   budget?: number;
+  // Lower end of a direct posting's budget range; `budget` is the ceiling.
+  budgetMin?: number | null;
+  category?: string;
+  publisherId?: Publisher | string | null;
+  createdAt?: string;
   description?: string;
   descriptions?: string;
   externalId?: string;
@@ -37,11 +42,57 @@ export interface Project {
   requiredSkills?: Array<{ _id: string; name: string } | string>;
   status?: 'Draft' | 'Public';
   priceFlag?: PriceFlag;
-  priceAnalysis?: { category: string; benchmarkCategory: string; ratio: number; medianBudget: number; avgBudget: number; sampleSize: number; evaluatedAt: string } | null;
+  priceAnalysis?: PriceAnalysis | null;
   aiAnalysis?: { documentUrls?: string[]; fieldResults?: Partial<Record<'budget' | 'announcedAt' | 'deadline', { status: 'found' | 'not_found' | 'ambiguous'; reason: string; evidence?: { quote: string; page: number; documentIndex: number } | null }>>; mandatorySkillNames?: string[]; noMandatorySkillsReason?: string; skillEvidence?: Array<{ name: string; quote: string; page?: number; documentIndex?: number }> };
 }
 
 export type PriceFlag = 'Normal' | 'Underpriced' | 'Overpriced' | 'ScopeMismatch';
+
+export interface Publisher { _id: string; username?: string; realName?: string; companyName?: string }
+
+// FR-09: the category benchmark behind a price flag. Quartiles are of comparable government TOR budgets.
+export interface PriceAnalysis {
+  category: string;
+  benchmarkCategory: string;
+  ratio: number;
+  medianBudget: number;
+  q1Budget?: number;
+  q3Budget?: number;
+  avgBudget: number;
+  sampleSize: number;
+  scopeSkills?: number | null;
+  evaluatedAt: string;
+}
+
+export const DIRECT_SOURCE = 'direct';
+
+// Keys match the backend PriceAnalysis categories; job listers pick one when posting.
+export const PRICE_CATEGORIES: Record<string, [string, string]> = {
+  'information-system': ['ระบบสารสนเทศ / เว็บแอปพลิเคชัน', 'Information system / web app'],
+  'mobile-app': ['แอปพลิเคชันมือถือ', 'Mobile app'],
+  'data-ai': ['ข้อมูล / AI / แดชบอร์ด', 'Data, AI & dashboards'],
+  infrastructure: ['เครือข่าย / คลาวด์ / เซิร์ฟเวอร์', 'Network, cloud & servers'],
+  security: ['ความมั่นคงปลอดภัยไซเบอร์', 'Cybersecurity'],
+  gis: ['ภูมิสารสนเทศ (GIS)', 'GIS & mapping'],
+  'maintenance-license': ['บำรุงรักษา / ลิขสิทธิ์ซอฟต์แวร์', 'Maintenance & licences'],
+  'other-it': ['งาน IT อื่น ๆ', 'Other IT'],
+  'all-it': ['งาน IT ทั้งหมด', 'all IT TORs'],
+};
+
+export function priceCategoryLabel(key: string | undefined, lang: 'th' | 'en') {
+  const label = key ? PRICE_CATEGORIES[key] : undefined;
+  return label ? label[lang === 'th' ? 0 : 1] : key || '';
+}
+
+export function publisherName(project: Project) {
+  const publisher = project.publisherId;
+  if (!publisher || typeof publisher === 'string') return '';
+  return publisher.companyName || publisher.realName || publisher.username || '';
+}
+
+export function formatMoney(value: number, lang: 'th' | 'en') {
+  return new Intl.NumberFormat(lang === 'th' ? 'th-TH' : 'en-US', { style: 'currency', currency: 'THB', maximumFractionDigits: 0 }).format(value);
+}
 
 export function priceFlagLabel(flag: PriceFlag | undefined, lang: 'th' | 'en') {
   const labels: Record<PriceFlag, [string, string]> = { Normal: ['งบประมาณปกติ', 'Typical budget'], Overpriced: ['งบสูงกว่าปกติ', 'Above typical budget'], Underpriced: ['งบต่ำกว่าปกติ', 'Below typical budget'], ScopeMismatch: ['งบไม่สอดคล้องกับขอบเขต', 'Budget/scope mismatch'] };
@@ -52,10 +103,11 @@ export function priceFlagLabel(flag: PriceFlag | undefined, lang: 'th' | 'en') {
 export function priceComparison(project: Project, lang: 'th' | 'en') {
   const analysis = project.priceAnalysis;
   if (!analysis) return null;
-  const money = new Intl.NumberFormat(lang === 'th' ? 'th-TH' : 'en-US', { style: 'currency', currency: 'THB', maximumFractionDigits: 0 }).format(analysis.medianBudget);
+  const money = formatMoney(analysis.medianBudget, lang);
+  const category = priceCategoryLabel(analysis.benchmarkCategory, lang);
   return lang === 'th'
-    ? `${analysis.ratio} เท่าของค่ากลาง ${money} ในหมวด ${analysis.benchmarkCategory} (${analysis.sampleSize} โครงการ)`
-    : `${analysis.ratio}× the ${money} median for ${analysis.benchmarkCategory} (${analysis.sampleSize} TORs)`;
+    ? `${analysis.ratio} เท่าของค่ากลาง ${money} ในหมวด ${category} (${analysis.sampleSize} โครงการ)`
+    : `${analysis.ratio}× the ${money} median for ${category} (${analysis.sampleSize} TORs)`;
 }
 
 export interface IngestionStatus { status: string; code?: string; lastAttemptAt?: string; lastSuccessAt?: string; nextAttemptAt?: string; intervalMinutes: number }
@@ -85,17 +137,24 @@ export async function getProjects(params: URLSearchParams, signal: AbortSignal):
 // matchPercentage is set only on the vendor's matched-TOR list, where the card shows a match badge.
 export function projectCard(project: Project, lang: 'th' | 'en', matchPercentage: number | null = null) {
   const unknown = lang === 'th' ? 'ต้นทางไม่ระบุข้อมูล' : 'Not provided by source';
+  const isDirect = project.source === DIRECT_SOURCE;
+  const hasBudget = project.budget != null && Number.isFinite(project.budget) && project.budget >= 0;
+  const budgetText = !hasBudget ? extractionFieldLabel(project, 'budget', lang)
+    : isDirect && project.budgetMin != null ? `${formatMoney(project.budgetMin, lang)} – ${formatMoney(project.budget as number, lang)}`
+    : new Intl.NumberFormat(lang === 'th' ? 'th-TH' : 'en-US', { style: 'currency', currency: 'THB', maximumFractionDigits: 2 }).format(project.budget as number);
   return {
+    isDirect,
     match: matchPercentage,
     submission: { availability: project.availability, deadline: project.deadline, deadlinePrecision: project.deadlinePrecision, submissionStartAt: project.submissionStartAt },
     lang,
     id: project._id,
     displayId: project.externalId || project._id,
     name: project.title?.trim() || pendingExtraction(lang),
-    employer: project.agency || unknown,
-    price: project.budget == null || !Number.isFinite(project.budget) || project.budget < 0 ? extractionFieldLabel(project, 'budget', lang) : new Intl.NumberFormat(lang === 'th' ? 'th-TH' : 'en-US', { style: 'currency', currency: 'THB', maximumFractionDigits: 2 }).format(project.budget),
-    sourcePortal: ({ 'tero-procurement': 'Tero Procurement', govspending: 'GovSpending / DGA', 'bangkok-egp': 'Bangkok e-GP' } as Record<string, string>)[project.source || ''] || project.source || unknown,
-    method: project.procurementMethod || unknown,
+    employer: project.agency || (isDirect && publisherName(project)) || unknown,
+    price: budgetText,
+    sourcePortal: isDirect ? (lang === 'th' ? 'ประกาศตรงบน TORmax' : 'Direct posting on TORmax')
+      : ({ 'tero-procurement': 'Tero Procurement', govspending: 'GovSpending / DGA', 'bangkok-egp': 'Bangkok e-GP' } as Record<string, string>)[project.source || ''] || project.source || unknown,
+    method: isDirect ? (lang === 'th' ? 'ติดต่อผู้ประกาศโดยตรง' : 'Contact the publisher') : project.procurementMethod || unknown,
     deadline: project.deadline && Number.isFinite(Date.parse(project.deadline)) ? formatSubmissionDeadline(project, lang) : extractionFieldLabel(project, 'deadline', lang),
     availability: project.availability || 'unverified',
     availabilityLabel: availabilityLabel(project.availability, lang),
@@ -103,7 +162,7 @@ export function projectCard(project: Project, lang: 'th' | 'en', matchPercentage
     priceFlagLabel: priceFlagLabel(project.priceFlag, lang),
     priceComparison: priceComparison(project, lang),
     published: project.announcedAt && Number.isFinite(Date.parse(project.announcedAt)) ? formatProcurementDate(project.announcedAt, lang, false) : extractionFieldLabel(project, 'announcedAt', lang),
-    desc: project.descriptions || (lang === 'th' ? 'รอ AI สรุปเอกสาร TOR' : 'Awaiting AI TOR summary'),
+    desc: project.descriptions || (isDirect ? project.description : '') || (lang === 'th' ? 'รอ AI สรุปเอกสาร TOR' : 'Awaiting AI TOR summary'),
     tags: [...new Set([...(project.sourceSkillNames || []), ...(project.requiredSkills || []).flatMap(skill => typeof skill === 'string' ? [] : [skill.name]), ...(project.aiAnalysis?.mandatorySkillNames || [])])],
   };
 }

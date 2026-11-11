@@ -1,6 +1,6 @@
 'use client';
 
-import { RiCloseLine } from '@remixicon/react';
+import { RiCloseLine, RiSearchLine } from '@remixicon/react';
 
 interface SearchInputProps {
   value: string;
@@ -13,6 +13,7 @@ export function SearchInput({ value, onChange, placeholder }: SearchInputProps) 
 
   return (
     <div className="relative flex-1">
+      <RiSearchLine size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-ink-4" />
       <input
         type="text"
         aria-label={placeholder}
@@ -20,13 +21,13 @@ export function SearchInput({ value, onChange, placeholder }: SearchInputProps) 
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full p-3 pr-10 rounded-xl bg-white dark:bg-tormax-surfaceDark border border-slate-200 dark:border-tormax-borderDark text-slate-900 dark:text-white text-xs font-semibold focus:outline-none focus:border-tormax-purple shadow-2xs"
+        className="ui-field h-12 pl-11 pr-11 text-[15px] rounded-xl"
       />
       {value && (
         <button
           onClick={handleClear}
           aria-label="Clear search"
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+          className="ui-icon-btn absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full"
         >
           <RiCloseLine size={16} />
         </button>

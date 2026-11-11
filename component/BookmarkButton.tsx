@@ -17,13 +17,9 @@ export function BookmarkButton({ id, lang }: { id: string; lang: 'th' | 'en' }) 
       aria-pressed={saved}
       aria-label={label}
       title={label}
-      className={`shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors cursor-pointer ${
-        saved
-          ? 'text-tormax-purple dark:text-tormax-lavender bg-tormax-purple/10'
-          : 'text-slate-400 hover:text-tormax-purple dark:hover:text-tormax-lavender hover:bg-slate-100 dark:hover:bg-slate-800'
-      }`}
+      className={`ui-icon-btn h-8 w-8 ${saved ? 'text-accent bg-brand-tint hover:bg-brand-tint hover:text-accent' : 'hover:text-accent'}`}
     >
-      {saved ? <RiBookmarkFill size={18} /> : <RiBookmarkLine size={18} />}
+      {saved ? <RiBookmarkFill size={17} /> : <RiBookmarkLine size={17} />}
     </button>
   );
 }

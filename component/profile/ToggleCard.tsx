@@ -11,26 +11,26 @@ interface ToggleCardProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export function ToggleCard({ 
-  id, 
-  title, 
+export function ToggleCard({
+  id,
+  title,
   icon,
-  description, 
-  checked, 
-  onChange 
+  description,
+  checked,
+  onChange
 }: ToggleCardProps) {
   return (
-    <label className="p-4 rounded-2xl border border-slate-200 dark:border-tormax-borderDark flex items-center justify-between cursor-pointer bg-slate-50 dark:bg-[#090D16] hover:border-tormax-purple transition-colors">
-      <div>
-        <div className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">{icon}{title}</div>
-        <div className="text-[11px] text-slate-500 dark:text-slate-400">{description}</div>
+    <label className={`flex cursor-pointer items-center justify-between gap-4 rounded-card border p-4 transition-colors duration-150 ${checked ? 'border-brand-soft/60 bg-brand-tint/50' : 'border-line hover:border-line-strong hover:bg-surface-2/50'}`}>
+      <div className="min-w-0">
+        <div className="flex items-center gap-1.5 text-sm font-medium text-ink">{icon && <span className="text-ink-3">{icon}</span>}{title}</div>
+        <div className="mt-0.5 text-xs leading-relaxed text-ink-3">{description}</div>
       </div>
       <input
         type="checkbox"
         id={id}
         checked={checked}
         onChange={onChange}
-        className="w-5 h-5 accent-tormax-purple cursor-pointer"
+        className="ui-switch"
       />
     </label>
   );

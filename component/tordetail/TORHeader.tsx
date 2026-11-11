@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { RiArrowLeftLine, RiGovernmentLine } from '@remixicon/react';
+import { RiArrowLeftLine, RiBuilding2Line, RiGovernmentLine } from '@remixicon/react';
 import { TORFacts } from '@/component/TORFacts';
 
 interface TORHeaderProps {
@@ -14,41 +14,42 @@ interface TORHeaderProps {
   published: string;
   deadline: string;
   lang: 'th' | 'en';
+  direct?: boolean;
 }
 
-export function TORHeader({ 
-  id, 
-  sourcePortal, 
-  price, 
-  name, 
-  employer, 
+export function TORHeader({
+  id,
+  sourcePortal,
+  price,
+  name,
+  employer,
   backToDirectory,
   published,
   deadline,
   lang,
+  direct = false,
 }: TORHeaderProps) {
   return (
-    <header className="bg-slate-900 text-white min-h-[260px] px-6 sm:px-8 py-10 flex flex-col justify-center border-b border-slate-800">
-      <div className="max-w-5xl mx-auto w-full space-y-3">
-        <div className="flex items-center space-x-3 text-xs font-mono">
-          <Link
-            href="/search-feed"
-            className="text-tormax-lavender hover:underline transition-colors inline-flex items-center gap-1"
-          >
-            <RiArrowLeftLine size={14} /> {backToDirectory}
+    <header className="border-b border-line">
+      <div className="mx-auto w-full max-w-6xl px-4 pb-10 pt-8 sm:px-6 sm:pt-10 lg:px-8 space-y-5">
+        <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px]">
+          <Link href="/search-feed" className="ui-link group">
+            <RiArrowLeftLine size={14} className="transition-transform duration-150 group-hover:-translate-x-0.5" /> {backToDirectory}
           </Link>
-          <span>/</span>
-          <span className="text-slate-400">{id}</span>
-          <span>/</span>
-          <span className="text-amber-400 font-bold">{sourcePortal}</span>
-        </div>
-        <h1 className="text-2xl md:text-3xl font-extrabold text-white leading-tight">
+          <span aria-hidden className="text-ink-4">/</span>
+          <span className="font-mono text-xs text-ink-3">{id}</span>
+          <span aria-hidden className="text-ink-4">/</span>
+          <span className="font-medium text-ink-2">{sourcePortal}</span>
+        </nav>
+        <h1 className="ui-title max-w-4xl">
           {name}
         </h1>
-        <p className="text-sm font-semibold text-slate-300 flex items-center gap-1.5"><RiGovernmentLine size={16} /> {employer}</p>
-        <div className="border-t border-slate-700 pt-5 mt-5">
-          <TORFacts budget={price} published={published} deadline={deadline} lang={lang} inverse />
-          <p className="text-xs text-slate-400 mt-3">{lang === 'th' ? 'วันที่ตามเวลาไทย (GMT+7) • แสดงเวลาเมื่อมีข้อมูลระบุเท่านั้น' : 'Dates use Thailand time (GMT+7). Times appear only when provided.'}</p>
+        <p className="flex items-center gap-2 text-[15px] text-ink-2">
+          {direct ? <RiBuilding2Line size={17} className="shrink-0 text-ink-3" /> : <RiGovernmentLine size={17} className="shrink-0 text-ink-3" />} {employer}
+        </p>
+        <div className="ui-card mt-2 p-5 sm:px-6">
+          <TORFacts budget={price} published={published} deadline={deadline} lang={lang} direct={direct} />
+          <p className="ui-meta mt-4 border-t border-line pt-3">{lang === 'th' ? 'วันที่ตามเวลาไทย (GMT+7) • แสดงเวลาเมื่อมีข้อมูลระบุเท่านั้น' : 'Dates use Thailand time (GMT+7). Times appear only when provided.'}</p>
         </div>
       </div>
     </header>
