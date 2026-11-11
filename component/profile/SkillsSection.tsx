@@ -1,41 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { API_BASE_URL, BACKGROUND_HEADERS } from '@/lib/auth';
 import { RiAddLine, RiCheckLine, RiCloseLine } from '@remixicon/react';
 import { FormSection } from './FormSection';
 
-const SUGGESTED_SKILLS = [
-  'Python',
-  'C',
-  'C++',
-  'C#',
-  'Assembly',
-  'Java',
-  'JavaScript',
-  'TypeScript',
-  'Go',
-  'Rust',
-  'PHP',
-  'Ruby',
-  'Kotlin',
-  'Swift',
-  'Dart',
-  'R',
-  'MATLAB',
-  'Bash',
-  'PowerShell',
-  'React',
-  'Node.js',
-  'Docker',
-  'Kubernetes',
-  'Linux',
-  'Windows',
-  'AWS',
-  'Azure',
-  'MongoDB',
-  'SQL',
-  'Git',
-];
+interface SkillGroup { category: string; skills: string[] }
 
 const MAX_SKILLS = 30;
 
@@ -59,6 +29,26 @@ const normalizeSkill = (value: string) => value.trim().replace(/\s+/g, ' ');
 
 export function SkillsSection({ skills, onChange, t }: SkillsSectionProps) {
   const [customSkill, setCustomSkill] = useState('');
+  const [groups, setGroups] = useState<SkillGroup[]>([]);
+  const [loadError, setLoadError] = useState(false);
+  const [retry, setRetry] = useState(0);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch(`${API_BASE_URL}/api/skills/recommendations`, {
+      signal: controller.signal, headers: BACKGROUND_HEADERS,
+    }).then(async response => {
+      if (!response.ok) throw new Error('Unable to load skills');
+      const data: unknown = await response.json();
+      if (!Array.isArray(data) || !data.every(group =>
+        typeof group?.category === 'string' && Array.isArray(group.skills) &&
+        group.skills.every((name: unknown) => typeof name === 'string'))) {
+        throw new Error('Invalid skill recommendations');
+      }
+      if (!controller.signal.aborted) { setGroups(data); setLoadError(false); }
+    }).catch(() => { if (!controller.signal.aborted) setLoadError(true); });
+    return () => controller.abort();
+  }, [retry]);
 
   const hasSkill = (name: string) =>
     skills.some((skill) => skill.toLocaleLowerCase() === name.toLocaleLowerCase());
@@ -119,8 +109,14 @@ export function SkillsSection({ skills, onChange, t }: SkillsSectionProps) {
 
       <div className="space-y-2.5">
         <p className="ui-label">{t.suggestedSkills}</p>
-        <div className="flex flex-wrap gap-1.5">
-          {SUGGESTED_SKILLS.map((skill) => {
+        {loadError && <p className="ui-hint" role="status">
+          Unable to load suggestions. <button type="button" className="underline" onClick={() => setRetry(value => value + 1)}>Retry</button>
+        </p>}
+        {!loadError && groups.length === 0 && <p className="ui-hint" role="status">Loading suggestions...</p>}
+        {groups.map(group => <fieldset key={group.category} className="space-y-2 rounded-xl border border-line p-3">
+          <legend className="px-1 text-xs font-semibold text-ink-2">{group.category}</legend>
+          <div className="flex flex-wrap gap-1.5">
+          {group.skills.map((skill) => {
             const selected = hasSkill(skill);
             return (
               <button
@@ -140,7 +136,8 @@ export function SkillsSection({ skills, onChange, t }: SkillsSectionProps) {
               </button>
             );
           })}
-        </div>
+          </div>
+        </fieldset>)}
       </div>
 
       <div className="space-y-2">
