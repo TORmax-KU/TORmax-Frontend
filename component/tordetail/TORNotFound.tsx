@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { RiArrowLeftLine } from '@remixicon/react';
+import { RiArrowLeftLine, RiFileSearchLine } from '@remixicon/react';
 
 interface TORNotFoundProps {
   notFound: string;
@@ -12,16 +12,19 @@ export function TORNotFound({ notFound, backToDirectory }: TORNotFoundProps) {
   const router = useRouter();
 
   return (
-    <div className="max-w-4xl mx-auto p-12 text-center space-y-4">
-      <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-        {notFound}
-      </h2>
-      <button
-        onClick={() => router.push('/search-feed')}
-        className="text-xs text-[#5B3E96] font-bold underline cursor-pointer hover:opacity-80 transition-opacity inline-flex items-center gap-1"
-      >
-        <RiArrowLeftLine size={14} /> {backToDirectory}
-      </button>
+    <div className="ui-page">
+      <div className="ui-empty py-16">
+        <div className="ui-empty-icon"><RiFileSearchLine size={20} /></div>
+        <h2 className="ui-section-title">
+          {notFound}
+        </h2>
+        <button
+          onClick={() => router.push('/search-feed')}
+          className="ui-btn ui-btn-secondary ui-btn-sm mt-3"
+        >
+          <RiArrowLeftLine size={14} /> {backToDirectory}
+        </button>
+      </div>
     </div>
   );
 }

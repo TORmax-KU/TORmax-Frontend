@@ -8,6 +8,7 @@ import {
   RiCheckDoubleLine,
 } from '@remixicon/react';
 import { NotificationListItem } from '@/component/Notification/NotificationListItem';
+import { PageHeader } from '@/component/PageHeader';
 import { toNotificationItem, useNotifications } from '@/lib/notifications';
 
 export default function NotificationsPage() {
@@ -22,93 +23,80 @@ export default function NotificationsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#121118] text-slate-900 dark:text-slate-100 p-4 md:p-8">
-      <div className="max-w-4xl mx-auto space-y-6">
-        
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-[#2D2938] pb-6">
-          <div>
-            <div className="flex items-center gap-2 text-xs font-bold text-[#5B3E96] dark:text-[#9B82C1] uppercase tracking-wider">
-              <RiNotificationLine className="h-4 w-4" />
-              <span>{lang === 'EN' ? 'Activity Hub' : 'ศูนย์การแจ้งเตือน'}</span>
-            </div>
-            <h1 className="text-2xl md:text-3xl font-black mt-1">
-              {lang === 'EN' ? 'Notifications' : 'การแจ้งเตือน'}
-            </h1>
-          </div>
+    <div className="ui-page max-w-4xl">
+      <div className="space-y-6">
 
-          <button
-            onClick={markAllRead}
-            disabled={unreadCount === 0}
-            className="btn btn-sm btn-ghost gap-1.5 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-[#2D2938] rounded-xl self-start sm:self-auto"
-          >
-            <RiCheckDoubleLine className="h-4 w-4 text-[#5B3E96] dark:text-[#9B82C1]" />
-            <span>{lang === 'EN' ? 'Mark all as read' : 'ทำเครื่องหมายว่าอ่านแล้วทั้งหมด'}</span>
-          </button>
-        </div>
+        {/* Header */}
+        <PageHeader
+          className="pb-2"
+          eyebrow={<><RiNotificationLine className="h-3.5 w-3.5" /><span>{lang === 'EN' ? 'Activity Hub' : 'ศูนย์การแจ้งเตือน'}</span></>}
+          title={lang === 'EN' ? 'Notifications' : 'การแจ้งเตือน'}
+          actions={
+            <button
+              onClick={markAllRead}
+              disabled={unreadCount === 0}
+              className="ui-btn ui-btn-ghost ui-btn-sm"
+            >
+              <RiCheckDoubleLine className="h-4 w-4 text-accent" />
+              <span>{lang === 'EN' ? 'Mark all as read' : 'ทำเครื่องหมายว่าอ่านแล้วทั้งหมด'}</span>
+            </button>
+          }
+        />
 
         {/* Filter Toggle Bar */}
-        <div className="flex items-center justify-between bg-white dark:bg-[#1C1A24] p-1.5 rounded-2xl border border-slate-200 dark:border-[#2D2938]">
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setFilter('all')}
-              className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                filter === 'all'
-                  ? 'bg-[#5B3E96] text-white shadow-sm'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#2D2938]'
-              }`}
-            >
+        <div className="flex items-center justify-between gap-3">
+          <div className="ui-segmented">
+            <button aria-pressed={filter === 'all'} onClick={() => setFilter('all')}>
               {lang === 'EN' ? 'All Alerts' : 'ทั้งหมด'}
             </button>
-            <button
-              onClick={() => setFilter('unread')}
-              className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                filter === 'unread'
-                  ? 'bg-[#5B3E96] text-white shadow-sm'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-[#2D2938]'
-              }`}
-            >
+            <button aria-pressed={filter === 'unread'} onClick={() => setFilter('unread')}>
               {lang === 'EN' ? 'Unread Only' : 'ยังไม่ได้อ่าน'}
             </button>
           </div>
 
-          <span className="text-xs font-semibold text-slate-400 px-3">
-            {unreadCount} {lang === 'EN' ? 'unread' : 'รายการใหม่'}
+          <span className="text-[13px] text-ink-3">
+            <span className="font-medium tabular-nums text-ink">{unreadCount}</span> {lang === 'EN' ? 'unread' : 'รายการใหม่'}
           </span>
         </div>
 
         {/* List */}
         {signedOut ? (
-          <div className="bg-white dark:bg-[#1C1A24] rounded-2xl p-12 border border-slate-200 dark:border-[#2D2938] text-center space-y-3">
-            <RiNotificationLine className="h-10 w-10 text-slate-300 dark:text-slate-600 mx-auto" />
-            <h3 className="font-bold text-sm text-slate-700 dark:text-slate-300">
+          <div className="ui-empty py-16">
+            <div className="ui-empty-icon"><RiNotificationLine className="h-5 w-5" /></div>
+            <h3 className="font-medium text-ink">
               {lang === 'EN' ? 'Sign in to receive match alerts' : 'เข้าสู่ระบบเพื่อรับการแจ้งเตือน TOR ที่ตรงกับคุณ'}
             </h3>
-            <Link href="/login" className="inline-block text-xs font-bold text-[#5B3E96] dark:text-[#9B82C1] hover:underline">
+            <Link href="/login" className="ui-btn ui-btn-primary ui-btn-sm mt-3">
               {lang === 'EN' ? 'Sign in' : 'เข้าสู่ระบบ'}
             </Link>
           </div>
         ) : status === 'loading' ? (
-          <p role="status" className="p-12 text-center text-sm text-slate-500">
-            {lang === 'EN' ? 'Loading notifications…' : 'กำลังโหลดการแจ้งเตือน…'}
-          </p>
+          <div role="status" className="ui-card divide-y divide-line overflow-hidden">
+            <span className="sr-only">{lang === 'EN' ? 'Loading notifications…' : 'กำลังโหลดการแจ้งเตือน…'}</span>
+            {[0, 1, 2].map(i => (
+              <div key={i} aria-hidden className="flex gap-4 p-4 sm:px-5">
+                <div className="ui-skeleton h-9 w-9 shrink-0 rounded-[10px]" />
+                <div className="flex-1 space-y-2.5 pt-1"><div className="ui-skeleton h-3.5 w-1/3" /><div className="ui-skeleton h-3 w-3/4" /></div>
+              </div>
+            ))}
+          </div>
         ) : status === 'error' ? (
-          <div className="bg-white dark:bg-[#1C1A24] rounded-2xl p-12 border border-slate-200 dark:border-[#2D2938] text-center space-y-3">
-            <h3 className="font-bold text-sm text-slate-700 dark:text-slate-300">
+          <div className="ui-empty py-16">
+            <h3 className="font-medium text-ink">
               {lang === 'EN' ? 'Notifications could not be loaded' : 'โหลดการแจ้งเตือนไม่สำเร็จ'}
             </h3>
-            <button onClick={retry} className="text-xs font-bold text-[#5B3E96] dark:text-[#9B82C1] hover:underline">
+            <button onClick={retry} className="ui-btn ui-btn-secondary ui-btn-sm mt-3">
               {lang === 'EN' ? 'Try again' : 'ลองอีกครั้ง'}
             </button>
           </div>
         ) : filteredList.length === 0 ? (
-          <div className="bg-white dark:bg-[#1C1A24] rounded-2xl p-12 border border-slate-200 dark:border-[#2D2938] text-center space-y-3">
-            <RiNotificationLine className="h-10 w-10 text-slate-300 dark:text-slate-600 mx-auto" />
-            <h3 className="font-bold text-sm text-slate-700 dark:text-slate-300">
+          <div className="ui-empty py-16">
+            <div className="ui-empty-icon"><RiNotificationLine className="h-5 w-5" /></div>
+            <h3 className="font-medium text-ink">
               {lang === 'EN' ? 'No notifications to display' : 'ไม่มีรายการแจ้งเตือน'}
             </h3>
             {filter === 'all' && (
-              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+              <p className="text-sm text-ink-3 max-w-sm mx-auto">
                 {lang === 'EN'
                   ? 'Add your skills and budget range to your profile, and we will alert you when a TOR matches.'
                   : 'เพิ่มทักษะและช่วงงบประมาณในโปรไฟล์ แล้วเราจะแจ้งเตือนเมื่อมี TOR ที่ตรงกับคุณ'}
@@ -116,7 +104,7 @@ export default function NotificationsPage() {
             )}
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="ui-card divide-y divide-line overflow-hidden">
             {filteredList.map((item) => (
               <NotificationListItem
                 key={item.id}

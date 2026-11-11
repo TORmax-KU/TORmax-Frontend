@@ -5,6 +5,7 @@ import {
   RiAddLine,
   RiArrowRightLine,
   RiCalendarCheckLine,
+  RiCheckLine,
   RiFileTextLine,
   RiLightbulbFlashLine,
   RiMoneyDollarCircleLine,
@@ -41,85 +42,87 @@ const faqs = [
 
 export function AboutTORSection() {
   return (
-    <section id="about-tor" aria-labelledby="about-tor-heading" className="mt-20 space-y-14">
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[var(--tormax-purple-deep)] via-[var(--tormax-purple)] to-indigo-500 p-8 sm:p-12 text-white shadow-xl">
-        <div aria-hidden className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/10 blur-2xl" />
-        <div aria-hidden className="absolute -bottom-20 left-1/3 h-56 w-56 rounded-full bg-indigo-300/20 blur-3xl" />
-        <div className="relative max-w-3xl">
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-bold uppercase tracking-wider">
+    <section id="about-tor" aria-labelledby="about-tor-heading" className="mt-24 space-y-20 sm:mt-32">
+      {/* Introduction */}
+      <div className="grid gap-8 rounded-panel border border-line bg-surface p-8 sm:p-12 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-16">
+        <div className="space-y-4">
+          <span className="ui-eyebrow">
             <RiLightbulbFlashLine size={14} /> ความรู้พื้นฐาน
           </span>
-          <h2 id="about-tor-heading" className="mt-4 text-3xl sm:text-4xl font-black tracking-tight">
+          <h2 id="about-tor-heading" className="ui-display text-4xl sm:text-5xl">
             TOR คืออะไร?
           </h2>
-          <p className="mt-4 text-base sm:text-lg leading-relaxed text-white/90">
-            <strong>TOR (Terms of Reference)</strong> หรือขอบเขตของงาน คือเอกสารที่หน่วยงานรัฐหรือรัฐวิสาหกิจเผยแพร่
-            เมื่อต้องการจัดซื้อจัดจ้างโครงการ โดยระบุอย่างชัดเจนว่าผู้ซื้อต้องการอะไร ใครมีสิทธิ์ยื่นข้อเสนอ
-            วงเงินที่วางแผนไว้ และวิธีพิจารณาข้อเสนอ สำหรับผู้ประกอบการ TOR คือจุดเริ่มต้นของการยื่นข้อเสนอทุกครั้ง
-          </p>
         </div>
+        <p className="self-end text-base leading-[1.8] text-ink-2 sm:text-[17px]">
+          <strong className="font-semibold text-ink">TOR (Terms of Reference)</strong> หรือขอบเขตของงาน คือเอกสารที่หน่วยงานรัฐหรือรัฐวิสาหกิจเผยแพร่
+          เมื่อต้องการจัดซื้อจัดจ้างโครงการ โดยระบุอย่างชัดเจนว่าผู้ซื้อต้องการอะไร ใครมีสิทธิ์ยื่นข้อเสนอ
+          วงเงินที่วางแผนไว้ และวิธีพิจารณาข้อเสนอ สำหรับผู้ประกอบการ TOR คือจุดเริ่มต้นของการยื่นข้อเสนอทุกครั้ง
+        </p>
       </div>
 
+      {/* What a TOR contains */}
       <div>
-        <h3 className="text-xl font-bold">ใน TOR มีอะไรบ้าง</h3>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">หัวข้อสำคัญที่ควรอ่านก่อนตัดสินใจยื่นข้อเสนอ</p>
-        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <h3 className="ui-section-title text-xl">ใน TOR มีอะไรบ้าง</h3>
+        <p className="mt-1.5 text-sm text-ink-3">หัวข้อสำคัญที่ควรอ่านก่อนตัดสินใจยื่นข้อเสนอ</p>
+        <div className="mt-8 grid gap-px overflow-hidden rounded-panel border border-line bg-line sm:grid-cols-2 lg:grid-cols-3">
           {contents.map(({ icon: Icon, title, text }) => (
-            <div
-              key={title}
-              className="group rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 transition hover:-translate-y-1 hover:border-tormax-purple hover:shadow-lg"
-            >
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-100 text-tormax-purple dark:bg-violet-500/15 dark:text-tormax-lavender transition group-hover:bg-tormax-purple group-hover:text-white">
-                <Icon size={22} />
+            <div key={title} className="group bg-surface p-6 sm:p-7 transition-colors duration-200 hover:bg-surface-2/60">
+              <div className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-brand-tint text-accent">
+                <Icon size={20} />
               </div>
-              <h4 className="mt-4 font-bold">{title}</h4>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{text}</p>
+              <h4 className="mt-5 font-semibold text-ink">{title}</h4>
+              <p className="mt-1.5 text-sm leading-relaxed text-ink-3">{text}</p>
             </div>
           ))}
         </div>
       </div>
 
+      {/* Lifecycle */}
       <div>
-        <h3 className="text-xl font-bold">วงจรชีวิตของ TOR</h3>
-        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">ตั้งแต่ร่างแรกจนถึงการลงนามในสัญญา</p>
-        <ol className="mt-6 grid gap-4 md:grid-cols-5">
+        <h3 className="ui-section-title text-xl">วงจรชีวิตของ TOR</h3>
+        <p className="mt-1.5 text-sm text-ink-3">ตั้งแต่ร่างแรกจนถึงการลงนามในสัญญา</p>
+        <ol className="mt-8 grid gap-6 md:grid-cols-5 md:gap-5">
           {steps.map(({ title, text }, i) => (
-            <li key={title} className="relative rounded-2xl bg-slate-50 dark:bg-slate-900/60 p-5">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-tormax-purple text-sm font-black text-white">
+            <li key={title} className="relative flex gap-4 md:block">
+              {i < steps.length - 1 && <>
+                <span aria-hidden className="absolute left-4 top-9 -bottom-6 w-px bg-line-strong md:hidden" />
+                <span aria-hidden className="absolute left-10 right-0 top-4 hidden h-px bg-line-strong md:block" />
+              </>}
+              <span className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-line-strong bg-surface text-[13px] font-semibold tabular-nums text-accent">
                 {i + 1}
               </span>
-              <h4 className="mt-3 font-bold">{title}</h4>
-              <p className="mt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{text}</p>
+              <div className="md:mt-4">
+                <h4 className="font-semibold text-ink">{title}</h4>
+                <p className="mt-1 text-sm leading-relaxed text-ink-3">{text}</p>
+              </div>
             </li>
           ))}
         </ol>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-5">
+      {/* FAQ & checklist */}
+      <div className="grid gap-10 lg:grid-cols-5 lg:gap-12">
         <div className="lg:col-span-3">
-          <h3 className="text-xl font-bold">คำถามที่พบบ่อย</h3>
-          <div className="mt-6 space-y-3">
+          <h3 className="ui-section-title text-xl">คำถามที่พบบ่อย</h3>
+          <div className="mt-6 divide-y divide-line rounded-card border border-line bg-surface">
             {faqs.map(({ q, a }) => (
-              <details
-                key={q}
-                className="group rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 open:border-tormax-purple"
-              >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold [&::-webkit-details-marker]:hidden">
+              <details key={q} className="group">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 font-medium text-ink transition-colors hover:text-accent [&::-webkit-details-marker]:hidden">
                   {q}
-                  <RiAddLine size={20} className="shrink-0 text-tormax-purple dark:text-tormax-lavender transition group-open:rotate-45" />
+                  <RiAddLine size={18} className="shrink-0 text-ink-3 transition-transform duration-200 group-open:rotate-45 group-open:text-accent" />
                 </summary>
-                <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{a}</p>
+                <p className="ui-reveal px-5 pb-5 -mt-1 text-sm leading-relaxed text-ink-3">{a}</p>
               </details>
             ))}
           </div>
         </div>
 
-        <aside className="lg:col-span-2 rounded-3xl border border-violet-200 dark:border-violet-500/30 bg-violet-50 dark:bg-violet-500/10 p-7 self-start">
-          <div className="flex items-center gap-2 text-tormax-purple dark:text-tormax-lavender">
-            <RiShieldCheckLine size={22} />
-            <h3 className="text-lg font-bold">ตรวจสอบก่อนยื่นข้อเสนอ</h3>
+        <aside className="self-start rounded-card border border-line bg-surface p-7 lg:col-span-2 lg:mt-12">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-tint text-accent"><RiShieldCheckLine size={18} /></span>
+            <h3 className="ui-section-title">ตรวจสอบก่อนยื่นข้อเสนอ</h3>
           </div>
-          <ul className="mt-4 space-y-3 text-sm text-slate-700 dark:text-slate-300">
+          <ul className="mt-5 space-y-3 text-sm text-ink-2">
             {[
               'คุณมีคุณสมบัติครบตามที่บังคับทุกข้อ',
               'ทีมของคุณมีทักษะและใบรับรองตามที่กำหนด',
@@ -127,17 +130,14 @@ export function AboutTORSection() {
               'คุณส่งมอบงานได้ทันตามกำหนดเวลา',
               'เตรียมเอกสารครบถ้วนก่อนวันปิดรับ',
             ].map((item) => (
-              <li key={item} className="flex gap-2">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-tormax-purple" />
+              <li key={item} className="flex gap-2.5">
+                <RiCheckLine size={16} className="mt-0.5 shrink-0 text-accent" />
                 {item}
               </li>
             ))}
           </ul>
-          <Link
-            href="/search-feed"
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-tormax-purple px-5 py-3 text-sm font-bold text-white transition hover:bg-tormax-purpleDeep"
-          >
-            <RiSearchEyeLine size={18} /> สำรวจ TOR <RiArrowRightLine size={16} />
+          <Link href="/search-feed" className="ui-btn ui-btn-primary mt-7">
+            <RiSearchEyeLine size={17} /> สำรวจ TOR <RiArrowRightLine size={16} />
           </Link>
         </aside>
       </div>

@@ -198,6 +198,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }
 }, [isDark, mounted]);
 
+  // Keep <html lang> in step with the UI language so typography (Thai line height and
+  // letter spacing) and screen readers follow the active language.
+  useEffect(() => {
+    document.documentElement.lang = lang === 'TH' ? 'th' : 'en';
+  }, [lang]);
+
   const toggleTheme = () => {
     setIsDark((prev) => !prev);
   };

@@ -17,14 +17,14 @@ interface TORListProps {
 export function TORList({ items, t }: TORListProps) {
   if (items.length === 0) {
     return (
-      <div className="p-8 text-center text-xs font-medium text-slate-500 dark:text-slate-400 bg-white dark:bg-tormax-surfaceDark rounded-2xl border border-slate-200 dark:border-tormax-borderDark shadow-sm">
-        {t.noResults}
+      <div className="ui-empty">
+        <p className="text-sm text-ink-3">{t.noResults}</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {items.map((item) => (
         <TORCard key={item.id} item={item} t={t} />
       ))}

@@ -6,6 +6,7 @@ import { ProjectCard } from '@/lib/projects';
 import { SubmissionStatus } from '@/component/SubmissionStatus';
 import { TORFacts } from '@/component/TORFacts';
 import { BookmarkButton } from '@/component/BookmarkButton';
+import { availabilityTone } from '@/component/ui';
 
 interface TORCardProps {
   item: ProjectCard;
@@ -19,60 +20,74 @@ interface TORCardProps {
 
 export function TORCard({ item, t }: TORCardProps) {
   return (
-    <div className="bg-white dark:bg-tormax-surfaceDark p-6 rounded-2xl border border-slate-200 dark:border-tormax-borderDark space-y-3 hover:border-tormax-purple dark:hover:border-tormax-lavender/50 transition-all shadow-sm hover:shadow-md group">
-      <div className="flex justify-between items-start gap-2">
-        <div className="flex items-center flex-wrap gap-2">
-          {item.isDirect ? (
-            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded bg-violet-50 dark:bg-violet-950 text-violet-800 dark:text-violet-200 border border-violet-200 dark:border-violet-800">
-              {item.sourcePortal}
+    <article className="ui-card ui-card-interactive p-5 sm:p-6">
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_15.5rem] lg:gap-8">
+        {/* Document */}
+        <div className="min-w-0 space-y-3">
+          <div className="flex items-start justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 pt-1.5 text-xs text-ink-3">
+            {item.isDirect ? (
+              <span className="ui-badge ui-badge-brand h-5 px-2 text-[11px]">{item.sourcePortal}</span>
+            ) : (
+              <span className="font-medium text-ink-2">{t.source} {item.sourcePortal}</span>
+            )}
+            <span aria-hidden className="text-ink-4">·</span>
+            <span className="font-mono text-[11px] tracking-tight">{item.displayId}</span>
+          </div>
+          <div className="-mr-1.5 -mt-1.5"><BookmarkButton id={item.id} lang={item.lang} /></div>
+          </div>
+
+          <h2 className="text-[17px] font-semibold leading-snug tracking-[-0.01em] text-ink">
+            <Link href={`/tor-page/${item.id}`} className="rounded-sm transition-colors duration-150 hover:text-accent">
+              {item.name}
+            </Link>
+          </h2>
+
+          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[13px] text-ink-3">
+            <span className="inline-flex min-w-0 items-center gap-1.5">
+              {item.isDirect ? <RiBuilding2Line size={14} className="shrink-0" /> : <RiGovernmentLine size={14} className="shrink-0" />}
+              <span className="truncate">{item.employer}</span>
             </span>
-          ) : (
-            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-              {t.source} {item.sourcePortal}
-            </span>
-          )}
-          <span className="text-xs font-mono font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded">
-            {item.displayId}
-          </span>
-          {item.match != null && (
-            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200">
-              {item.lang === 'th' ? `ตรงกับโปรไฟล์ ${Math.round(item.match)}%` : `${Math.round(item.match)}% match`}
-            </span>
+            <span aria-hidden className="text-ink-4">·</span>
+            <span className="text-ink-2">{item.isDirect ? item.method : `${t.method} ${item.method}`}</span>
+          </div>
+
+          <p className="line-clamp-3 text-sm leading-relaxed text-ink-2">{item.desc}</p>
+
+          {item.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {item.tags.map(tag => <span key={tag} className="ui-chip">{tag}</span>)}
+            </div>
           )}
         </div>
-        <BookmarkButton id={item.id} lang={item.lang} />
-      </div>
 
-      <h2 className="text-lg font-bold text-slate-900 dark:text-white leading-snug group-hover:text-tormax-purple dark:group-hover:text-tormax-lavender transition-colors">
-        {item.name}
-      </h2>
+        {/* Key facts */}
+        <div className="flex flex-col gap-4 border-t border-line pt-5 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
+          <div className="flex flex-wrap gap-1.5">
+            {item.match != null && (
+              <span className="ui-badge ui-badge-ok">
+                {item.lang === 'th' ? `ตรงกับโปรไฟล์ ${Math.round(item.match)}%` : `${Math.round(item.match)}% match`}
+              </span>
+            )}
+            <span className={`ui-badge ui-badge-dot ${availabilityTone(item.availability)}`}>{item.availabilityLabel}</span>
+            {item.priceFlag && item.priceFlag !== 'Normal' && (
+              <span title={item.priceComparison || undefined} className="ui-badge ui-badge-danger">{item.priceFlagLabel}</span>
+            )}
+          </div>
 
-      <div className="flex items-center space-x-3 text-xs text-slate-500 dark:text-slate-400 font-semibold">
-        <span className="inline-flex items-center gap-1">{item.isDirect ? <RiBuilding2Line size={14} /> : <RiGovernmentLine size={14} />} {item.employer}</span>
-        <span>•</span>
-        <span className="text-tormax-purple dark:text-tormax-lavender font-bold">
-          {item.isDirect ? item.method : `${t.method} ${item.method}`}
-        </span>
-      </div>
+          <div>
+            <TORFacts budget={item.price} published={item.published} deadline={item.deadline} lang={item.lang} direct={item.isDirect} variant="card" />
+            {item.submission.deadlinePrecision === 'datetime' && <p className="ui-meta mt-2">{item.lang === 'th' ? 'เวลาไทย (GMT+7)' : 'Thailand time (GMT+7)'}</p>}
+          </div>
 
-      <p className="text-sm text-slate-600 dark:text-slate-300 line-clamp-3">{item.desc}</p>
-      <div className="rounded-xl bg-slate-50 dark:bg-slate-900/50 p-3">
-        <TORFacts budget={item.price} published={item.published} deadline={item.deadline} lang={item.lang} direct={item.isDirect} />
-        {item.submission.deadlinePrecision === 'datetime' && <p className="text-xs text-slate-500 mt-2">{item.lang === 'th' ? 'เวลาไทย (GMT+7)' : 'Thailand time (GMT+7)'}</p>}
+          <SubmissionStatus project={item.submission} lang={item.lang} />
+
+          <Link href={`/tor-page/${item.id}`} className="ui-btn ui-btn-secondary ui-btn-sm group mt-auto self-start">
+            {t.openSpec}
+            <RiArrowRightLine size={14} className="transition-transform duration-150 group-hover:translate-x-0.5" />
+          </Link>
+        </div>
       </div>
-      <SubmissionStatus project={item.submission} lang={item.lang} />
-      <span className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${item.availability === 'open' ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200' : item.availability === 'draft' ? 'bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-200' : 'bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-200'}`}>{item.availabilityLabel}</span>
-      {item.priceFlag && item.priceFlag !== 'Normal' && <span title={item.priceComparison || undefined} className="ml-2 inline-block rounded-full px-3 py-1 text-xs font-semibold bg-rose-50 text-rose-800 dark:bg-rose-950 dark:text-rose-200">{item.priceFlagLabel}</span>}
-      <div className="flex flex-wrap gap-2">{item.tags.map(tag => <span key={tag} className="text-xs rounded bg-slate-100 dark:bg-slate-800 px-2 py-1">{tag}</span>)}</div>
-      <div className="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-tormax-borderDark text-xs">
-        <Link
-          href={`/tor-page/${item.id}`}
-          className="inline-flex items-center gap-1 px-4 py-2 bg-tormax-purple hover:bg-tormax-purpleDeep text-white font-bold rounded-xl transition-all shadow-sm active:scale-95"
-        >
-          {t.openSpec}
-          <RiArrowRightLine size={14} />
-        </Link>
-      </div>
-    </div>
+    </article>
   );
 }

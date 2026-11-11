@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { FormField } from '@/component/profile/FormField';
 import { SkillsSection } from '@/component/profile/SkillsSection';
+import { FormSection } from '@/component/profile/FormSection';
 import { PRICE_CATEGORIES, Project } from '@/lib/projects';
 import { fromBangkokLocalInput, PostingInput, PostingValidationError, toBangkokLocalInput } from '@/lib/postings';
 
@@ -139,44 +140,38 @@ export function PostingForm({ lang, project, defaults, submitLabel, onSubmit }: 
     }
   }
 
-  const section = 'bg-white dark:bg-tormax-surfaceDark border border-slate-200 dark:border-tormax-borderDark p-8 rounded-3xl space-y-6 shadow-sm';
-  const heading = (title: string, desc: string) => <div className="border-b border-slate-100 dark:border-tormax-borderDark pb-3">
-    <h2 className="text-base font-bold text-slate-900 dark:text-white">{title}</h2>
-    <p className="text-xs text-slate-500 dark:text-slate-400">{desc}</p>
-  </div>;
-  const control = (error?: string) => `w-full p-3 rounded-xl bg-slate-50 dark:bg-[#090D16] border ${error ? 'border-red-500 dark:border-red-500' : 'border-slate-200 dark:border-tormax-borderDark'} font-semibold text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-tormax-purple`;
-  const errorText = (id: string, error?: string) => error ? <p id={`${id}-error`} className="text-red-600 dark:text-red-400">{error}</p> : null;
+  const label = 'ui-label';
+  const errorText = (id: string, error?: string) => error ? <p id={`${id}-error`} className="ui-error-text">{error}</p> : null;
 
   return (
-    <form onSubmit={submit} noValidate className="space-y-6">
-      <section className={section}>
-        {heading(th ? 'รายละเอียดงาน' : 'Project details', th ? 'บอกผู้ให้บริการว่าต้องการอะไร' : 'Tell vendors what you need built.')}
-        <div className="space-y-6 text-xs">
+    <form onSubmit={submit} noValidate className="space-y-5">
+      <FormSection title={th ? 'รายละเอียดงาน' : 'Project details'} description={th ? 'บอกผู้ให้บริการว่าต้องการอะไร' : 'Tell vendors what you need built.'}>
+        <div className="space-y-5">
           <FormField id="title" label={th ? 'ชื่องาน *' : 'Title *'} value={form.title} onChange={set('title')} error={errors.title} />
-          <div className="space-y-2">
-            <label htmlFor="description" className="font-bold block text-slate-700 dark:text-slate-300">{th ? 'ขอบเขตงาน *' : 'Scope of work *'}</label>
+          <div className="space-y-1.5">
+            <label htmlFor="description" className={label}>{th ? 'ขอบเขตงาน *' : 'Scope of work *'}</label>
             <textarea id="description" rows={7} value={form.description} onChange={set('description')} maxLength={10000}
               aria-invalid={errors.description ? true : undefined} aria-describedby={errors.description ? 'description-error' : undefined}
               placeholder={th ? 'วัตถุประสงค์ งานที่ต้องส่งมอบ ระยะเวลา และข้อจำกัดสำคัญ' : 'Purpose, deliverables, timeline and key constraints'}
-              className={`${control(errors.description)} leading-6`} />
+              className="ui-field" />
             {errorText('description', errors.description)}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label htmlFor="category" className="font-bold block text-slate-700 dark:text-slate-300">{th ? 'หมวดหมู่ *' : 'Category *'}</label>
-              <select id="category" value={form.category} onChange={set('category')} aria-invalid={errors.category ? true : undefined} aria-describedby={errors.category ? 'category-error' : undefined} className={control(errors.category)}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="space-y-1.5">
+              <label htmlFor="category" className={label}>{th ? 'หมวดหมู่ *' : 'Category *'}</label>
+              <select id="category" value={form.category} onChange={set('category')} aria-invalid={errors.category ? true : undefined} aria-describedby={errors.category ? 'category-error' : undefined} className="ui-field">
                 <option value="">{th ? 'เลือกหมวดหมู่' : 'Choose a category'}</option>
                 {Object.entries(PRICE_CATEGORIES).filter(([key]) => key !== 'all-it').map(([key, labels]) => <option key={key} value={key}>{labels[th ? 0 : 1]}</option>)}
               </select>
-              <p className="text-slate-500">{th ? 'ใช้เทียบงบประมาณกับ TOR ภาครัฐในหมวดเดียวกัน' : 'Used to compare your budget with government TORs in the same category.'}</p>
+              <p className="ui-hint">{th ? 'ใช้เทียบงบประมาณกับ TOR ภาครัฐในหมวดเดียวกัน' : 'Used to compare your budget with government TORs in the same category.'}</p>
               {errorText('category', errors.category)}
             </div>
             <FormField id="agency" label={th ? 'องค์กร / บริษัท' : 'Organization'} value={form.agency} onChange={set('agency')} error={errors.agency} />
           </div>
         </div>
-      </section>
+      </FormSection>
 
-      <div id="skills" tabIndex={-1} className={errors.skills ? 'rounded-3xl ring-2 ring-red-500' : ''}>
+      <div id="skills" tabIndex={-1} className={errors.skills ? 'rounded-panel ring-2 ring-danger/60 ring-offset-2 ring-offset-canvas' : 'rounded-panel'}>
         <SkillsSection skills={form.skills} onChange={skills => { setForm(current => ({ ...current, skills })); setErrors(current => ({ ...current, skills: undefined })); }} t={{
           skillsTitle: th ? 'ทักษะและเทคโนโลยีที่ต้องใช้ *' : 'Required skills & stack *',
           skillsDesc: th ? 'ผู้ให้บริการที่มีทักษะตรงจะได้รับแจ้งเตือนทันที' : 'Vendors with matching skills are notified as soon as you publish.',
@@ -188,34 +183,31 @@ export function PostingForm({ lang, project, defaults, submitLabel, onSubmit }: 
           removeSkill: th ? 'ลบ' : 'Remove',
           skillsLimit: th ? 'สูงสุด 30 ทักษะ' : 'Up to 30 skills',
         }} />
-        {errors.skills && <p className="text-xs text-red-600 dark:text-red-400 px-8 pb-4 -mt-2">{errors.skills}</p>}
       </div>
+      {errors.skills && <p className="ui-error-text -mt-2 px-1">{errors.skills}</p>}
 
-      <section className={section}>
-        {heading(th ? 'งบประมาณและกำหนดเวลา' : 'Budget & deadline', th ? 'งบเป็นบาท เวลาเป็นเวลาไทย (GMT+7)' : 'Budget in THB. Times are Thailand time (GMT+7).')}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+      <FormSection title={th ? 'งบประมาณและกำหนดเวลา' : 'Budget & deadline'} description={th ? 'งบเป็นบาท เวลาเป็นเวลาไทย (GMT+7)' : 'Budget in THB. Times are Thailand time (GMT+7).'}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <FormField id="budgetMin" label={th ? 'งบขั้นต่ำ (ไม่บังคับ)' : 'Minimum budget (optional)'} type="number" min={0} value={form.budgetMin} onChange={set('budgetMin')} error={errors.budgetMin} />
           <FormField id="budget" label={th ? 'งบสูงสุด *' : 'Maximum budget *'} type="number" min={0} value={form.budget} onChange={set('budget')} error={errors.budget} />
           <FormField id="deadline" label={th ? 'ปิดรับสมัคร *' : 'Application deadline *'} type="datetime-local" value={form.deadline} onChange={set('deadline')} error={errors.deadline} />
         </div>
-      </section>
+      </FormSection>
 
-      <section className={section}>
-        {heading(th ? 'ช่องทางติดต่อ' : 'Contact details', th ? 'แสดงในหน้างานเพื่อให้ผู้ให้บริการติดต่อสอบถามได้' : 'Shown on the posting so vendors can ask questions before applying.')}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
+      <FormSection title={th ? 'ช่องทางติดต่อ' : 'Contact details'} description={th ? 'แสดงในหน้างานเพื่อให้ผู้ให้บริการติดต่อสอบถามได้' : 'Shown on the posting so vendors can ask questions before applying.'}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <FormField id="contactName" label={th ? 'ชื่อผู้ติดต่อ *' : 'Contact name *'} value={form.contactName} onChange={set('contactName')} error={errors.contactName} />
           <FormField id="contactEmail" label={th ? 'อีเมล' : 'Email'} type="email" value={form.contactEmail} onChange={set('contactEmail')} error={errors.contactEmail} />
           <FormField id="contactPhone" label={th ? 'โทรศัพท์' : 'Phone'} type="tel" value={form.contactPhone} onChange={set('contactPhone')} error={errors.contactPhone} />
         </div>
-        <div className="text-xs">
-          <FormField id="sourceUrl" label={th ? 'ลิงก์รายละเอียดเพิ่มเติม (ไม่บังคับ)' : 'Link to more details (optional)'} type="url" value={form.sourceUrl} onChange={set('sourceUrl')} error={errors.sourceUrl} />
-        </div>
-      </section>
+        <FormField id="sourceUrl" label={th ? 'ลิงก์รายละเอียดเพิ่มเติม (ไม่บังคับ)' : 'Link to more details (optional)'} type="url" value={form.sourceUrl} onChange={set('sourceUrl')} error={errors.sourceUrl} />
+      </FormSection>
 
-      {formError && <p role="alert" className="text-sm font-semibold text-red-600 dark:text-red-400">{formError}</p>}
-      <div className="flex flex-wrap items-center justify-end gap-3">
-        <Link href="/postings" className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-tormax-borderDark text-sm font-bold">{th ? 'ยกเลิก' : 'Cancel'}</Link>
-        <button type="submit" disabled={saving} className="px-5 py-2.5 rounded-xl bg-tormax-purple hover:bg-tormax-purpleDeep text-white text-sm font-bold disabled:opacity-50">
+      {formError && <p role="alert" className="ui-alert ui-alert-danger">{formError}</p>}
+      <div className="flex flex-wrap items-center justify-end gap-2 pt-2">
+        <Link href="/postings" className="ui-btn ui-btn-secondary">{th ? 'ยกเลิก' : 'Cancel'}</Link>
+        <button type="submit" disabled={saving} className="ui-btn ui-btn-primary px-6">
+          {saving && <span className="ui-spinner h-3.5 w-3.5" aria-hidden />}
           {saving ? (th ? 'กำลังบันทึก…' : 'Saving…') : submitLabel}
         </button>
       </div>

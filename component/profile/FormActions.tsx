@@ -9,9 +9,9 @@ interface FormActionsProps {
   disabled?: boolean;
 }
 
-export function FormActions({ 
-  onCancel, 
-  cancelText, 
+export function FormActions({
+  onCancel,
+  cancelText,
   saveText,
   disabled = false,
 }: FormActionsProps) {
@@ -26,18 +26,18 @@ export function FormActions({
   };
 
   return (
-    <div className="flex justify-end gap-4 pt-4">
+    <div className="flex justify-end gap-2 pt-2">
       <button
         type="button"
         onClick={handleCancel}
-        className="px-6 py-3 border border-slate-300 dark:border-tormax-borderDark font-bold text-xs text-slate-700 dark:text-slate-300 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+        className="ui-btn ui-btn-secondary"
       >
         {cancelText}
       </button>
       <button
         type="submit"
         disabled={disabled}
-        className="px-8 py-3 bg-tormax-purple hover:bg-tormax-purpleDeep text-white font-bold text-xs rounded-xl shadow-md transition-all active:scale-95 cursor-pointer"
+        className="ui-btn ui-btn-primary px-6"
       >
         {saveText}
       </button>

@@ -7,6 +7,7 @@ import { RiArrowLeftLine } from '@remixicon/react';
 import { useApp } from '@/context/AppContext';
 import { ListerGate } from '@/component/postings/ListerGate';
 import { PostingForm } from '@/component/postings/PostingForm';
+import { PageHeader } from '@/component/PageHeader';
 import { DIRECT_SOURCE, Project } from '@/lib/projects';
 import { getPosting, updatePosting } from '@/lib/postings';
 import { AuthUser } from '@/types';
@@ -18,11 +19,11 @@ export default function EditPostingPage() {
   const { id } = useParams<{ id: string }>();
 
   return (
-    <div className="max-w-4xl mx-auto px-6 sm:px-8 py-10 w-full space-y-6">
-      <header className="space-y-2">
-        <Link href="/postings" className="text-xs font-bold text-tormax-purple dark:text-tormax-lavender inline-flex items-center gap-1"><RiArrowLeftLine size={14} />{th ? 'กลับไปหน้าจัดการประกาศ' : 'Back to postings'}</Link>
-        <h1 className="text-2xl md:text-3xl font-black">{th ? 'แก้ไขประกาศงาน' : 'Edit posting'}</h1>
-      </header>
+    <div className="ui-page max-w-4xl space-y-6">
+      <div className="space-y-4">
+        <Link href="/postings" className="ui-link group text-[13px]"><RiArrowLeftLine size={14} className="transition-transform duration-150 group-hover:-translate-x-0.5" />{th ? 'กลับไปหน้าจัดการประกาศ' : 'Back to postings'}</Link>
+        <PageHeader className="pb-2" title={th ? 'แก้ไขประกาศงาน' : 'Edit posting'} />
+      </div>
       <ListerGate lang={activeLang}>{user => <EditForm id={id} user={user} lang={activeLang} />}</ListerGate>
     </div>
   );
@@ -41,13 +42,13 @@ function EditForm({ id, user, lang }: { id: string; user: AuthUser; lang: 'th' |
     return () => controller.abort();
   }, [id]);
 
-  if (!result) return <p role="status" className="p-10 text-center text-sm text-slate-500">{th ? 'กำลังโหลดประกาศ…' : 'Loading posting…'}</p>;
+  if (!result) return <p role="status" className="flex items-center justify-center gap-2.5 p-12 text-sm text-ink-3"><span className="ui-spinner text-brand-soft" aria-hidden />{th ? 'กำลังโหลดประกาศ…' : 'Loading posting…'}</p>;
   const project = result.project;
   const publisherId = typeof project?.publisherId === 'string' ? project.publisherId : project?.publisherId?._id;
   if (!project || project.source !== DIRECT_SOURCE || publisherId !== user._id) {
-    return <div role="alert" className="py-8 text-center space-y-3">
-      <p>{result.error === 'failed' ? (th ? 'โหลดประกาศไม่สำเร็จ' : 'Could not load this posting.') : (th ? 'ไม่พบประกาศนี้ในบัญชีของคุณ' : 'This posting is not in your account.')}</p>
-      <Link href="/postings" className="underline text-sm">{th ? 'กลับไปหน้าจัดการประกาศ' : 'Back to postings'}</Link>
+    return <div role="alert" className="ui-empty">
+      <p className="text-sm text-ink-2">{result.error === 'failed' ? (th ? 'โหลดประกาศไม่สำเร็จ' : 'Could not load this posting.') : (th ? 'ไม่พบประกาศนี้ในบัญชีของคุณ' : 'This posting is not in your account.')}</p>
+      <Link href="/postings" className="ui-btn ui-btn-secondary ui-btn-sm mt-2">{th ? 'กลับไปหน้าจัดการประกาศ' : 'Back to postings'}</Link>
     </div>;
   }
   return <PostingForm lang={lang} project={project} submitLabel={th ? 'บันทึกการแก้ไข' : 'Save changes'}

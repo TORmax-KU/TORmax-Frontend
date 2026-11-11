@@ -10,9 +10,9 @@ export default async function Template({
 }>) {
 
     return (
-        <div>
+        <div className="min-h-screen bg-canvas">
                 <Navbar/>
-                <div className="animate-fadeIn transition-opacity duration-300">
+                <div className="ui-enter">
                     {children}
                     <Script src='https://static.matterport.com/showcase-sdk/latest.js' />
                 </div>
