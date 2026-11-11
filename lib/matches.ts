@@ -1,4 +1,4 @@
-import { API_BASE_URL } from './auth';
+import { API_BASE_URL, BACKGROUND_HEADERS, reportSignedOut } from './auth';
 import { Project } from './projects';
 
 // Vendor matches computed by the backend matching engine (FR-08, UC1).
@@ -43,10 +43,11 @@ export interface ProjectMatch {
 
 export class SignedOutError extends Error {}
 
-export async function getMatches(page: number, signal: AbortSignal): Promise<MatchResults> {
+// `background` marks automatic refreshes so they do not count as session activity (NFR-07).
+export async function getMatches(page: number, signal: AbortSignal, background = false): Promise<MatchResults> {
   const params = new URLSearchParams({ page: String(page), limit: '20' });
-  const response = await fetch(`${API_BASE_URL}/api/matches?${params}`, { credentials: 'include', signal });
-  if (response.status === 401) throw new SignedOutError();
+  const response = await fetch(`${API_BASE_URL}/api/matches?${params}`, { credentials: 'include', signal, headers: background ? BACKGROUND_HEADERS : undefined });
+  if (response.status === 401) { reportSignedOut(); throw new SignedOutError(); }
   if (!response.ok) throw new Error('Could not load matches');
   return response.json();
 }

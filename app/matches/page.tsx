@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { RiSparkling2Line } from '@remixicon/react';
 import { useApp } from '@/context/AppContext';
@@ -23,15 +23,19 @@ export default function MatchesPage() {
   const userId = user?._id;
   const [page, setPage] = useState(1);
   const [retry, setRetry] = useState(0);
+  // True while the pending reload came from the auto-refresh timer, not the user (NFR-07).
+  const autoRefresh = useRef(false);
   const [result, setResult] = useState<{ key: string; data?: MatchResults; error?: 'signedOut' | 'failed' }>();
   const key = `${userId}:${page}`;
 
   useEffect(() => {
     if (!userId) return;
     const controller = new AbortController();
+    const background = autoRefresh.current;
+    autoRefresh.current = false;
     async function load() {
       try {
-        const data = await getMatches(page, controller.signal);
+        const data = await getMatches(page, controller.signal, background);
         if (!controller.signal.aborted) setResult({ key: `${userId}:${page}`, data });
       } catch (error) {
         if (!controller.signal.aborted) setResult({ key: `${userId}:${page}`, error: error instanceof SignedOutError ? 'signedOut' : 'failed' });
@@ -43,7 +47,7 @@ export default function MatchesPage() {
 
   // Matches refresh in the background as new TORs finish analysis; pick them up without a reload.
   useEffect(() => {
-    const timer = setInterval(() => setRetry(value => value + 1), 60000);
+    const timer = setInterval(() => { autoRefresh.current = true; setRetry(value => value + 1); }, 60000);
     return () => clearInterval(timer);
   }, []);
 

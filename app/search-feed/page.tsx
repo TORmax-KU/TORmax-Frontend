@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { RiFileSearchLine } from '@remixicon/react';
 import { useApp } from '@/context/AppContext';
+import { useAuth } from '@/context/AuthContext';
 import { searchfeedi18n } from '@/public/mockData/i18n/searchfeed';
 import { SearchHeader } from '@/component/searchfeed/SearchHeader';
 import { SearchInput } from '@/component/searchfeed/SearchInput';
@@ -16,6 +17,9 @@ function SearchFeedContent() {
   const { lang } = useApp();
   const activeLang = lang?.toLowerCase() === 'th' ? 'th' : 'en';
   const th = activeLang === 'th';
+  // Suggest the signed-in vendor's own skills in the stack filter.
+  const { user } = useAuth();
+  const mySkills = (user?.proficiency || []).flatMap(skill => typeof skill === 'string' ? [] : [skill.name]);
   const t = searchfeedi18n[activeLang];
   const params = useSearchParams();
   const query = params.get('q') || '';
@@ -23,7 +27,7 @@ function SearchFeedContent() {
   const [retry, setRetry] = useState(0);
   const [result, setResult] = useState<{ key: string; data?: ProjectResults; error?: boolean }>();
   const apiParams = new URLSearchParams({ search: query.trim(), limit: '20', availability: params.get('availability') || 'open' });
-  for (const key of ['agency', 'minBudget', 'maxBudget', 'page', 'deadlineYear', 'deadlineFrom', 'deadlineTo', 'method', 'sort', 'priceFlag', 'origin']) {
+  for (const key of ['agency', 'minBudget', 'maxBudget', 'page', 'deadlineYear', 'deadlineFrom', 'deadlineTo', 'method', 'sort', 'priceFlag', 'origin', 'skill']) {
     const value = params.get(key);
     if (value) apiParams.set(key, value);
   }
@@ -74,13 +78,15 @@ function SearchFeedContent() {
         <p className="ui-hint max-w-3xl">{th ? 'แสดงงาน IT แบบ e-bidding ตามสถานะที่เลือก (เปิดรับหรือร่างประกาศ) พร้อมชื่อ งบประมาณ วันประกาศ วันปิดรับ และสรุป TOR จาก AI รวมถึงประกาศงานที่ผู้ประกาศลงบน TORmax โดยตรง' : 'Shows IT e-bidding TORs in the selected status (open or draft) with a title, budget, publication date, deadline, and AI summary, plus jobs posted directly on TORmax.'}</p>
       </div>
       {filtersOpen && <div className="ui-card ui-reveal grid gap-x-5 gap-y-4 p-5 sm:grid-cols-2 sm:p-6 lg:grid-cols-3">
+        {/* NFR-09: stack, agency and budget come first; each applies as you type, no Apply button. */}
+        <label className={fieldLabel}><span className="ui-label">{th ? 'ทักษะ / เทคโนโลยี' : 'Tech stack'}</span><input className={fieldClass} list="stack-suggestions" placeholder={th ? 'เช่น React, Java' : 'e.g. React, Java'} value={params.get('skill') || ''} onChange={e => update('skill', e.target.value)} /><datalist id="stack-suggestions">{mySkills.map(name => <option key={name} value={name} />)}</datalist></label>
+        <label className={fieldLabel}><span className="ui-label">{th ? 'หน่วยงาน' : 'Agency'}</span><input className={fieldClass} value={params.get('agency') || ''} onChange={e => update('agency', e.target.value)} /></label>
+        <label className={fieldLabel}><span className="ui-label">{th ? 'งบประมาณขั้นต่ำ (บาท)' : 'Minimum budget (THB)'}</span><input className={fieldClass} type="number" min="0" value={params.get('minBudget') || ''} onChange={e => update('minBudget', e.target.value)} /></label>
+        <label className={fieldLabel}><span className="ui-label">{th ? 'งบประมาณสูงสุด (บาท)' : 'Maximum budget (THB)'}</span><input className={fieldClass} type="number" min="0" value={params.get('maxBudget') || ''} onChange={e => update('maxBudget', e.target.value)} /></label>
         <label className={fieldLabel}><span className="ui-label">{th ? 'สถานะ' : 'Status'}</span><select className={fieldClass} value={params.get('availability') || 'open'} onChange={e => update('availability', e.target.value === 'open' ? '' : e.target.value)}>{['open', 'draft'].map(value => <option key={value} value={value}>{availabilityLabel(value, activeLang)}</option>)}</select></label>
         <label className={fieldLabel}><span className="ui-label">{th ? 'ปีที่ปิดรับ (พ.ศ.)' : 'Closing year (B.E.)'}</span><input className={fieldClass} type="number" min="2543" max="2743" placeholder={String(new Date().getFullYear() + 543)} value={params.get('deadlineYear') || ''} onChange={e => update('deadlineYear', e.target.value)} /></label>
         <label className={fieldLabel}><span className="ui-label">{th ? 'ปิดรับตั้งแต่วันที่' : 'Closing from'}</span><input className={fieldClass} type="date" value={params.get('deadlineFrom') || ''} onChange={e => update('deadlineFrom', e.target.value)} /></label>
         <label className={fieldLabel}><span className="ui-label">{th ? 'ปิดรับถึงวันที่' : 'Closing through'}</span><input className={fieldClass} type="date" value={params.get('deadlineTo') || ''} onChange={e => update('deadlineTo', e.target.value)} /></label>
-        <label className={fieldLabel}><span className="ui-label">{th ? 'หน่วยงาน' : 'Agency'}</span><input className={fieldClass} value={params.get('agency') || ''} onChange={e => update('agency', e.target.value)} /></label>
-        <label className={fieldLabel}><span className="ui-label">{th ? 'งบประมาณขั้นต่ำ (บาท)' : 'Minimum budget (THB)'}</span><input className={fieldClass} type="number" min="0" value={params.get('minBudget') || ''} onChange={e => update('minBudget', e.target.value)} /></label>
-        <label className={fieldLabel}><span className="ui-label">{th ? 'งบประมาณสูงสุด (บาท)' : 'Maximum budget (THB)'}</span><input className={fieldClass} type="number" min="0" value={params.get('maxBudget') || ''} onChange={e => update('maxBudget', e.target.value)} /></label>
         <label className={fieldLabel}><span className="ui-label">{th ? 'วิธีจัดซื้อจัดจ้าง' : 'Procurement method'}</span><input className={fieldClass} placeholder="e-bidding" value={params.get('method') || ''} onChange={e => update('method', e.target.value)} /></label>
         <label className={fieldLabel}><span className="ui-label">{th ? 'เรียงตาม' : 'Sort by'}</span><select className={fieldClass} value={params.get('sort') || 'deadline'} onChange={e => update('sort', e.target.value)}><option value="deadline">{th ? 'ใกล้ปิดรับก่อน' : 'Closing soonest'}</option><option value="newest">{th ? 'ประกาศล่าสุด' : 'Recently announced'}</option><option value="budget">{th ? 'งบประมาณสูงสุด' : 'Highest budget'}</option></select></label>
         <label className={fieldLabel}><span className="ui-label">{th ? 'ตรวจสอบงบประมาณ' : 'Budget check'}</span><select className={fieldClass} value={params.get('priceFlag') || ''} onChange={e => update('priceFlag', e.target.value)}><option value="">{th ? 'ทั้งหมด' : 'Any'}</option>{(['Overpriced', 'Underpriced', 'ScopeMismatch', 'Normal'] as const).map(flag => <option key={flag} value={flag}>{priceFlagLabel(flag, activeLang)}</option>)}</select></label>

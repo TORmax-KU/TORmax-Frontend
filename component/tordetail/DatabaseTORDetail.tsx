@@ -11,6 +11,7 @@ import { TORHeader } from './TORHeader';
 import { SubmissionStatus } from '@/component/SubmissionStatus';
 import { ExtractionEvidence } from './ExtractionEvidence';
 import { MatchPanel } from './MatchPanel';
+import { ReportMisclassification } from './ReportMisclassification';
 import { PriceComparison } from './PriceComparison';
 import { DirectPostingDetail } from './DirectPostingDetail';
 import { availabilityTone, detailLayout, panel, sectionTitle } from '@/component/ui';
@@ -95,6 +96,7 @@ export function DatabaseTORDetail({ id }: { id: string }) {
         <section className={panel}><h2 className={sectionTitle}>{th ? 'เอกสารต้นฉบับ' : 'Original documents'}</h2>{documents.length ? <ul className="space-y-2">{documents.map((document, index) => <li key={index}><a href={document.url} target="_blank" rel="noopener noreferrer" className="group flex items-start gap-3 rounded-control border border-line p-3 transition-colors duration-150 hover:border-line-strong hover:bg-surface-2"><span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-tint text-accent"><RiFileTextLine size={16} /></span><span className="min-w-0 flex-1"><span className="block text-[13px] font-medium leading-snug text-ink group-hover:text-accent">{document.kind === 'tor' ? 'TOR · ' : ''}{document.title || (th ? 'เปิดเอกสาร' : 'Open document')}</span><span className="ui-meta mt-1 block">{th ? 'ตรวจลิงก์ล่าสุด: ' : 'Link last checked: '}{date(document.verifiedAt)}</span></span><RiExternalLinkLine size={14} className="mt-0.5 shrink-0 text-ink-4 group-hover:text-accent" /></a></li>)}</ul> : <p className="text-sm text-ink-3">{th ? 'ยังไม่มีลิงก์เอกสาร TOR ที่ตรวจสอบแล้ว' : 'No verified TOR document link is available.'}</p>}{sourceUrl && <a className="ui-btn ui-btn-primary w-full" href={sourceUrl} target="_blank" rel="noopener noreferrer">{th ? 'เปิดประกาศบนเว็บไซต์ต้นทาง' : 'Open source announcement'}<RiExternalLinkLine size={16} /></a>}<p className="ui-meta">{th ? 'การยื่นข้อเสนอทำผ่านช่องทางที่หน่วยงานกำหนด' : 'Submit using the channel specified by the procuring agency.'}</p></section>
         <section className={panel}><h2 className={sectionTitle}>{th ? 'ติดต่อและการยื่นข้อเสนอ' : 'Contact & submission'}</h2><dl className="space-y-3.5 text-sm">{[[th ? 'ผู้ติดต่อ' : 'Contact', project.contact?.name], [th ? 'โทรศัพท์' : 'Phone', project.contact?.phone], [th ? 'อีเมล' : 'Email', project.contact?.email], [th ? 'ที่อยู่หน่วยงาน' : 'Address', project.contact?.address], [th ? 'ช่องทาง / สถานที่ยื่น' : 'Submission channel / location', project.submissionLocation]].map(([label, value]) => <div key={label}><dt className="ui-meta mb-0.5">{label}</dt><dd className={`break-words ${value ? 'text-ink' : 'text-ink-3'}`}>{value || unknown}</dd></div>)}</dl></section>
         <p className="ui-meta px-1">{th ? 'ตรวจข้อมูลต้นทางล่าสุด: ' : 'Source last verified: '}{date(project.sourceVerifiedAt)}</p>
+        <ReportMisclassification projectId={project._id} lang={activeLang} />
       </aside>
     </main>
   </div>;

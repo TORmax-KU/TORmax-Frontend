@@ -2,7 +2,7 @@
 
 import { useEffect, useSyncExternalStore } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { API_BASE_URL } from '@/lib/auth';
+import { API_BASE_URL, BACKGROUND_HEADERS, reportSignedOut } from '@/lib/auth';
 import { NotificationItem } from '@/interface/NotificationItem';
 
 // Match and TOR-state alerts produced by the backend matching sweep (FR-10).
@@ -42,9 +42,11 @@ function subscribe(listener: () => void) {
   return () => { listeners.delete(listener); };
 }
 
-async function refresh(userId: string) {
+// `background` marks timer-driven polls, which must not count as session activity (NFR-07).
+async function refresh(userId: string, background = false) {
   try {
-    const res = await fetch(`${ENDPOINT}?limit=50`, { credentials: 'include' });
+    const res = await fetch(`${ENDPOINT}?limit=50`, { credentials: 'include', headers: background ? BACKGROUND_HEADERS : undefined });
+    if (res.status === 401) reportSignedOut();
     if (!res.ok) throw new Error(`Failed to load notifications (${res.status})`);
     const body = await res.json();
     if (owner === userId) set({ items: body.notifications, unreadCount: body.unreadCount, status: 'ready' });
@@ -106,7 +108,7 @@ export function useNotifications({ poll = false }: { poll?: boolean } = {}) {
     if (!userId) return;
     void refresh(userId);
     if (!poll) return;
-    const timer = setInterval(() => void refresh(userId), POLL_MS);
+    const timer = setInterval(() => void refresh(userId, true), POLL_MS);
     return () => clearInterval(timer);
   }, [userId, poll]);
 

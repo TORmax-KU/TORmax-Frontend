@@ -3,6 +3,32 @@ import { AuthUser } from '@/types';
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 
+// NFR-07: the backend signs a session out after 2 hours without activity. Automatic refreshes
+// send this header so an unattended tab does not keep the session alive.
+export const BACKGROUND_HEADERS = { 'X-Background-Request': '1' };
+
+const SIGNED_OUT_EVENT = 'tormax:signed-out';
+
+// Called when an API request reports the session has ended, so the UI shows signed out.
+export function reportSignedOut() {
+  if (typeof window !== 'undefined') window.dispatchEvent(new Event(SIGNED_OUT_EVENT));
+}
+
+export function onSignedOut(listener: () => void) {
+  window.addEventListener(SIGNED_OUT_EVENT, listener);
+  return () => window.removeEventListener(SIGNED_OUT_EVENT, listener);
+}
+
+// Checks the session without counting as activity. 'unknown' means the check itself failed.
+export async function checkSession(): Promise<'signedIn' | 'signedOut' | 'unknown'> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/me`, { credentials: 'include', headers: BACKGROUND_HEADERS });
+    return res.status === 401 ? 'signedOut' : res.ok ? 'signedIn' : 'unknown';
+  } catch {
+    return 'unknown';
+  }
+}
+
 export function getGoogleLoginUrl(): string {
   return `${API_BASE_URL}/auth/google`;
 }
