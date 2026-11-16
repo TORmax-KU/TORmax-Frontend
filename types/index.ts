@@ -84,6 +84,10 @@ export interface AuthUser {
   nbtcLicense?: boolean;
   trackedKeywords?: string;
   matchThreshold?: number;
+  notifyMatchesInApp?: boolean;
+  notifyMatchesEmail?: boolean;
+  notifyHighBudgetInApp?: boolean;
+  notifyHighBudgetEmail?: boolean;
   dailyDigestEmail?: boolean;
   smsAlerts?: boolean;
   contactPhone?: string;

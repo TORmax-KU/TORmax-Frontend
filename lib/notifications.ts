@@ -18,6 +18,7 @@ export interface ApiNotification {
   read: boolean;
   createdAt: string;
   matchPercentage?: number;
+  highBudget?: boolean;
   fromState?: TorState;
   toState?: TorState;
   // null once the TOR has been removed from TORmax
@@ -147,8 +148,8 @@ export function toNotificationItem(n: ApiNotification, th: boolean): Notificatio
     return {
       ...base,
       type: 'match',
-      title: 'New TOR matches your profile',
-      titleTh: 'พบ TOR ที่ตรงกับโปรไฟล์ของคุณ',
+      title: n.highBudget ? 'Matching TOR over ฿10 million' : 'New TOR matches your profile',
+      titleTh: n.highBudget ? 'พบ TOR ที่ตรงกับคุณและมีงบเกิน 10 ล้านบาท' : 'พบ TOR ที่ตรงกับโปรไฟล์ของคุณ',
       message: project ? `${name}${project.agency ? ` — ${project.agency}` : ''} (skill match${pct})` : removed.en,
       messageTh: project ? `${name}${project.agency ? ` — ${project.agency}` : ''} (ทักษะตรงกัน${pct})` : removed.th,
     };

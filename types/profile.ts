@@ -14,8 +14,10 @@ export interface ProfileFormData {
   nbtcLicense: boolean;
   trackedKeywords: string;
   matchThreshold: number;
-  dailyDigestEmail: boolean;
-  smsAlerts: boolean;
+  notifyMatchesInApp: boolean;
+  notifyMatchesEmail: boolean;
+  notifyHighBudgetInApp: boolean;
+  notifyHighBudgetEmail: boolean;
   contactName: string;
   contactEmail: string;
   contactPhone: string;
