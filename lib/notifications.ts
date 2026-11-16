@@ -25,13 +25,17 @@ export interface ApiNotification {
   projectId: { _id: string; title: string; agency?: string } | null;
 }
 
-interface Snapshot { items: ApiNotification[]; unreadCount: number; status: 'loading' | 'ready' | 'error' }
-const INITIAL: Snapshot = { items: [], unreadCount: 0, status: 'loading' };
+interface Snapshot {
+  items: ApiNotification[]; unreadCount: number; total: number; page: number;
+  status: 'loading' | 'ready' | 'error'; loadingMore: boolean; loadMoreError: boolean;
+}
+const INITIAL: Snapshot = { items: [], unreadCount: 0, total: 0, page: 0, status: 'loading', loadingMore: false, loadMoreError: false };
 const listeners = new Set<() => void>();
 
 let snapshot = INITIAL;
 // Signed-in user whose notifications the snapshot holds.
 let owner: string | null = null;
+let requestVersion = 0;
 
 function set(next: Snapshot) {
   snapshot = next;
@@ -44,16 +48,39 @@ function subscribe(listener: () => void) {
 }
 
 // `background` marks timer-driven polls, which must not count as session activity (NFR-07).
+async function getPage(page: number, background: boolean) {
+  const res = await fetch(`${ENDPOINT}?limit=50&page=${page}`, { credentials: 'include', headers: background ? BACKGROUND_HEADERS : undefined, signal: AbortSignal.timeout(15_000) });
+  if (res.status === 401) reportSignedOut();
+  if (!res.ok) throw new Error(`Failed to load notifications (${res.status})`);
+  return await res.json() as { notifications: ApiNotification[]; unreadCount: number; total: number };
+}
+
 async function refresh(userId: string, background = false) {
+  const version = ++requestVersion;
   try {
-    const res = await fetch(`${ENDPOINT}?limit=50`, { credentials: 'include', headers: background ? BACKGROUND_HEADERS : undefined });
-    if (res.status === 401) reportSignedOut();
-    if (!res.ok) throw new Error(`Failed to load notifications (${res.status})`);
-    const body = await res.json();
-    if (owner === userId) set({ items: body.notifications, unreadCount: body.unreadCount, status: 'ready' });
+    // Keep already-open pages across polling, and refill gaps after deletions.
+    const pages = await Promise.all(Array.from({ length: Math.max(1, snapshot.page) }, (_, i) => getPage(i + 1, background)));
+    const items = [...new Map(pages.flatMap(body => body.notifications).map(item => [item._id, item])).values()];
+    if (owner === userId && version === requestVersion) set({ items, unreadCount: pages[0].unreadCount, total: pages[0].total,
+      page: pages.length, status: 'ready', loadingMore: false, loadMoreError: false });
   } catch {
     // Keep showing the last good list; only a first load reports an error.
-    if (owner === userId && snapshot.status !== 'ready') set({ ...snapshot, status: 'error' });
+    if (owner === userId && version === requestVersion) set({ ...snapshot, loadingMore: false, status: snapshot.status === 'ready' ? 'ready' : 'error' });
+  }
+}
+
+async function loadMore(userId: string) {
+  if (snapshot.loadingMore || snapshot.status !== 'ready' || snapshot.items.length >= snapshot.total) return;
+  const page = snapshot.page + 1;
+  const version = ++requestVersion;
+  set({ ...snapshot, loadingMore: true, loadMoreError: false });
+  try {
+    const body = await getPage(page, false);
+    if (owner === userId && version === requestVersion) set({ ...snapshot,
+      items: [...new Map([...snapshot.items, ...body.notifications].map(item => [item._id, item])).values()],
+      total: body.total, unreadCount: body.unreadCount, page, loadingMore: false });
+  } catch {
+    if (owner === userId && version === requestVersion) set({ ...snapshot, loadingMore: false, loadMoreError: true });
   }
 }
 
@@ -61,7 +88,7 @@ async function refresh(userId: string, background = false) {
 function send(path: string, init: RequestInit) {
   const userId = owner;
   void fetch(`${ENDPOINT}${path}`, { credentials: 'include', ...init })
-    .then(res => { if (!res.ok) throw new Error(`Request failed (${res.status})`); })
+    .then(res => { if (!res.ok) throw new Error(`Request failed (${res.status})`); if (userId && owner === userId) void refresh(userId, true); })
     .catch(() => { if (userId) void refresh(userId); });
 }
 
@@ -86,6 +113,7 @@ function remove(id: string) {
   set({
     ...snapshot,
     items: snapshot.items.filter(n => n._id !== id),
+    total: Math.max(0, snapshot.total - 1),
     unreadCount: Math.max(0, snapshot.unreadCount - (item.read ? 0 : 1)),
   });
   send(`/${encodeURIComponent(id)}`, { method: 'DELETE' });
@@ -120,6 +148,8 @@ export function useNotifications({ poll = false }: { poll?: boolean } = {}) {
     remove,
     markAllRead,
     retry: () => { if (userId) void refresh(userId); },
+    hasMore: state.items.length < state.total,
+    loadMore: () => { if (userId) void loadMore(userId); },
   };
 }
 

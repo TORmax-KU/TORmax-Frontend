@@ -18,7 +18,9 @@ export default function SettingsPage() {
       {isLoading ? <p role="status" className="text-sm text-ink-3">{th ? 'กำลังโหลด…' : 'Loading…'}</p> : user ? <>
         <p className="text-[15px] font-medium text-ink">{user.email}</p>
         <Link href="/profile" className="ui-link group text-sm">{th ? 'แก้ไขโปรไฟล์และข้อมูลติดต่อ' : 'Edit profile and contact details'}<RiArrowRightLine size={14} className="transition-transform duration-150 group-hover:translate-x-0.5" /></Link>
-        <p className="ui-hint border-t border-line pt-4 text-[13px]">{th ? 'บัญชีนี้เข้าสู่ระบบผ่าน Google จัดการรหัสผ่านและการยืนยันสองขั้นตอนในบัญชี Google ของคุณ' : 'You sign in with Google. Manage your password and two-step verification in your Google account.'}</p>
+        <p className="ui-hint border-t border-line pt-4 text-[13px]">{user.googleId
+          ? (th ? 'บัญชีนี้เชื่อมกับ Google จัดการรหัสผ่าน Google และการยืนยันสองขั้นตอนในบัญชี Google ของคุณ' : 'Google sign-in is linked. Manage your Google password and two-step verification in your Google account.')
+          : (th ? 'บัญชีนี้ใช้การเข้าสู่ระบบด้วยอีเมลและรหัสผ่าน ยังไม่รองรับการเปลี่ยนหรือรีเซ็ตรหัสผ่านในเว็บไซต์' : 'You sign in with email and password. Password changes and resets are not available on the website yet.')}</p>
       </> : <Link href="/login" className="ui-btn ui-btn-primary ui-btn-sm">{th ? 'เข้าสู่ระบบเพื่อจัดการบัญชี' : 'Sign in to manage your account'}</Link>}
     </section>
     <section className={panel}>

@@ -11,6 +11,8 @@ interface FormFieldProps {
   max?: number;
   step?: number;
   error?: string;
+  readOnly?: boolean;
+  hint?: string;
 }
 
 export function FormField({
@@ -24,6 +26,8 @@ export function FormField({
   max,
   step,
   error,
+  readOnly = false,
+  hint,
 }: FormFieldProps) {
   return (
     <div className="space-y-1.5">
@@ -38,11 +42,13 @@ export function FormField({
         min={min}
         max={max}
         step={step}
+        readOnly={readOnly}
         aria-invalid={error ? true : undefined}
-        aria-describedby={error ? `${id}-error` : undefined}
+        aria-describedby={[error ? `${id}-error` : '', hint ? `${id}-hint` : ''].filter(Boolean).join(' ') || undefined}
         className={`ui-field ${className}`}
       />
       {error && <p id={`${id}-error`} className="ui-error-text">{error}</p>}
+      {hint && <p id={`${id}-hint`} className="ui-hint">{hint}</p>}
     </div>
   );
 }

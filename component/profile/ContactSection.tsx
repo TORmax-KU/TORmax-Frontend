@@ -31,6 +31,8 @@ export function ContactSection({
           value={formData.contactEmail}
           onChange={onChange}
           type="email"
+          readOnly
+          hint={t.contactEmailHint}
         />
         <FormField
           id="contactPhone"

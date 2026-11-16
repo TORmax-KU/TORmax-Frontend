@@ -2,10 +2,12 @@
 
 import { FormEvent, Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { RiArrowDownSLine } from '@remixicon/react';
 import LogoSignature from '@/component/LogoSignature';
 import { useApp } from '@/context/AppContext';
 import { useAuth } from '@/context/AuthContext';
+import { API_BASE_URL } from '@/lib/auth';
 
 export default function GoogleLoginPage() {
     return <Suspense fallback={<div className="p-10 text-center">Loading...</div>}><GoogleLoginContent /></Suspense>;
@@ -22,11 +24,21 @@ function GoogleLoginContent() {
     const [role, setRole] = useState<'Vendor' | 'JobLister'>('Vendor');
     const [formError, setFormError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [googleEnabled, setGoogleEnabled] = useState<boolean | null>(null);
     const th = lang === 'TH';
     const isSignup = mode === 'signup';
     const router = useRouter();
     const searchParams = useSearchParams();
     const authFailed = searchParams.get('error') === 'auth_failed';
+
+    useEffect(() => {
+        const controller = new AbortController();
+        fetch(`${API_BASE_URL}/auth/options`, { signal: controller.signal })
+            .then(response => response.ok ? response.json() : Promise.reject())
+            .then(options => setGoogleEnabled(options.googleEnabled === true))
+            .catch(() => { if (!controller.signal.aborted) setGoogleEnabled(false); });
+        return () => controller.abort();
+    }, []);
 
     // Already signed in: skip the login screen entirely
     useEffect(() => {
@@ -99,7 +111,7 @@ function GoogleLoginContent() {
                 {/* Google OAuth Action Button */}
                 <button
                     onClick={handleGoogleLogin}
-                    disabled={isLoading}
+                    disabled={isLoading || googleEnabled !== true}
                     className="ui-btn ui-btn-secondary w-full h-11 gap-3 group"
                 >
                     {isLoading ? (
@@ -135,6 +147,10 @@ function GoogleLoginContent() {
                         </>
                     )}
                 </button>
+
+                {googleEnabled === false && <p className="ui-hint mt-2" role="status">
+                    {th ? 'ยังไม่สามารถเข้าสู่ระบบด้วย Google ในระบบนี้ได้ กรุณาใช้อีเมลและรหัสผ่าน' : 'Google sign-in is unavailable here. Use email and password below.'}
+                </p>}
 
                 {/* Scope / Terms Notice */}
                 <p className="mt-3 text-xs text-ink-3 leading-relaxed text-center">
@@ -291,15 +307,9 @@ function GoogleLoginContent() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <a href="#" className="hover:text-ink transition-colors">
+                    <Link href="/#about-tor" className="hover:text-ink transition-colors">
                         {lang === 'TH' ? 'ช่วยเหลือ' : 'Help'}
-                    </a>
-                    <a href="#" className="hover:text-ink transition-colors">
-                        {lang === 'TH' ? 'ความเป็นส่วนตัว' : 'Privacy'}
-                    </a>
-                    <a href="#" className="hover:text-ink transition-colors">
-                        {lang === 'TH' ? 'ข้อกำหนด' : 'Terms'}
-                    </a>
+                    </Link>
                 </div>
             </footer>
         </div>

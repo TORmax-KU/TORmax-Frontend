@@ -16,7 +16,7 @@ export interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ companyName }) => {
-    const { isDark, setTheme, lang, toggleLanguage, t } = useApp();
+    const { isDark, setTheme, lang, t } = useApp();
     const { user, logout } = useAuth();
     const pathname = usePathname();
     // Polls while signed in so new match alerts appear without a page reload (SRS 3.1.3).
@@ -29,7 +29,7 @@ export const Navbar: React.FC<NavbarProps> = ({ companyName }) => {
             {/* Brand & Links */}
             <div className="flex items-center gap-6 min-w-0">
                 <div className="flex items-center gap-1">
-                    <DrawerMenu />
+                    <DrawerMenu unreadCount={unreadCount} />
                     <Link href="/" className="rounded-lg">
                         <LogoSignature />
                     </Link>
@@ -110,7 +110,7 @@ export const Navbar: React.FC<NavbarProps> = ({ companyName }) => {
                             </div>
                             <div className="hidden xl:block leading-tight">
                                 <div className="text-[13px] font-medium text-ink truncate max-w-40">
-                                    <span>{user.realName || companyName}</span>
+                                    <span>{user.realName || user.companyName || companyName || user.email}</span>
                                 </div>
                                 <div className="text-[11px] text-ink-3 truncate max-w-40">{user.email}</div>
                             </div>

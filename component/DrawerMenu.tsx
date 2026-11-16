@@ -37,16 +37,18 @@ interface NavItem {
 }
 
 export default function DrawerMenu({
-  companyName = "Tech Solutions Co., Ltd.",
-  taxId = "0105563012345",
-  unreadCount = 3
+  companyName,
+  taxId,
+  unreadCount = 0
 }: DrawerMenuProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
   // Hook directly into your global AppContext
   const { isDark, setTheme, lang } = useApp();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const displayName = companyName || user?.companyName || user?.realName || user?.email || (lang === 'TH' ? 'เข้าสู่ระบบ' : 'Sign in');
+  const displayedTaxId = taxId || user?.taxId;
 
   // Close drawer on route change
   useEffect(() => {
@@ -120,15 +122,15 @@ export default function DrawerMenu({
 
           {/* User Profile Preview */}
           <div className="px-3 pb-3">
-            <Link href="/profile" onClick={() => setIsOpen(false)} className="flex items-center gap-3 rounded-control p-2.5 bg-surface-2 hover:bg-surface-3 transition-colors group">
+            <Link href={user ? '/profile' : '/login'} onClick={() => setIsOpen(false)} className="flex items-center gap-3 rounded-control p-2.5 bg-surface-2 hover:bg-surface-3 transition-colors group">
               <div className="w-9 h-9 rounded-full bg-brand-deep text-white flex items-center justify-center font-semibold text-[11px] tracking-wide shrink-0">
-                TT
+                {user ? displayName.slice(0, 2).toUpperCase() : 'TM'}
               </div>
               <div className="flex-1 min-w-0 leading-tight">
                 <p className="font-medium text-[13px] text-ink truncate">
-                  {companyName}
+                  {displayName}
                 </p>
-                <p className="text-[11px] text-ink-3 truncate mt-0.5">Tax ID: {taxId}</p>
+                {displayedTaxId && <p className="text-[11px] text-ink-3 truncate mt-0.5">Tax ID: {displayedTaxId}</p>}
               </div>
             </Link>
           </div>
@@ -199,13 +201,14 @@ export default function DrawerMenu({
             {/* Version & Logout */}
             <div className="mt-4 flex items-center justify-between text-xs text-ink-4">
               <span>TORmax v2.0.1</span>
-              <button
-                onClick={() => console.log('Logged out')}
+              {user ? <button
+                type="button"
+                onClick={() => { setIsOpen(false); logout(); }}
                 className="inline-flex items-center gap-1 text-danger font-medium hover:underline underline-offset-4"
               >
                 <RiLogoutBoxRLine className="h-3.5 w-3.5" />
-                <span>Logout</span>
-              </button>
+                <span>{lang === 'TH' ? 'ออกจากระบบ' : 'Logout'}</span>
+              </button> : <Link href="/login" onClick={() => setIsOpen(false)} className="ui-link">{lang === 'TH' ? 'เข้าสู่ระบบ' : 'Sign in'}</Link>}
             </div>
           </div>
 

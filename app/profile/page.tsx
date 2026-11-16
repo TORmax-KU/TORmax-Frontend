@@ -83,12 +83,14 @@ export default function ProfilePage() {
   const t = profilei18n[activeLang];
 
   const [formData, setFormData] = useState<ProfileFormData>(emptyFormData);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loadState, setLoadState] = useState<{ key: string; status: 'ready' | 'error' }>();
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [capacityErrors, setCapacityErrors] = useState<Partial<Record<CapacityField, string>>>({});
-  const [profileLoaded, setProfileLoaded] = useState(false);
   const [retry, setRetry] = useState(0);
+  const profileKey = user ? `${user._id}:${retry}` : '';
+  const profileLoaded = loadState?.key === profileKey && loadState.status === 'ready';
+  const isLoading = isAuthLoading || !user || loadState?.key !== profileKey;
 
   useEffect(() => {
     if (isAuthLoading) return;
@@ -99,16 +101,13 @@ export default function ProfilePage() {
     }
 
     let cancelled = false;
-    setIsLoading(true);
-    setProfileLoaded(false);
-    setError(null);
     (async () => {
       const profile = await fetchUserById(user._id);
       if (cancelled) return;
 
       if (!profile) {
         setError('Failed to load profile');
-        setIsLoading(false);
+        setLoadState({ key: profileKey, status: 'error' });
         return;
       }
 
@@ -138,14 +137,14 @@ export default function ProfilePage() {
           .map((skill) => (typeof skill === 'string' ? '' : skill.name))
           .filter(Boolean),
       });
-      setProfileLoaded(true);
-      setIsLoading(false);
+      setError(null);
+      setLoadState({ key: profileKey, status: 'ready' });
     })();
 
     return () => {
       cancelled = true;
     };
-  }, [user, isAuthLoading, router, retry]);
+  }, [user, isAuthLoading, router, profileKey]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value, type, checked } = e.target;

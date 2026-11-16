@@ -13,7 +13,7 @@ import { toNotificationItem, useNotifications } from '@/lib/notifications';
 
 export default function NotificationsPage() {
   const { lang } = useApp();
-  const { items, unreadCount, status, signedOut, toggleRead, remove, markAllRead, retry } = useNotifications();
+  const { items, unreadCount, status, signedOut, toggleRead, remove, markAllRead, retry, hasMore, loadMore, loadingMore, loadMoreError } = useNotifications();
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
 
   const notifications = items.map((item) => toNotificationItem(item, lang === 'TH'));
@@ -117,6 +117,12 @@ export default function NotificationsPage() {
           </div>
         )}
 
+        {!signedOut && status === 'ready' && hasMore && <div className="text-center space-y-2">
+          {loadMoreError && <p role="alert" className="ui-error-text">{lang === 'TH' ? 'โหลดรายการเก่าไม่สำเร็จ กรุณาลองอีกครั้ง' : 'Older notifications could not be loaded. Try again.'}</p>}
+          <button type="button" className="ui-btn ui-btn-secondary" onClick={loadMore} disabled={loadingMore}>
+            {loadingMore ? (lang === 'TH' ? 'กำลังโหลด…' : 'Loading…') : (lang === 'TH' ? 'โหลดการแจ้งเตือนเก่า' : 'Load older notifications')}
+          </button>
+        </div>}
       </div>
     </div>
   );
