@@ -10,6 +10,7 @@ import { detailLayout, panel, sectionTitle } from '@/component/ui';
 import { TORHeader } from './TORHeader';
 import { MatchPanel } from './MatchPanel';
 import { PriceComparison } from './PriceComparison';
+import { ReportPosting } from './ReportPosting';
 
 // FR-13 / US4 / US8: a job posting published directly on TORmax. Vendors contact the publisher
 // themselves; TORmax never submits an application on anyone's behalf (FR-15).
@@ -68,6 +69,7 @@ export function DirectPostingDetail({ project, lang, backToDirectory }: { projec
           </div>
           <p className="ui-meta">{th ? 'TORmax ไม่ได้ส่งใบสมัครหรือข้อเสนอแทนคุณ' : 'TORmax does not send applications or proposals on your behalf.'}</p>
         </section>
+        {!isOwner && <ReportPosting projectId={project._id} lang={lang} />}
       </aside>
     </main>
   </div>;

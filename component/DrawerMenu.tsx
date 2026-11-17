@@ -19,7 +19,8 @@ import {
   RiLogoutBoxRLine,
   RiSunLine,
   RiMoonLine,
-  RiSparkling2Line
+  RiSparkling2Line,
+  RiShieldUserLine
 } from "@remixicon/react";
 
 interface DrawerMenuProps {
@@ -64,6 +65,7 @@ export default function DrawerMenu({
     { label: 'Matched for You', labelTh: 'TOR ที่ตรงกับคุณ', href: '/matches', icon: <RiSparkling2Line className="h-[18px] w-[18px]" /> },
     { label: 'Bookmarks', labelTh: 'โครงการที่ติดตามอยู่', href: '/bookmarks', icon: <RiBookmarkLine className="h-[18px] w-[18px]" /> },
     ...(user?.role === 'JobLister' ? [{ label: 'Manage Postings', labelTh: 'จัดการประกาศงาน', href: '/postings', icon: <RiFileListLine className="h-[18px] w-[18px]" /> }] : []),
+    ...(user?.role === 'Admin' ? [{ label: 'Admin Portal', labelTh: 'ระบบจัดการ', href: '/admin', icon: <RiShieldUserLine className="h-[18px] w-[18px]" /> }] : []),
     { label: 'Notifications', labelTh: 'การแจ้งเตือน', href: '/notifications', icon: <RiNotificationLine className="h-[18px] w-[18px]" />, badge: unreadCount },
     { label: 'Profile Settings', labelTh: 'ตั้งค่าโปรไฟล์', href: '/profile', icon: <RiUserLine className="h-[18px] w-[18px]" /> },
   ];
