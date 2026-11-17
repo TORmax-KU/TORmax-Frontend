@@ -22,6 +22,7 @@ export function submissionSummary(project: SubmissionInfo, lang: 'th' | 'en', no
   const start = project.submissionStartAt ? Date.parse(project.submissionStartAt) : NaN;
   const terminal = ['closed', 'awarded', 'cancelled', 'draft'].includes(project.availability || '');
   const bangkokDay = (value: number) => Math.floor((value + 7 * 3600000) / 86400000);
+  if (project.availability === 'draft') return th ? 'ร่างประกาศ — ยังไม่เปิดให้ยื่นข้อเสนอ' : 'Draft — bidding not open yet';
   if (terminal) return th ? 'ไม่อยู่ในช่วงเปิดรับข้อเสนอ' : 'Not accepting submissions';
   if (Number.isFinite(deadline) && (project.deadlinePrecision === 'datetime' ? deadline <= now : bangkokDay(deadline) < bangkokDay(now))) return th ? 'หมดเวลายื่นข้อเสนอแล้ว' : 'Submission deadline has passed';
   if (!Number.isFinite(deadline)) return th ? 'ยังคำนวณเวลาที่เหลือไม่ได้ — ต้นทางไม่ระบุวันปิดรับ' : 'Time remaining unknown — no closing deadline provided';

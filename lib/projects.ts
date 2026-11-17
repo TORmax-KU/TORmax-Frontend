@@ -22,6 +22,8 @@ export interface Project {
   deadline?: string;
   deadlinePrecision?: 'datetime' | 'date' | 'unknown';
   announcedAt?: string;
+  // FR-05: when a draft TOR was published for public comment.
+  draftPublishedAt?: string;
   procurementStartAt?: string;
   submissionStartAt?: string;
   documentSaleEndAt?: string;
@@ -138,8 +140,10 @@ export async function getProjects(params: URLSearchParams, signal: AbortSignal):
 export function projectCard(project: Project, lang: 'th' | 'en', matchPercentage: number | null = null) {
   const unknown = lang === 'th' ? 'ต้นทางไม่ระบุข้อมูล' : 'Not provided by source';
   const isDirect = project.source === DIRECT_SOURCE;
+  // FR-05: drafts are listed from source metadata; AI analysis runs once the invitation is out.
+  const isDraft = project.availability === 'draft';
   const hasBudget = project.budget != null && Number.isFinite(project.budget) && project.budget >= 0;
-  const budgetText = !hasBudget ? extractionFieldLabel(project, 'budget', lang)
+  const budgetText = !hasBudget ? (isDraft ? unknown : extractionFieldLabel(project, 'budget', lang))
     : isDirect && project.budgetMin != null ? `${formatMoney(project.budgetMin, lang)} – ${formatMoney(project.budget as number, lang)}`
     : new Intl.NumberFormat(lang === 'th' ? 'th-TH' : 'en-US', { style: 'currency', currency: 'THB', maximumFractionDigits: 2 }).format(project.budget as number);
   return {
@@ -155,19 +159,30 @@ export function projectCard(project: Project, lang: 'th' | 'en', matchPercentage
     sourcePortal: isDirect ? (lang === 'th' ? 'ประกาศตรงบน TORmax' : 'Direct posting on TORmax')
       : ({ 'tero-procurement': 'Tero Procurement', govspending: 'GovSpending / DGA', 'bangkok-egp': 'Bangkok e-GP' } as Record<string, string>)[project.source || ''] || project.source || unknown,
     method: isDirect ? (lang === 'th' ? 'ติดต่อผู้ประกาศโดยตรง' : 'Contact the publisher') : project.procurementMethod || unknown,
-    deadline: project.deadline && Number.isFinite(Date.parse(project.deadline)) ? formatSubmissionDeadline(project, lang) : extractionFieldLabel(project, 'deadline', lang),
+    deadline: project.deadline && Number.isFinite(Date.parse(project.deadline)) ? formatSubmissionDeadline(project, lang)
+      : isDraft ? (lang === 'th' ? 'กำหนดเมื่อมีประกาศเชิญชวนอย่างเป็นทางการ' : 'Set when the official invitation is published')
+      : extractionFieldLabel(project, 'deadline', lang),
     availability: project.availability || 'unverified',
     availabilityLabel: availabilityLabel(project.availability, lang),
     priceFlag: project.priceAnalysis ? project.priceFlag || 'Normal' : null,
     priceFlagLabel: priceFlagLabel(project.priceFlag, lang),
     priceComparison: priceComparison(project, lang),
-    published: project.announcedAt && Number.isFinite(Date.parse(project.announcedAt)) ? formatProcurementDate(project.announcedAt, lang, false) : extractionFieldLabel(project, 'announcedAt', lang),
-    desc: project.descriptions || (isDirect ? project.description : '') || (lang === 'th' ? 'รอ AI สรุปเอกสาร TOR' : 'Awaiting AI TOR summary'),
+    published: project.announcedAt && Number.isFinite(Date.parse(project.announcedAt)) ? formatProcurementDate(project.announcedAt, lang, false)
+      : isDraft && project.draftPublishedAt && Number.isFinite(Date.parse(project.draftPublishedAt)) ? formatProcurementDate(project.draftPublishedAt, lang, false)
+      : isDraft ? unknown : extractionFieldLabel(project, 'announcedAt', lang),
+    desc: project.descriptions || (isDirect ? project.description : '') || (isDraft ? draftNote(lang) : (lang === 'th' ? 'รอ AI สรุปเอกสาร TOR' : 'Awaiting AI TOR summary')),
     tags: [...new Set([...(project.sourceSkillNames || []), ...(project.requiredSkills || []).flatMap(skill => typeof skill === 'string' ? [] : [skill.name]), ...(project.aiAnalysis?.mandatorySkillNames || [])])],
   };
 }
 
 export type ProjectCard = ReturnType<typeof projectCard>;
+
+// FR-05: why a draft has no AI summary, deadline or skills yet.
+export function draftNote(lang: 'th' | 'en') {
+  return lang === 'th'
+    ? 'ร่าง TOR เผยแพร่เพื่อรับฟังความคิดเห็น ยังไม่เปิดให้ยื่นข้อเสนอ AI จะสรุปเอกสารเมื่อมีประกาศเชิญชวนอย่างเป็นทางการ ระหว่างนี้ดูร่างเอกสารได้จากแหล่งต้นทาง'
+    : 'Draft TOR published for public comment; bidding is not open yet. The AI summary appears once the official invitation is published — until then, read the draft at the source.';
+}
 
 export function pendingExtraction(lang: 'th' | 'en') {
   return lang === 'th' ? 'รอ AI สกัดข้อมูล' : 'Pending AI extraction';

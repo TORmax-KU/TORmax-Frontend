@@ -10,7 +10,9 @@ test('counts down precise deadlines and handles exact expiry', () => {
 });
 test('missing dates and unverified or terminal states never promise an open bid', () => {
   assert.match(submissionSummary({ availability: 'unknown' }, 'en', now), /Time remaining unknown/);
-  for (const availability of ['closed', 'cancelled', 'awarded', 'draft']) {
+  // A draft is not open either, but says why: bidding opens with the official invitation.
+  assert.equal(submissionSummary({ ...project, availability: 'draft' }, 'en', now), 'Draft — bidding not open yet');
+  for (const availability of ['closed', 'cancelled', 'awarded']) {
     assert.equal(submissionSummary({ ...project, availability }, 'en', now), 'Not accepting submissions');
   }
   assert.match(submissionSummary({ ...project, availability: 'unverified' }, 'en', now), /unconfirmed/);

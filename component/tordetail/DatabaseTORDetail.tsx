@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { RiArrowRightSLine, RiExternalLinkLine, RiFileTextLine } from '@remixicon/react';
 import { useApp } from '@/context/AppContext';
 import { API_BASE_URL } from '@/lib/auth';
-import { DIRECT_SOURCE, Project, projectCard, formatProcurementDate, safeSourceUrl, pendingExtraction } from '@/lib/projects';
+import { DIRECT_SOURCE, Project, projectCard, formatProcurementDate, safeSourceUrl, pendingExtraction, draftNote } from '@/lib/projects';
 import { torpagei18n } from '@/public/mockData/i18n/torpage';
 import { TORHeader } from './TORHeader';
 import { SubmissionStatus } from '@/component/SubmissionStatus';
@@ -49,7 +49,9 @@ export function DatabaseTORDetail({ id }: { id: string }) {
   const sourceUrl = safeSourceUrl(project.sourceUrl);
   const documents = (project.documents || []).filter(document => safeSourceUrl(document.url));
   const unknown = th ? 'ไม่ระบุในข้อมูลต้นทาง' : 'Not provided by source';
-  const pending = pendingExtraction(activeLang);
+  // FR-05: a draft is not analysed until its official invitation, so explain that instead of "pending".
+  const isDraft = tor.availability === 'draft';
+  const pending = isDraft ? (th ? 'ยังไม่มี — จะแสดงเมื่อ AI วิเคราะห์ TOR ฉบับประกาศเชิญชวน' : 'Not yet — shown once the final TOR from the official invitation is analysed') : pendingExtraction(activeLang);
   const money = (value?: number) => value == null ? unknown : new Intl.NumberFormat(th ? 'th-TH' : 'en-US', { style: 'currency', currency: 'THB' }).format(value);
   const date = (value?: string) => formatProcurementDate(value, activeLang);
   const fields = [
@@ -76,7 +78,7 @@ export function DatabaseTORDetail({ id }: { id: string }) {
         <PriceComparison analysis={project.priceAnalysis} budget={project.budget} flag={project.priceFlag} lang={activeLang} />
         <section className={panel}>
           <h2 className={sectionTitle}>{th ? 'สรุป TOR' : 'TOR summary'}</h2>
-          <p className="whitespace-pre-line text-[15px] leading-7 text-ink-2">{project.descriptions || (project.analyzedAt ? (th ? 'เอกสารที่มีไม่เพียงพอสำหรับสรุปขอบเขต TOR' : 'Available documents do not contain enough TOR scope to summarize.') : pending)}</p>
+          <p className="whitespace-pre-line text-[15px] leading-7 text-ink-2">{project.descriptions || (isDraft ? draftNote(activeLang) : project.analyzedAt ? (th ? 'เอกสารที่มีไม่เพียงพอสำหรับสรุปขอบเขต TOR' : 'Available documents do not contain enough TOR scope to summarize.') : pending)}</p>
           {project.descriptions && <p className="ui-meta">{th ? 'สรุปโดย AI — ตรวจสอบกับ TOR ต้นฉบับ' : 'AI-generated summary — verify against the original TOR'}</p>}
         </section>
         <section className={panel}><h2 className={sectionTitle}>{th ? 'ขอบเขตและรายละเอียดงาน' : 'Scope of work'}</h2><p className="whitespace-pre-line text-sm leading-7 text-ink-2">{project.description || unknown}</p></section>
