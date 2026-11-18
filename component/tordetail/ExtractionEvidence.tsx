@@ -17,10 +17,14 @@ export function ExtractionEvidence({ project, lang }: { project: Project; lang: 
     ? { pending: 'รอ AI สกัดข้อมูล', processing: 'AI กำลังวิเคราะห์เอกสาร', completed: 'วิเคราะห์เอกสารแล้ว', failed: 'วิเคราะห์ไม่สำเร็จ — ต้องลองใหม่', awaiting_documents: 'ต้องการเอกสาร TOR เพิ่มเติม', needs_review: 'ข้อมูลบางส่วนต้องตรวจสอบ', retry_pending: 'รอลองวิเคราะห์ใหม่อัตโนมัติ' }
     : { pending: 'Pending AI extraction', processing: 'AI is analyzing documents', completed: 'Documents analyzed', failed: 'Analysis failed — retry needed', awaiting_documents: 'Additional TOR documents needed', needs_review: 'Some fields need review', retry_pending: 'Automatic retry pending' };
   const status = project.analysisStatus || 'pending';
+  // FR-05: drafts wait for the official invitation; that is expected, not a failure.
+  const draft = project.availability === 'draft';
+  const label = draft ? (th ? 'รอประกาศเชิญชวนก่อนวิเคราะห์' : 'Analysed once officially announced')
+    : status === 'skipped' ? (th ? 'ข้ามการวิเคราะห์อัตโนมัติ' : 'Automatic analysis skipped') : states[status] || states.pending;
   return <section className={panel}>
     <div className="flex flex-wrap items-center justify-between gap-3">
       <h2 className={sectionTitle}>{th ? 'สถานะการวิเคราะห์' : 'Extraction status'}</h2>
-      <p role="status" className={`ui-badge ui-badge-dot ${statusTone[status] || 'ui-badge-neutral'}`}>{status === 'skipped' ? (th ? 'ข้ามการวิเคราะห์อัตโนมัติ' : 'Automatic analysis skipped') : states[status] || states.pending}</p>
+      <p role="status" className={`ui-badge ui-badge-dot ${draft ? 'ui-badge-brand' : statusTone[status] || 'ui-badge-neutral'}`}>{label}</p>
     </div>
     {project.aiAnalysis?.fieldResults && <details className="ui-disclosure border-t border-line pt-4">
       <summary><RiArrowRightSLine size={16} className="ui-chevron text-ink-3" />{th ? 'หลักฐานงบประมาณและวันที่' : 'Budget and date evidence'}</summary>

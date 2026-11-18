@@ -26,7 +26,10 @@ function SearchFeedContent() {
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [retry, setRetry] = useState(0);
   const [result, setResult] = useState<{ key: string; data?: ProjectResults; error?: boolean }>();
-  const apiParams = new URLSearchParams({ search: query.trim(), limit: '20', availability: 'open' });
+  // FR-05 / UC3: '' = open for bids (default), 'Draft' = drafts in public comment, 'all' = both.
+  const statusParam = params.get('status');
+  const status = statusParam === 'Draft' || statusParam === 'all' ? statusParam : '';
+  const apiParams = new URLSearchParams({ search: query.trim(), limit: '20', ...(status ? { status } : { availability: 'open' }) });
   for (const key of ['agency', 'minBudget', 'maxBudget', 'page', 'deadlineYear', 'deadlineFrom', 'deadlineTo', 'method', 'sort', 'priceFlag', 'origin', 'skill']) {
     const value = params.get(key);
     if (value) apiParams.set(key, value);
@@ -74,7 +77,17 @@ function SearchFeedContent() {
       <SearchHeader title={th ? 'TOR และประกาศงาน IT' : 'IT TORs & job postings'} subtitle={th ? 'ตรวจสอบวันปิดรับ เอกสารต้นฉบับ และรายละเอียดก่อนยื่นข้อเสนอ' : 'Review closing deadlines, original documents and requirements before applying.'} onFilterClick={() => setFiltersOpen(!filtersOpen)} filterBtnText={th ? 'ตัวกรอง' : 'Filters'} filtersOpen={filtersOpen} />
       <div className="space-y-3">
         <SearchInput value={query} onChange={value => update('q', value)} placeholder={th ? 'ค้นหาชื่อโครงการ หน่วยงาน รหัส TOR สรุป หรือทักษะ...' : 'Search title, agency, TOR ID, summary, or skills...'} />
-        <p className="ui-hint max-w-3xl">{th ? 'แสดงงาน IT แบบ e-bidding ที่เปิดรับ พร้อมข้อมูลจากเอกสาร TOR และประกาศงานที่ลงบน TORmax โดยตรง ยังไม่รองรับการค้นหาร่างประกาศ' : 'Shows open IT e-bidding TORs with document-backed details, plus direct job postings. Draft browsing is not available yet.'}</p>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <div role="group" aria-label={th ? 'สถานะประกาศ' : 'Listing status'} className="ui-segmented">
+            {([['', th ? 'เปิดรับข้อเสนอ' : 'Open for bids'], ['Draft', th ? 'ร่างประกาศ' : 'Drafts'], ['all', th ? 'ทั้งสองแบบ' : 'Both']] as const).map(([value, label]) =>
+              <button key={value || 'open'} type="button" aria-pressed={status === value} onClick={() => update('status', value)}>{label}</button>)}
+          </div>
+          <p className="ui-hint max-w-3xl flex-1">{status === 'Draft'
+            ? (th ? 'ร่าง TOR ที่หน่วยงานเผยแพร่เพื่อรับฟังความคิดเห็นก่อนเปิดประกวดราคา ยังไม่เปิดให้ยื่นข้อเสนอ ใช้เตรียมตัวล่วงหน้า ร่างไม่มีวันปิดรับ จึงไม่แสดงเมื่อกรองตามวันปิดรับ' : 'Draft TORs agencies publish for public comment before bidding opens — use them to prepare early. Drafts have no closing date, so closing-date filters hide them.')
+            : status === 'all'
+              ? (th ? 'งานที่เปิดรับข้อเสนอแสดงก่อน ตามด้วยร่างประกาศล่าสุด' : 'Open opportunities first, then the latest drafts.')
+              : (th ? 'แสดงงาน IT แบบ e-bidding ที่เปิดรับ พร้อมข้อมูลจากเอกสาร TOR และประกาศงานที่ลงบน TORmax โดยตรง' : 'Shows open IT e-bidding TORs with document-backed details, plus direct job postings.')}</p>
+        </div>
       </div>
       {filtersOpen && <div className="ui-card ui-reveal grid gap-x-5 gap-y-4 p-5 sm:grid-cols-2 sm:p-6 lg:grid-cols-3">
         {/* NFR-09: stack, agency and budget come first; each applies as you type, no Apply button. */}
@@ -86,7 +99,7 @@ function SearchFeedContent() {
         <label className={fieldLabel}><span className="ui-label">{th ? 'ปิดรับตั้งแต่วันที่' : 'Closing from'}</span><input className={fieldClass} type="date" value={params.get('deadlineFrom') || ''} onChange={e => update('deadlineFrom', e.target.value)} /></label>
         <label className={fieldLabel}><span className="ui-label">{th ? 'ปิดรับถึงวันที่' : 'Closing through'}</span><input className={fieldClass} type="date" value={params.get('deadlineTo') || ''} onChange={e => update('deadlineTo', e.target.value)} /></label>
         <label className={fieldLabel}><span className="ui-label">{th ? 'วิธีจัดซื้อจัดจ้าง' : 'Procurement method'}</span><input className={fieldClass} placeholder="e-bidding" value={params.get('method') || ''} onChange={e => update('method', e.target.value)} /></label>
-        <label className={fieldLabel}><span className="ui-label">{th ? 'เรียงตาม' : 'Sort by'}</span><select className={fieldClass} value={params.get('sort') || 'deadline'} onChange={e => update('sort', e.target.value)}><option value="deadline">{th ? 'ใกล้ปิดรับก่อน' : 'Closing soonest'}</option><option value="newest">{th ? 'ประกาศล่าสุด' : 'Recently announced'}</option><option value="budget">{th ? 'งบประมาณสูงสุด' : 'Highest budget'}</option></select></label>
+        <label className={fieldLabel}><span className="ui-label">{th ? 'เรียงตาม' : 'Sort by'}</span><select className={fieldClass} value={params.get('sort') || 'deadline'} onChange={e => update('sort', e.target.value)}><option value="deadline">{status === 'Draft' ? (th ? 'ร่างล่าสุดก่อน' : 'Latest drafts first') : (th ? 'ใกล้ปิดรับก่อน' : 'Closing soonest')}</option><option value="newest">{th ? 'ประกาศล่าสุด' : 'Recently announced'}</option><option value="budget">{th ? 'งบประมาณสูงสุด' : 'Highest budget'}</option></select></label>
         <label className={fieldLabel}><span className="ui-label">{th ? 'ตรวจสอบงบประมาณ' : 'Budget check'}</span><select className={fieldClass} value={params.get('priceFlag') || ''} onChange={e => update('priceFlag', e.target.value)}><option value="">{th ? 'ทั้งหมด' : 'Any'}</option>{(['Overpriced', 'Underpriced', 'ScopeMismatch', 'Normal'] as const).map(flag => <option key={flag} value={flag}>{priceFlagLabel(flag, activeLang)}</option>)}</select></label>
         <label className={fieldLabel}><span className="ui-label">{th ? 'แหล่งที่มา' : 'Source'}</span><select className={fieldClass} value={params.get('origin') || ''} onChange={e => update('origin', e.target.value)}><option value="">{th ? 'ทั้งหมด' : 'All'}</option><option value="government">{th ? 'TOR ภาครัฐ' : 'Government TORs'}</option><option value="direct">{th ? 'ประกาศตรงบน TORmax' : 'Direct postings'}</option></select></label>
       </div>}
@@ -96,7 +109,7 @@ function SearchFeedContent() {
           {params.size > 0 && <button className="ui-link text-[13px]" onClick={resetFilters}>{th ? 'ล้างการค้นหาและตัวกรอง' : 'Clear search and filters'}</button>}
         </div>}
         {loading ? <TORCardSkeleton count={4} label={t.loading} className="space-y-3" /> : result?.error ? <div role="alert" className="ui-empty"><p className="max-w-md text-sm text-ink-2">{th ? 'โหลด TOR ไม่สำเร็จ ตรวจสอบการเชื่อมต่อและช่วงงบประมาณ แล้วลองใหม่' : 'Could not load TORs. Check your connection and budget range, then try again.'}</p><button className="ui-btn ui-btn-secondary ui-btn-sm mt-2" onClick={() => setRetry(value => value + 1)}>{th ? 'ลองอีกครั้ง' : 'Retry'}</button></div> : data && <>
-          {data.total === 0 ? <div className="ui-empty"><div className="ui-empty-icon"><RiFileSearchLine size={20} /></div><p className="font-medium text-ink">{th ? 'ยังไม่มีงานที่ผ่านเงื่อนไขนี้' : 'No open projects match these filters.'}</p><p className="max-w-lg text-sm text-ink-3">{th ? 'TOR ภาครัฐจะแสดงเมื่อ AI วิเคราะห์ข้อมูลครบและยืนยันเอกสารต้นทางแล้ว ส่วนประกาศงานโดยตรงใช้ข้อมูลจากผู้ประกาศ' : 'Government listings appear after AI extracts required fields and verifies source documents. Direct postings use the publisher’s details.'}</p>{params.size > 0 && <button className="ui-btn ui-btn-primary ui-btn-sm mt-3" onClick={resetFilters}>{th ? 'รีเซ็ตตัวกรอง' : 'Reset Filters'}</button>}</div> : <TORList items={data.projects.map(project => projectCard(project, activeLang))} t={t} />}
+          {data.total === 0 ? <div className="ui-empty"><div className="ui-empty-icon"><RiFileSearchLine size={20} /></div><p className="font-medium text-ink">{status === 'Draft' ? (th ? 'ยังไม่มีร่างประกาศที่ผ่านเงื่อนไขนี้' : 'No draft TORs match these filters.') : (th ? 'ยังไม่มีงานที่ผ่านเงื่อนไขนี้' : 'No open projects match these filters.')}</p><p className="max-w-lg text-sm text-ink-3">{status === 'Draft' ? (th ? 'ร่างประกาศจะแสดงระหว่างที่แหล่งต้นทางยังเผยแพร่อยู่ และไม่เกิน 90 วันหลังเผยแพร่ เมื่อมีประกาศเชิญชวนแล้วจะย้ายไปอยู่ในงานที่เปิดรับ' : 'Drafts are shown while the source still lists them, for up to 90 days. Once the official invitation is out they move to open opportunities.') : (th ? 'TOR ภาครัฐจะแสดงเมื่อ AI วิเคราะห์ข้อมูลครบและยืนยันเอกสารต้นทางแล้ว ส่วนประกาศงานโดยตรงใช้ข้อมูลจากผู้ประกาศ' : 'Government listings appear after AI extracts required fields and verifies source documents. Direct postings use the publisher’s details.')}</p>{params.size > 0 && <button className="ui-btn ui-btn-primary ui-btn-sm mt-3" onClick={resetFilters}>{th ? 'รีเซ็ตตัวกรอง' : 'Reset Filters'}</button>}</div> : <TORList items={data.projects.map(project => projectCard(project, activeLang))} t={t} />}
           {data.total > data.limit && <Pagination page={data.page} total={data.total} limit={data.limit} onChange={page => update('page', String(page))} ariaLabel={th ? 'หน้าผลการค้นหา' : 'Search result pages'} previousLabel={th ? 'ก่อนหน้า' : 'Previous'} nextLabel={th ? 'ถัดไป' : 'Next'} />}
         </>}
       </div>
