@@ -17,9 +17,9 @@ jobs:
     timeout-minutes: 15
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22 # matches the Dockerfile; tests rely on Node's built-in TypeScript stripping (22.18+)
           cache: npm
@@ -32,8 +32,12 @@ jobs:
         run: npm run lint
         continue-on-error: true
 
+      # Next.js generates global route types (LayoutProps, PageProps) into .next/,
+      # which a fresh checkout doesn't have. Generate them before type checking.
       - name: Type check
-        run: npx tsc --noEmit
+        run: |
+          npx next typegen
+          npx tsc --noEmit
 
       - name: Unit tests
         run: npm test
