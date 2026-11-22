@@ -53,3 +53,16 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Security scan (OWASP ZAP DAST)
+
+Run before each release against the local Docker stack. With the stack up
+(`docker compose up -d --build` from the root), run from `TORment-Frontend`:
+
+```powershell
+.\security\zap\run-zap.ps1
+```
+
+The script runs ZAP's passive Baseline scan (`zap-baseline.py`) on `http://localhost:3000`.
+The report is saved to `security/zap/reports/zap-frontend-report.html`, which is gitignored.
+The Docker image runs `next dev`, so ignore findings that only apply in dev mode.
