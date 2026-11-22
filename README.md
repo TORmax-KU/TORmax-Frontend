@@ -1,55 +1,106 @@
-# Local setup without Docker
+# TORmax frontend
 
-Use Node.js 22+ and start the backend with your own MongoDB first; see
-`csp-backend/README.md` for database and source-access setup.
+The TORmax website. It lets people search Thai government IT procurement
+documents (TORs) in one place, see how well their skills match each project,
+bookmark projects, get notifications, and post their own IT projects.
+
+Built with Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4 and
+daisyUI. Every page gets its data from the
+[TORmax backend](https://github.com/GotAdithep/csp-backend) API.
+
+> **Want to run the whole website?** Follow the
+> [main repository README](https://github.com/TORmax-KU/TORmax#readme). It starts
+> this website, the backend and MongoDB together with one Docker command. This
+> page covers running the frontend on its own.
+
+## Run the frontend
+
+### What you need
+
+- [Node.js 22 or newer](https://nodejs.org/)
+- The backend running at http://localhost:5001. See the
+  [backend README](https://github.com/GotAdithep/csp-backend#readme). The website
+  opens without it, but every page that loads data will show an error.
+
+### Steps
 
 ```powershell
+cd Untitled-Collab-Project-Frontend
 npm ci
-Copy-Item .env.example .env.local
+if (!(Test-Path .env.local)) { Copy-Item .env.example .env.local }   # macOS/Linux: [ -f .env.local ] || cp .env.example .env.local
 npm run dev
 ```
 
-Copy the environment example only if `.env.local` does not exist. The API defaults
-to `http://localhost:5001`; the website runs on `http://localhost:3000`.
+Open **http://localhost:3000**. The page reloads automatically when you edit a
+file.
 
-Home and search use the live database. The backend checks Bangkok e-GP, EGAT,
-IEAT and GISTDA on startup and every five minutes. The public feed currently
-shows verified Bangkok IT e-bidding projects with complete analysis and future
-deadlines. The retired national-source notice has been removed.
+### Settings
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+`.env.local` has one setting:
 
-## Getting Started
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `NEXT_PUBLIC_API_URL` | `http://localhost:5001` | Backend address, as reached from the browser |
 
-First, run the development server:
+Anything starting with `NEXT_PUBLIC_` is sent to the browser, so never put
+secrets in this file. Restart `npm run dev` after changing it. In the root
+Docker setup, Compose sets this value for you, so you don't need `.env.local`.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Seeing content
+
+A new database has no government TORs. They appear only after the backend's AI
+analysis has processed them. To try the site without that, register as a **Job
+Lister** at `/login` and create a posting at `/postings/new`; it appears in
+search straight away. The
+[main README](https://github.com/TORmax-KU/TORmax#2-your-first-visit-why-the-feed-is-empty)
+explains this in more detail.
+
+## Scripts
+
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Development server with hot reload on port 3000 |
+| `npm run build` | Production build. Also catches TypeScript errors |
+| `npm start` | Serves the production build (run `npm run build` first) |
+| `npm run lint` | ESLint |
+| `npm run knip` | Finds unused files, exports and dependencies |
+| `npm test` | Unit tests in `test/` (Node's built-in test runner) |
+
+## Pages
+
+| Route | Page |
+| --- | --- |
+| `/` | Home with search and live opportunities |
+| `/search-feed` | Search and filter TORs and postings |
+| `/tor-page/[tor-id]` | TOR or posting details, skill match, bookmark and report |
+| `/login` | Sign in and register (Vendor or Job Lister) |
+| `/profile` | Profile, skills, budget range and alert preferences |
+| `/settings` | Account and appearance (theme) |
+| `/bookmarks`, `/matches`, `/notifications` | A vendor's saved TORs, matches and alerts |
+| `/postings`, `/postings/new`, `/postings/[id]/edit` | A job lister's own postings |
+| `/admin` | Admin console (admins only) |
+
+## Project layout
+
+```text
+app/          routes (Next.js App Router): one folder per page
+component/    React components, grouped by feature (searchfeed/, tordetail/, admin/, …)
+context/      React context: signed-in user (AuthContext) and app-wide state (AppContext)
+lib/          API calls to the backend, one file per area (projects, auth, bookmarks, …)
+utils/        small helpers
+types/, interface/   shared TypeScript types
+public/       static images and icons
+test/         unit tests
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Troubleshooting
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Pages show network or "failed to fetch" errors.** The backend isn't
+  reachable. Check that http://localhost:5001/api/projects returns JSON, and that
+  `NEXT_PUBLIC_API_URL` in `.env.local` matches.
+- **Port 3000 is already in use.** Another dev server, or the Docker frontend,
+  is already running. Stop it, or run `npm run dev -- -p 3001`. If you use
+  another port, the backend's `FRONTEND_URL` must match it, or login and API
+  calls will be blocked.
+- **Build fails with a syntax error in `.next/dev/types/validator.ts`.** This is
+  stale generated output. Delete the `.next` folder and build again.
