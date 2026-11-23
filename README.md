@@ -46,6 +46,21 @@ Anything starting with `NEXT_PUBLIC_` is sent to the browser, so never put
 secrets in this file. Restart `npm run dev` after changing it. In the root
 Docker setup, Compose sets this value for you, so you don't need `.env.local`.
 
+**When hosted** (for example on Vercel, with the backend on Render), set these
+two instead:
+
+| Variable | Value |
+| --- | --- |
+| `NEXT_PUBLIC_API_URL` | `/backend` |
+| `BACKEND_URL` | The backend address, e.g. `https://your-api.onrender.com` |
+
+The website then forwards every `/backend/...` request to the backend (see
+[next.config.ts](next.config.ts)). Browsers only send the login cookie to the
+site that set it, so calling the backend directly from another site would log
+everyone out straight after signing in. The
+[main README](https://github.com/TORmax-KU/TORmax#hosting-vercel--render)
+has the full hosting steps.
+
 ### Seeing content
 
 A new database has no government TORs. They appear only after the backend's AI

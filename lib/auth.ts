@@ -1,5 +1,7 @@
 import { AuthUser } from '@/types';
 
+// Either the API's own address (local development) or "/backend", which next.config.ts
+// forwards to BACKEND_URL so the session cookie stays on this site when hosted.
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 
