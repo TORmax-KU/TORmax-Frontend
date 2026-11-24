@@ -45,7 +45,7 @@ export interface Project {
   status?: 'Draft' | 'Public';
   priceFlag?: PriceFlag;
   priceAnalysis?: PriceAnalysis | null;
-  aiAnalysis?: { documentUrls?: string[]; fieldResults?: Partial<Record<'budget' | 'announcedAt' | 'deadline', { status: 'found' | 'not_found' | 'ambiguous'; reason: string; evidence?: { quote: string; page: number; documentIndex: number } | null }>>; mandatorySkillNames?: string[]; noMandatorySkillsReason?: string; skillEvidence?: Array<{ name: string; quote: string; page?: number; documentIndex?: number }> };
+  aiAnalysis?: { documentUrls?: string[]; fieldResults?: Partial<Record<'budget' | 'referencePrice' | 'announcedAt' | 'deadline', { status: 'found' | 'not_found' | 'ambiguous'; reason: string; evidence?: { quote: string; page: number; documentIndex: number } | null }>>; mandatorySkillNames?: string[]; noMandatorySkillsReason?: string; skillEvidence?: Array<{ name: string; quote: string; page?: number; documentIndex?: number }> };
 }
 
 export type PriceFlag = 'Normal' | 'Underpriced' | 'Overpriced' | 'ScopeMismatch';
@@ -128,6 +128,21 @@ export function availabilityLabel(value: string | undefined, lang: 'th' | 'en') 
 export function safeSourceUrl(value?: string) {
   if (!value) return null;
   try { const url = new URL(value); return url.protocol === 'https:' && !url.username && !url.password ? url.href : null; } catch { return null; }
+}
+
+// Some sources (Tero) bundle every PDF in one ZIP; their URLs are `<zip>#file=<name>`.
+// Returns the ZIP URL for such a document, otherwise null.
+export function archiveUrl(value?: string) {
+  const url = safeSourceUrl(value);
+  return url && url.includes('#file=') ? url.split('#')[0] : null;
+}
+
+// Link that opens the document itself. A PDF inside a ZIP is served by the backend,
+// because browsers ignore `#file=` and would download the whole ZIP.
+export function documentHref(project: Pick<Project, '_id' | 'documents'>, index: number) {
+  const url = safeSourceUrl(project.documents?.[index]?.url);
+  if (!url) return null;
+  return archiveUrl(url) ? `${API_BASE_URL}/api/projects/${encodeURIComponent(project._id)}/documents/${index}` : url;
 }
 
 export async function getProjects(params: URLSearchParams, signal: AbortSignal): Promise<ProjectResults> {
